@@ -178,7 +178,7 @@ internal fun DrawScope.drawSleepingChibiCat(
                 color = palette.patchColor.copy(alpha = 0.50f),
                 topLeft = pt(-0.62f, 0.10f), size = Size(u * 0.50f, u * 0.42f) // mặt nạ quanh mắt mũi
             )
-        } else if (wardrobe.furSkinId == "fur_orange") {
+        } else if (wardrobe.furSkinId == "fur_orange" || wardrobe.furSkinId == "fur_ginger") {
             listOf(
                 Offset(0.05f, -0.62f) to Offset(0.02f, -0.46f),
                 Offset(0.30f, -0.58f) to Offset(0.25f, -0.43f),
@@ -190,6 +190,18 @@ internal fun DrawScope.drawSleepingChibiCat(
                     strokeWidth = lineW * 4.5f, cap = StrokeCap.Round
                 )
             }
+        } else if (wardrobe.furSkinId == "fur_calico") {
+            // Đốm cam trên lưng
+            drawOval(
+                color = palette.patchColor.copy(alpha = 0.85f),
+                topLeft = pt(0.05f, -0.65f), size = Size(u * 0.40f, u * 0.35f)
+            )
+            // Đốm đen nâu bên cạnh
+            val secColor = palette.secondaryPatchColor ?: Color(0xFF3D3436)
+            drawOval(
+                color = secColor.copy(alpha = 0.85f),
+                topLeft = pt(0.35f, -0.50f), size = Size(u * 0.35f, u * 0.30f)
+            )
         }
     }
 

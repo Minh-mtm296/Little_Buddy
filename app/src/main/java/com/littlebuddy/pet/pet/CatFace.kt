@@ -54,6 +54,25 @@ internal fun DrawScope.drawChibiFace(
     }
     drawPath(maskPath, color = palette.patchColor)
 
+    // Đốm màu thứ 3 đặc trưng cho mèo tam thể (Calico) ở nửa bên phải mặt
+    palette.secondaryPatchColor?.let { secColor ->
+        val calicoRightPatch = Path().apply {
+            moveTo(cx, cy - u * 0.70f)
+            cubicTo(
+                cx + u * 0.16f, cy - u * 0.70f,
+                cx + u * 0.28f, cy - u * 0.58f,
+                cx + u * 0.30f, cy - u * 0.44f
+            )
+            cubicTo(
+                cx + u * 0.28f, cy - u * 0.30f,
+                cx + u * 0.18f, cy - u * 0.16f,
+                cx, cy - u * 0.16f
+            )
+            close()
+        }
+        drawPath(calicoRightPatch, color = secColor)
+    }
+
     // 2. Mắt dọc hạt đậu nghiêng nhẹ ngơ ngác \ /
     val eyeY = cy - u * 0.44f
     val eyeOffsetX = u * 0.25f

@@ -75,6 +75,7 @@ import com.littlebuddy.pet.pet.PetActionState
 import com.littlebuddy.pet.pet.PetCanvas
 import com.littlebuddy.pet.pet.PetMood
 import com.littlebuddy.pet.pet.PetState
+import com.littlebuddy.pet.pet.rememberPetAnimationState
 import com.littlebuddy.pet.ui.theme.BlushPetal
 import com.littlebuddy.pet.ui.theme.MidnightLagoon
 import com.littlebuddy.pet.ui.theme.Rosewood
@@ -642,6 +643,10 @@ fun YarnChaseGame(
                             }
                         }
 
+                        val yarnGameActionState = if (isPouncing) PetActionState.PLAYING else PetActionState.IDLE
+                        val yarnGamePetState = if (isCatchSuccess) petState.copy(temporaryMood = PetMood.HAPPY) else petState
+                        val yarnGameAnimState = rememberPetAnimationState(petState = yarnGamePetState, actionState = yarnGameActionState)
+
                         // Lớp vẽ bé Mèo Chibi Canvas thật (Đúng Skin + Phụ kiện Tủ đồ)
                         Box(
                             modifier = Modifier
@@ -659,9 +664,10 @@ fun YarnChaseGame(
                                 }
                         ) {
                             PetCanvas(
-                                petState = if (isCatchSuccess) petState.copy(temporaryMood = PetMood.HAPPY) else petState,
+                                petState = yarnGamePetState,
                                 modifier = Modifier.fillMaxSize(),
-                                actionState = if (isPouncing) PetActionState.PLAYING else PetActionState.IDLE,
+                                actionState = yarnGameActionState,
+                                animState = yarnGameAnimState,
                                 facingDirection = 1f
                             )
                         }
@@ -936,6 +942,10 @@ fun FeatherHuntGame(
                             }
                         }
 
+                        val featherGameActionState = if (isJumping) PetActionState.PLAYING else PetActionState.IDLE
+                        val featherGamePetState = if (isCatchSuccess) petState.copy(temporaryMood = PetMood.HAPPY) else petState
+                        val featherGameAnimState = rememberPetAnimationState(petState = featherGamePetState, actionState = featherGameActionState)
+
                         // Lớp vẽ bé Mèo Chibi Canvas thật (Đúng Skin + Phụ kiện Tủ đồ)
                         Box(
                             modifier = Modifier
@@ -953,9 +963,10 @@ fun FeatherHuntGame(
                                 }
                         ) {
                             PetCanvas(
-                                petState = if (isCatchSuccess) petState.copy(temporaryMood = PetMood.HAPPY) else petState,
+                                petState = featherGamePetState,
                                 modifier = Modifier.fillMaxSize(),
-                                actionState = if (isJumping) PetActionState.PLAYING else PetActionState.IDLE,
+                                actionState = featherGameActionState,
+                                animState = featherGameAnimState,
                                 facingDirection = 1f
                             )
                         }

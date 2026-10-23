@@ -204,11 +204,11 @@ data class PetState(
     }
 
     /**
-     * Hồi phục năng lượng trong lúc ngủ theo từng chu kỳ tick
+     * Hồi phục năng lượng trong lúc ngủ theo từng chu kỳ tick (~1 phút để nạp đầy năng lượng)
      */
     fun sleepTick(): PetState {
         if (!isSleeping) return this
-        return copy(energy = (energy + 10f).coerceIn(0f, 100f))
+        return copy(energy = (energy + 5f).coerceIn(0f, 100f))
     }
 
     /**

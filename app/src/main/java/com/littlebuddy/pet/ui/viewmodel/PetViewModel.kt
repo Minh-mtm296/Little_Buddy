@@ -75,6 +75,12 @@ class PetViewModel(
     private var wakeJob: Job? = null
     private var idleLifeJob: Job? = null
     private var feedbackDismissJob: Job? = null
+    private var scratchJob: Job? = null
+    private var pettingJob: Job? = null
+
+    /** Thời điểm tương tác gần nhất để chống spam miễn phí */
+    private var lastDrinkTimestamp: Long = 0L
+    private var lastYarnTimestamp: Long = 0L
 
     /**
      * Thức ăn đang trong phiên ăn hiện tại. Được khoá lại khi bắt đầu ăn để tránh
@@ -157,18 +163,26 @@ class PetViewModel(
     }
 
     /**
-     * Kiểm tra mèo có đang ở trạng thái rảnh rỗi (IDLE) và không ngủ để bắt đầu hành động tương tác đơn giản.
+     * Kiểm tra mèo có đang rảnh để nhận tương tác phụ (uống nước, vờn len, cào móng, vuốt ve).
+     * Chỉ cho phép khi đang IDLE hoặc PETTING và không ngủ.
      */
-    private fun canStartSimpleAction(): Boolean {
-        return !_petState.value.isSleeping && _actionState.value == PetActionState.IDLE
+    private fun isFreeForSideAction(): Boolean {
+        if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) return false
+        return _actionState.value == PetActionState.IDLE || _actionState.value == PetActionState.PETTING
     }
 
     /** Uống nước từ bát nước bên cạnh bát thức ăn */
     fun drinkWater() {
-        if (!canStartSimpleAction()) return
+        if (!isFreeForSideAction()) return
+        val now = System.currentTimeMillis()
+        if (now - lastDrinkTimestamp < 8000L) {
+            showFeedback("${_petState.value.petName} vừa uống nước xong, bụng còn no nước lắm! 💧", 2000L)
+            return
+        }
+        lastDrinkTimestamp = now
         _petState.update { state ->
-            val newEnergy = (state.energy + 14f).coerceIn(0f, 100f)
-            val newHappy = (state.happiness + 8f).coerceIn(0f, 100f)
+            val newEnergy = (state.energy + 10f).coerceIn(0f, 100f)
+            val newHappy = (state.happiness + 6f).coerceIn(0f, 100f)
             state.copy(
                 energy = newEnergy,
                 happiness = newHappy,
@@ -181,9 +195,15 @@ class PetViewModel(
 
     /** Tương tác cuộn len trên sàn */
     fun playWithYarn() {
-        if (!canStartSimpleAction()) return
+        if (!isFreeForSideAction()) return
+        val now = System.currentTimeMillis()
+        if (now - lastYarnTimestamp < 8000L) {
+            showFeedback("${_petState.value.petName} đang nghỉ thở một chút trước khi vờn len tiếp nhé! 🧶", 2000L)
+            return
+        }
+        lastYarnTimestamp = now
         _petState.update { state ->
-            val newHappy = (state.happiness + 12f).coerceIn(0f, 100f)
+            val newHappy = (state.happiness + 10f).coerceIn(0f, 100f)
             val newEnergy = (state.energy - 5f).coerceIn(0f, 100f)
             state.copy(
                 happiness = newHappy,
@@ -197,11 +217,12 @@ class PetViewModel(
 
     /** Cào móng ở cột cào móng */
     fun scratchPost() {
-        if (!canStartSimpleAction()) return
+        if (!isFreeForSideAction()) return
+        scratchJob?.cancel()
         _actionState.value = PetActionState.STRETCHING
         showFeedback("${_petState.value.petName} đang mài móng sột soạt sảng khoái... Meo~ 🪵✨", 3000L)
-        viewModelScope.launch {
-            _petState.update { it.copy(happiness = (it.happiness + 10f).coerceIn(0f, 100f), temporaryMood = PetMood.HAPPY) }
+        scratchJob = viewModelScope.launch {
+            _petState.update { it.copy(happiness = (it.happiness + 8f).coerceIn(0f, 100f), temporaryMood = PetMood.HAPPY) }
             repository.persistPetState(_petState.value)
             delay(1600L)
             if (_actionState.value == PetActionState.STRETCHING) {
@@ -348,22 +369,41 @@ class PetViewModel(
         _actionState.value = PetActionState.IDLE
     }
 
-    /** Vuốt ve thú cưng (Pet) - phản ứng rung rinh purr và híp mắt cười */
+    /**
+     * Vuốt ve thú cưng (Pet) - phản ứng rung rinh purr và híp mắt cười.
+     * Khi chạm liên tục trong cùng một chu kỳ, chỉ gia hạn animation chứ không cộng dồn chỉ số (chống spam cày EXP).
+     */
     fun pet() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
+            val now = System.currentTimeMillis()
+            if (now - _petState.value.lastInteractionTimestamp < 1200L) return
             _petState.update { it.pet() }
             repository.persistPetState(_petState.value)
             return
         }
-        if (!canStartSimpleAction() && _actionState.value != PetActionState.PETTING) {
+        if (!isFreeForSideAction()) {
             return
         }
 
+        if (_actionState.value == PetActionState.PETTING) {
+            // Đang vuốt ve: gia hạn thời gian hiệu ứng rung rinh nhưng KHÔNG cộng thêm EXP/chỉ số
+            pettingJob?.cancel()
+            pettingJob = viewModelScope.launch {
+                delay(2200L)
+                if (_actionState.value == PetActionState.PETTING) {
+                    _actionState.value = PetActionState.IDLE
+                }
+            }
+            return
+        }
+
+        // Bắt đầu chu kỳ vuốt ve mới: cộng chỉ số 1 lần duy nhất
         _actionState.value = PetActionState.PETTING
         _petState.update { it.pet() }
         persistAndScheduleMoodReset()
 
-        viewModelScope.launch {
+        pettingJob?.cancel()
+        pettingJob = viewModelScope.launch {
             delay(2200L)
             if (_actionState.value == PetActionState.PETTING) {
                 _actionState.value = PetActionState.IDLE
@@ -625,6 +665,8 @@ class PetViewModel(
         idleLifeJob?.cancel()
         temporaryMoodJob?.cancel()
         feedbackDismissJob?.cancel()
+        scratchJob?.cancel()
+        pettingJob?.cancel()
         activeMeal = null
         _actionState.value = PetActionState.IDLE
         _catPositionX.value = 0.5f
@@ -670,5 +712,9 @@ class PetViewModel(
         walkJob?.cancel()
         eatJob?.cancel()
         wakeJob?.cancel()
+        idleLifeJob?.cancel()
+        feedbackDismissJob?.cancel()
+        scratchJob?.cancel()
+        pettingJob?.cancel()
     }
 }

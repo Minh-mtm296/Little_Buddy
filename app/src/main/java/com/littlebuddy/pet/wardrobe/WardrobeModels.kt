@@ -18,12 +18,13 @@ enum class WardrobeCategory(val displayName: String, val icon: String) {
  */
 data class CatColorPalette(
     val bodyColor: Color,        // Màu lông thân chính (trắng, vàng, đen, xám...)
-    val patchColor: Color,       // Màu đốm đặc trưng (mặt nạ, 2 tai, 2 bàn tay, đuôi)
+    val patchColor: Color,       // Màu đốm đặc trưng (mặt nạ, tai trái, tay, đuôi)
     val outlineColor: Color,     // Màu viền nét thân và các chi tiết
     val innerEarColor: Color,    // Màu lòng tai trong
     val bellyColor: Color,       // Màu bóng mờ dưới đáy bụng
     val eyeColor: Color,         // Màu mắt hạt đậu
-    val noseColor: Color         // Màu mũi nhỏ xinh
+    val noseColor: Color,        // Màu mũi nhỏ xinh
+    val secondaryPatchColor: Color? = null // Màu đốm phụ thứ 3 (dành riêng cho mèo tam thể calico: đốm đen/nâu)
 )
 
 /**
@@ -99,6 +100,7 @@ object WardrobeRegistry {
     const val ID_FUR_BLACK = "fur_black"
     const val ID_FUR_SNOW = "fur_snow"
     const val ID_FUR_GREY = "fur_grey"
+    const val ID_FUR_CALICO = "fur_calico"
 
     const val ID_HEAD_RIBBON = "head_ribbon"
     const val ID_HEAD_STRAW_HAT = "head_straw_hat"
@@ -210,6 +212,26 @@ object WardrobeRegistry {
             bellyColor = Color(0xFFC0CAD4),
             eyeColor = Color(0xFF38A169),
             noseColor = Color(0xFF5A6675)
+        )
+    )
+
+    val FUR_CALICO = WardrobeItem(
+        id = ID_FUR_CALICO,
+        name = "Mèo Tam Thể",
+        description = "Bộ lông ba màu trắng, vàng cam và nâu đen mang lại may mắn, tài lộc.",
+        category = WardrobeCategory.FUR_SKIN,
+        levelRequired = 1,
+        previewPrimaryColor = Color(0xFFFAF6F0),
+        previewSecondaryColor = Color(0xFFE8833A),
+        palette = CatColorPalette(
+            bodyColor = Color(0xFFFAF6F0),
+            patchColor = Color(0xFFE8833A),
+            outlineColor = Color(0xFF5D3E44),
+            innerEarColor = Color(0xFFF7B5B5),
+            bellyColor = Color(0xFFEFE8DF),
+            eyeColor = Color(0xFF384E32),
+            noseColor = Color(0xFFE07A7A),
+            secondaryPatchColor = Color(0xFF3D3436)
         )
     )
 
@@ -339,7 +361,7 @@ object WardrobeRegistry {
     // ── TOÀN BỘ DANH SÁCH ───────────────────────────────────────────────────
 
     val ALL_ITEMS: List<WardrobeItem> = listOf(
-        FUR_SIAMESE, FUR_GINGER, FUR_BLACK, FUR_SNOW, FUR_GREY,
+        FUR_SIAMESE, FUR_GINGER, FUR_BLACK, FUR_SNOW, FUR_GREY, FUR_CALICO,
         HEAD_RIBBON, HEAD_STRAW_HAT, HEAD_BERET, HEAD_FLOWER_CROWN, HEAD_CROWN,
         NECK_BELL_COLLAR, NECK_WARM_SCARF, NECK_BLUE_BOW, NECK_PEARL,
         BODY_SWEATER, BODY_OVERALLS, BODY_ROYAL_CAPE

@@ -221,7 +221,8 @@ internal fun DrawScope.drawCuteCatEars(
         )
         close()
     }
-    drawPath(rightEarFill, color = palette.patchColor)
+    val rightEarColor = palette.secondaryPatchColor ?: palette.patchColor
+    drawPath(rightEarFill, color = rightEarColor)
 
     // Viền tai phải: KHÔNG close để gốc tai mở thông liền mạch với đầu
     val rightEarStroke = Path().apply {

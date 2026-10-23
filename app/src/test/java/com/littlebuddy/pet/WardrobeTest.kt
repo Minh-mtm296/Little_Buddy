@@ -35,6 +35,14 @@ class WardrobeTest {
     }
 
     @Test
+    fun calico_furSkin_existsAndHasSecondaryPatchColor() {
+        val calico = WardrobeRegistry.getItem(WardrobeRegistry.ID_FUR_CALICO)
+        assertNotNull(calico)
+        assertEquals("Mèo Tam Thể", calico?.name)
+        assertNotNull(calico?.palette?.secondaryPatchColor)
+    }
+
+    @Test
     fun defaultWardrobe_hasSiameseFurAndNoAccessories() {
         val wardrobe = EquippedWardrobe()
 

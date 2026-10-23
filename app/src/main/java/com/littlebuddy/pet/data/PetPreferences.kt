@@ -38,16 +38,17 @@ class PetPreferences(context: Context) {
      * Tải trạng thái thú cưng đã lưu
      */
     fun loadPetState(): PetState {
-        val name = prefs.getString(KEY_PET_NAME, "Momo") ?: "Momo"
+        val rawName = prefs.getString(KEY_PET_NAME, PetState.DEFAULT_PET_NAME) ?: PetState.DEFAULT_PET_NAME
+        val name = PetState.sanitizeName(rawName) ?: PetState.DEFAULT_PET_NAME
         val petTypeName = prefs.getString(KEY_PET_TYPE, PetType.CAT.name) ?: PetType.CAT.name
         val petType = try { PetType.valueOf(petTypeName) } catch (_: Exception) { PetType.CAT }
 
-        val hunger = prefs.getFloat(KEY_HUNGER, 70f)
-        val happiness = prefs.getFloat(KEY_HAPPINESS, 80f)
-        val energy = prefs.getFloat(KEY_ENERGY, 85f)
-        val intimacyScore = prefs.getInt(KEY_INTIMACY_SCORE, 0)
-        val level = prefs.getInt(KEY_LEVEL, 1)
-        val exp = prefs.getInt(KEY_EXP, 0)
+        val hunger = prefs.getFloat(KEY_HUNGER, 70f).coerceIn(0f, 100f)
+        val happiness = prefs.getFloat(KEY_HAPPINESS, 80f).coerceIn(0f, 100f)
+        val energy = prefs.getFloat(KEY_ENERGY, 85f).coerceIn(0f, 100f)
+        val intimacyScore = prefs.getInt(KEY_INTIMACY_SCORE, 15).coerceIn(0, PetState.MAX_INTIMACY_SCORE)
+        val level = prefs.getInt(KEY_LEVEL, 1).coerceAtLeast(1)
+        val exp = prefs.getInt(KEY_EXP, 0).coerceAtLeast(0)
         val isSleeping = prefs.getBoolean(KEY_IS_SLEEPING, false)
         val lastSaved = prefs.getLong(KEY_LAST_SAVED, System.currentTimeMillis())
 
