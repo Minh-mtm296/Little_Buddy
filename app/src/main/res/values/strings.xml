@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Little Buddy</string>
+    <string name="pet_default_name">Momo</string>
+    <string name="pet_status_happy">Momo đang rất vui vẻ!</string>
+    <string name="action_feed">Cho ăn</string>
+    <string name="action_pet">Vuốt ve</string>
+    <string name="action_play">Chơi đùa</string>
+    <string name="action_sleep">Đi ngủ</string>
+    <string name="action_wake">Thức dậy</string>
+</resources>

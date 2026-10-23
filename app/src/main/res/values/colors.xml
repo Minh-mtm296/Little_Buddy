@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bảng màu Little Buddy theo yêu cầu đề bài -->
+    <color name="vanilla_cream">#FFF7E6</color>
+    <color name="blush_petal">#F7C8D3</color>
+    <color name="rosewood">#B46A72</color>
+    <color name="sage_leaf">#A8B58A</color>
+    <color name="misty_sky">#A9B7C6</color>
+    <color name="midnight_lagoon">#2D3A47</color>
+</resources>
