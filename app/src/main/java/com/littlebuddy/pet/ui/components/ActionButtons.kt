@@ -42,6 +42,7 @@ import com.littlebuddy.pet.ui.theme.SoftWhite
 /**
  * Hàng 4 nút tương tác chính: Cho ăn, Chơi, Tủ đồ, Ngủ/Thức
  * Vuốt ve được thực hiện trực tiếp bằng cách chạm vào nhân vật.
+ * Hỗ trợ chế độ hiển thị lưới 2x2 ([isGrid] = true) khi màn hình xoay ngang.
  */
 @Composable
 fun PetActionButtons(
@@ -50,59 +51,118 @@ fun PetActionButtons(
     onPlay: () -> Unit,
     onWardrobe: () -> Unit,
     onToggleSleep: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isGrid: Boolean = false
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        // Nút Cho ăn
-        ActionButtonItem(
-            title = "Cho ăn",
-            subtitle = "Ngon miệng",
-            icon = Icons.Rounded.Restaurant,
-            backgroundColor = Rosewood,
-            contentColor = SoftWhite,
-            enabled = !petState.isSleeping,
-            onClick = onFeed,
-            modifier = Modifier.weight(1f)
-        )
+    if (isGrid) {
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ActionButtonItem(
+                    title = "Cho ăn",
+                    subtitle = "Ngon miệng",
+                    icon = Icons.Rounded.Restaurant,
+                    backgroundColor = Rosewood,
+                    contentColor = SoftWhite,
+                    enabled = !petState.isSleeping,
+                    onClick = onFeed,
+                    modifier = Modifier.weight(1f)
+                )
+                ActionButtonItem(
+                    title = "Chơi",
+                    subtitle = "Vui vẻ",
+                    icon = Icons.Rounded.SportsEsports,
+                    backgroundColor = BlushPetal,
+                    contentColor = MidnightLagoon,
+                    enabled = !petState.isSleeping && petState.canPlay,
+                    onClick = onPlay,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ActionButtonItem(
+                    title = "Tủ đồ",
+                    subtitle = "Thay đồ",
+                    icon = Icons.Rounded.Checkroom,
+                    backgroundColor = MistySky,
+                    contentColor = MidnightLagoon,
+                    enabled = true,
+                    onClick = onWardrobe,
+                    modifier = Modifier.weight(1f)
+                )
+                ActionButtonItem(
+                    title = if (petState.isSleeping) "Thức dậy" else "Đi ngủ",
+                    subtitle = if (petState.isSleeping) "Tỉnh giấc" else "Nghỉ ngơi",
+                    icon = if (petState.isSleeping) Icons.Rounded.WbSunny else Icons.Rounded.Bedtime,
+                    backgroundColor = if (petState.isSleeping) BlushPetal else Color(0xFF6B7280),
+                    contentColor = if (petState.isSleeping) MidnightLagoon else SoftWhite,
+                    enabled = true,
+                    onClick = onToggleSleep,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+    } else {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Nút Cho ăn
+            ActionButtonItem(
+                title = "Cho ăn",
+                subtitle = "Ngon miệng",
+                icon = Icons.Rounded.Restaurant,
+                backgroundColor = Rosewood,
+                contentColor = SoftWhite,
+                enabled = !petState.isSleeping,
+                onClick = onFeed,
+                modifier = Modifier.weight(1f)
+            )
 
-        // Nút Chơi
-        ActionButtonItem(
-            title = "Chơi",
-            subtitle = "Vui vẻ",
-            icon = Icons.Rounded.SportsEsports,
-            backgroundColor = BlushPetal,
-            contentColor = MidnightLagoon,
-            enabled = !petState.isSleeping && petState.canPlay,
-            onClick = onPlay,
-            modifier = Modifier.weight(1f)
-        )
+            // Nút Chơi
+            ActionButtonItem(
+                title = "Chơi",
+                subtitle = "Vui vẻ",
+                icon = Icons.Rounded.SportsEsports,
+                backgroundColor = BlushPetal,
+                contentColor = MidnightLagoon,
+                enabled = !petState.isSleeping && petState.canPlay,
+                onClick = onPlay,
+                modifier = Modifier.weight(1f)
+            )
 
-        // Nút Tủ đồ
-        ActionButtonItem(
-            title = "Tủ đồ",
-            subtitle = "Thay đồ",
-            icon = Icons.Rounded.Checkroom,
-            backgroundColor = MistySky,
-            contentColor = MidnightLagoon,
-            enabled = true,
-            onClick = onWardrobe,
-            modifier = Modifier.weight(1f)
-        )
+            // Nút Tủ đồ
+            ActionButtonItem(
+                title = "Tủ đồ",
+                subtitle = "Thay đồ",
+                icon = Icons.Rounded.Checkroom,
+                backgroundColor = MistySky,
+                contentColor = MidnightLagoon,
+                enabled = true,
+                onClick = onWardrobe,
+                modifier = Modifier.weight(1f)
+            )
 
-        // Nút Ngủ / Thức
-        ActionButtonItem(
-            title = if (petState.isSleeping) "Thức dậy" else "Đi ngủ",
-            subtitle = if (petState.isSleeping) "Tỉnh giấc" else "Nghỉ ngơi",
-            icon = if (petState.isSleeping) Icons.Rounded.WbSunny else Icons.Rounded.Bedtime,
-            backgroundColor = if (petState.isSleeping) BlushPetal else Color(0xFF6B7280),
-            contentColor = if (petState.isSleeping) MidnightLagoon else SoftWhite,
-            enabled = true,
-            onClick = onToggleSleep,
-            modifier = Modifier.weight(1f)
-        )
+            // Nút Ngủ / Thức
+            ActionButtonItem(
+                title = if (petState.isSleeping) "Thức dậy" else "Đi ngủ",
+                subtitle = if (petState.isSleeping) "Tỉnh giấc" else "Nghỉ ngơi",
+                icon = if (petState.isSleeping) Icons.Rounded.WbSunny else Icons.Rounded.Bedtime,
+                backgroundColor = if (petState.isSleeping) BlushPetal else Color(0xFF6B7280),
+                contentColor = if (petState.isSleeping) MidnightLagoon else SoftWhite,
+                enabled = true,
+                onClick = onToggleSleep,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 

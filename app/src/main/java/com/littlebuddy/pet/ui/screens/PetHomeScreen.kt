@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -56,12 +57,15 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.littlebuddy.pet.R
 import com.littlebuddy.pet.pet.BowlFood
 import com.littlebuddy.pet.pet.PetActionState
 import com.littlebuddy.pet.pet.PetCanvas
 import com.littlebuddy.pet.pet.PetState
+import com.littlebuddy.pet.pet.PetAnimationState
 import com.littlebuddy.pet.pet.rememberPetAnimationState
 import com.littlebuddy.pet.ui.components.CompactStatsRow
 import com.littlebuddy.pet.ui.components.CozyRoomBackground
@@ -132,228 +136,134 @@ fun PetHomeScreen(
         )
     } else {
         Surface(modifier = modifier.fillMaxSize(), color = VanillaCream) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // ═══ A. HEADER THÔNG TIN ═════════════════════════════════════════
-            PetHeaderSection(
-                petState = petState,
-                onEditClick = { showProfileDialog = true }
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // ═══ B. KHU VỰC PHÒNG & NHÂN VẬT 2D CANVAS COZY ROOM ═══════════
             BoxWithConstraints(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1.3f)
-                    .heightIn(min = 280.dp)
-                    .shadow(6.dp, RoundedCornerShape(26.dp))
-                    .clip(RoundedCornerShape(26.dp))
-                    .border(3.5.dp, RoomFrameBrown, RoundedCornerShape(26.dp)),
-                contentAlignment = Alignment.BottomCenter
+                    .fillMaxSize()
+                    .systemBarsPadding()
             ) {
-                val roomWidth = maxWidth
-                val roomHeight = maxHeight
-
-                // 1. Background căn phòng pastel ấm cúng
-                CozyRoomBackground(modifier = Modifier.fillMaxSize())
-
-                // Lớp phủ ánh sáng đêm ấm áp khi mèo đi ngủ
-                val nightAlpha by animateFloatAsState(
-                    targetValue = if (petState.isSleeping || actionState == PetActionState.SLEEPING) 0.30f else 0f,
-                    animationSpec = tween(900),
-                    label = "nightTint"
-                )
-                if (nightAlpha > 0.01f) {
-                    Box(
+                val wide = maxWidth > maxHeight
+                if (wide) {
+                    // Bố cục ngang (Landscape): Phòng chiếm 1.7f và toàn bộ chiều cao, điều khiển bên phải
+                    Row(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(Color(0xFF1E1F3B).copy(alpha = nightAlpha))
-                    )
-                }
-
-                // 2. Điểm chạm tương tác: Cột cào móng mèo ở góc phải phòng (tính tỉ lệ theo CozyRoomBackground: X=0.88w, Y=0.58h)
-                val scratchWidth = (roomWidth * 0.12f).coerceAtLeast(46.dp)
-                val scratchHeight = (roomHeight * 0.20f).coerceAtLeast(60.dp)
-                val scratchOffsetX = (roomWidth * 0.88f) - (scratchWidth / 2f)
-                val scratchOffsetY = (roomHeight * 0.58f)
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .offset(x = scratchOffsetX, y = scratchOffsetY)
-                        .size(width = scratchWidth, height = scratchHeight)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) { viewModel.scratchPost() }
-                )
-
-                // 3. Điểm chạm tương tác: Chậu cây cảnh góc phòng (tính tỉ lệ theo CozyRoomBackground: X=0.05w, Y=0.74h)
-                val plantWidth = (roomWidth * 0.12f).coerceAtLeast(44.dp)
-                val plantHeight = (roomHeight * 0.14f).coerceAtLeast(46.dp)
-                val plantOffsetX = ((roomWidth * 0.05f) - (plantWidth / 2f)).coerceAtLeast(0.dp)
-                val plantOffsetY = (roomHeight * 0.74f) - (plantHeight * 0.5f)
-
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .offset(x = plantOffsetX, y = plantOffsetY)
-                        .size(width = plantWidth, height = plantHeight)
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null
-                        ) {
-                            viewModel.showFeedback("🌿 Cây xanh đón nắng thu ấm áp, tươi tốt quá! ✨", 3000L)
-                        }
-                )
-
-                // 4. Cuộn len chơi đùa trên sàn (điểm chạm tương tác)
-                InteractiveYarnBall(
-                    onPlayYarn = { viewModel.playWithYarn() },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 126.dp, bottom = 22.dp)
-                )
-
-                // 5. Cụm trạm ăn & uống (Bát nước gốm sứ + Bát thức ăn drawable R.drawable.bat_do_an)
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 16.dp, bottom = 14.dp),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    WaterBowlInRoom(
-                        onDrinkWater = { viewModel.drinkWater() }
-                    )
-                    FoodBowlInRoom(
-                        bowlFood = bowlFood,
-                        onBowlClick = { viewModel.openFoodPicker() }
-                    )
-                }
-
-                // 6. Chú mèo chuyển động mượt mà (phóng to 1.45x, nâng chân lên giữa thảm)
-                val isSleepingMode = petState.isSleeping || actionState == PetActionState.SLEEPING
-                val catWidth = if (actionState == PetActionState.SLEEPING) 270.dp else 280.dp
-                val catHeight = if (actionState == PetActionState.SLEEPING) 210.dp else 290.dp
-                val maxTravelWidth = (roomWidth - catWidth).coerceAtLeast(0.dp)
-                val currentOffsetX = maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(bottom = if (actionState == PetActionState.SLEEPING) 40.dp else 52.dp),
-                    contentAlignment = Alignment.BottomStart
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .offset(x = currentOffsetX, y = 0.dp)
-                            .size(width = catWidth, height = catHeight)
-                            .pointerInput(petState.isSleeping, actionState) {
-                                if (actionState != PetActionState.WALKING &&
-                                    actionState != PetActionState.EATING &&
-                                    actionState != PetActionState.STRETCHING
-                                ) {
-                                    detectTapGestures(onTap = { viewModel.pet() })
-                                }
-                            },
-                        contentAlignment = Alignment.Center
+                            .padding(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        PetCanvas(
+                        Box(
+                            modifier = Modifier
+                                .weight(1.7f)
+                                .fillMaxHeight()
+                        ) {
+                            PetRoomSection(
+                                petState = petState,
+                                actionState = actionState,
+                                animValues = animValues,
+                                animatedCatX = animatedCatX,
+                                facingDirection = facingDirection,
+                                bowlFood = bowlFood,
+                                onPet = { viewModel.pet() },
+                                onScratchPost = { viewModel.scratchPost() },
+                                onPlayYarn = { viewModel.playWithYarn() },
+                                onDrinkWater = { viewModel.drinkWater() },
+                                onBowlClick = { viewModel.openFoodPicker() },
+                                onClearFeedback = { viewModel.clearFeedback() },
+                                onShowFeedback = { msg, dur -> viewModel.showFeedback(msg, dur) },
+                                isWideMode = true,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            PetHeaderSection(
+                                petState = petState,
+                                onEditClick = { showProfileDialog = true }
+                            )
+
+                            CompactStatsRow(
+                                petState = petState,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+
+                            PetActionButtons(
+                                petState = petState,
+                                onFeed = { viewModel.openFoodPicker() },
+                                onPlay = { viewModel.openGamePicker() },
+                                onWardrobe = { viewModel.openWardrobe() },
+                                onToggleSleep = { viewModel.toggleSleep() },
+                                modifier = Modifier.fillMaxWidth(),
+                                isGrid = true
+                            )
+                        }
+                    }
+                } else {
+                    // Bố cục dọc (Portrait)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // ═══ A. HEADER THÔNG TIN ═════════════════════════════════════════
+                        PetHeaderSection(
+                            petState = petState,
+                            onEditClick = { showProfileDialog = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // ═══ B. KHU VỰC PHÒNG & NHÂN VẬT 2D CANVAS COZY ROOM ═══════════
+                        PetRoomSection(
                             petState = petState,
                             actionState = actionState,
-                            animState = animValues,
+                            animValues = animValues,
+                            animatedCatX = animatedCatX,
                             facingDirection = facingDirection,
-                            modifier = Modifier.fillMaxSize()
+                            bowlFood = bowlFood,
+                            onPet = { viewModel.pet() },
+                            onScratchPost = { viewModel.scratchPost() },
+                            onPlayYarn = { viewModel.playWithYarn() },
+                            onDrinkWater = { viewModel.drinkWater() },
+                            onBowlClick = { viewModel.openFoodPicker() },
+                            onClearFeedback = { viewModel.clearFeedback() },
+                            onShowFeedback = { msg, dur -> viewModel.showFeedback(msg, dur) },
+                            isWideMode = false,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1.3f)
+                                .heightIn(min = 280.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // ═══ C. THANH CHỈ SỐ THU GỌN (1 HÀNG NGANG) ═══════════════════
+                        CompactStatsRow(
+                            petState = petState,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // ═══ D. CỤM PHÍM HÀNH ĐỘNG ═══════════════════════════════════════
+                        PetActionButtons(
+                            petState = petState,
+                            onFeed = { viewModel.openFoodPicker() },
+                            onPlay = { viewModel.openGamePicker() },
+                            onWardrobe = { viewModel.openWardrobe() },
+                            onToggleSleep = { viewModel.toggleSleep() },
+                            modifier = Modifier.fillMaxWidth(),
+                            isGrid = false
                         )
                     }
-                }
-
-                // 7. Bong bóng lời thoại tương tác (Comic Speech & Thought Cloud Bubble vẽ bằng Canvas)
-                if (petState.feedbackMessage.isNotBlank()) {
-                    val catCenterRatio = if (isSleepingMode) {
-                        0.25f // Khi ngủ trên đệm bên trái, đầu mèo nằm ở khoảng 25% chiều rộng phòng
-                    } else {
-                        val catCenterX = currentOffsetX + catWidth * 0.5f
-                        if (roomWidth > 0.dp) (catCenterX / roomWidth).coerceIn(0.20f, 0.80f) else 0.5f
-                    }
-                    val bubbleHorizontalBias = (catCenterRatio - 0.5f) * 1.5f
-                    val tailPositionFraction = (0.5f + bubbleHorizontalBias * 0.22f).coerceIn(0.25f, 0.75f)
-                    val bubbleTopPadding = if (isSleepingMode) {
-                        (roomHeight * 0.32f).coerceAtLeast(65.dp)
-                    } else {
-                        (roomHeight * 0.035f).coerceAtLeast(8.dp)
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.TopCenter)
-                            .padding(top = bubbleTopPadding, start = 12.dp, end = 12.dp),
-                        contentAlignment = BiasAlignment(horizontalBias = bubbleHorizontalBias, verticalBias = 0f)
-                    ) {
-                        FeedbackBubble(
-                            message = petState.feedbackMessage,
-                            isSleeping = isSleepingMode,
-                            tailPositionFraction = tailPositionFraction,
-                            onBubbleClick = { viewModel.clearFeedback() }
-                        )
-                    }
-                }
-
-                // 8. Nhãn trạng thái / gợi ý tương tác
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 6.dp)
-                        .clip(RoundedCornerShape(50))
-                        .background(VanillaCream.copy(alpha = 0.90f))
-                        .border(1.dp, BlushPetal, RoundedCornerShape(50))
-                        .padding(horizontal = 14.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = when (actionState) {
-                            PetActionState.WALKING -> "🐾 ${petState.petName} đang bước đi..."
-                            PetActionState.EATING -> "🍽️ ${petState.petName} đang thưởng thức món ngon~"
-                            PetActionState.SLEEPING -> "💤 ${petState.petName} đang cuộn tròn ngủ ngoan trên đệm..."
-                            PetActionState.WAKING_UP -> "✨ ${petState.petName} khẽ chớp mắt tỉnh giấc..."
-                            PetActionState.STRETCHING -> "🧘 ${petState.petName} đang vươn vai sảng khoái... Meo~"
-                            PetActionState.PETTING -> "💕 ${petState.petName} đang gầm gừ hạnh phúc vì được vuốt ve ♡"
-                            else -> "Chạm vào ${petState.petName} để vuốt ve ♡"
-                        },
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MidnightLagoon
-                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // ═══ C. THANH CHỈ SỐ THU GỌN (1 HÀNG NGANG) ═══════════════════
-            CompactStatsRow(
-                petState = petState,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // ═══ D. CỤM PHÍM HÀNH ĐỘNG ═══════════════════════════════════════
-            PetActionButtons(
-                petState = petState,
-                onFeed = { viewModel.openFoodPicker() },
-                onPlay = { viewModel.openGamePicker() },
-                onWardrobe = { viewModel.openWardrobe() },
-                onToggleSleep = { viewModel.toggleSleep() },
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 
@@ -413,6 +323,247 @@ fun PetHomeScreen(
             onDismiss = { showFeatherGame = false }
         )
     }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// KHU VỰC PHÒNG & NHÂN VẬT 2D CANVAS COZY ROOM
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Khu vực phòng và nhân vật 2D Cozy Room:
+ * - Kích thước nhân vật mèo và các vật thể (bát, cuộn len, cột cào, cây) được tính toán theo tỉ lệ chiều cao và rộng của phòng.
+ * - Tự động thích ứng mượt mà giữa chế độ đứng (Portrait) và ngang (Landscape).
+ */
+@Composable
+private fun PetRoomSection(
+    petState: PetState,
+    actionState: PetActionState,
+    animValues: PetAnimationState,
+    animatedCatX: Float,
+    facingDirection: Float,
+    bowlFood: BowlFood,
+    onPet: () -> Unit,
+    onScratchPost: () -> Unit,
+    onPlayYarn: () -> Unit,
+    onDrinkWater: () -> Unit,
+    onBowlClick: () -> Unit,
+    onClearFeedback: () -> Unit,
+    onShowFeedback: (String, Long) -> Unit,
+    isWideMode: Boolean = false,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(
+        modifier = modifier
+            .shadow(6.dp, RoundedCornerShape(26.dp))
+            .clip(RoundedCornerShape(26.dp))
+            .border(3.5.dp, RoomFrameBrown, RoundedCornerShape(26.dp)),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        val roomWidth = maxWidth
+        val roomHeight = maxHeight
+
+        // 1. Background căn phòng pastel ấm cúng
+        CozyRoomBackground(modifier = Modifier.fillMaxSize())
+
+        // Lớp phủ ánh sáng đêm ấm áp khi mèo đi ngủ
+        val nightAlpha by animateFloatAsState(
+            targetValue = if (petState.isSleeping || actionState == PetActionState.SLEEPING) 0.30f else 0f,
+            animationSpec = tween(900),
+            label = "nightTint"
+        )
+        if (nightAlpha > 0.01f) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF1E1F3B).copy(alpha = nightAlpha))
+            )
+        }
+
+        // 2. Điểm chạm tương tác: Cột cào móng mèo ở góc phải phòng (X=0.88w, Y=0.58h)
+        val scratchWidth = (roomWidth * 0.12f).coerceAtLeast(36.dp)
+        val scratchHeight = (roomHeight * 0.20f).coerceAtLeast(46.dp)
+        val scratchOffsetX = (roomWidth * 0.88f) - (scratchWidth / 2f)
+        val scratchOffsetY = (roomHeight * 0.58f)
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(x = scratchOffsetX, y = scratchOffsetY)
+                .size(width = scratchWidth, height = scratchHeight)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onScratchPost() }
+        )
+
+        // 3. Điểm chạm tương tác: Chậu cây cảnh góc phòng (X=0.05w, Y=0.74h)
+        val plantWidth = (roomWidth * 0.12f).coerceAtLeast(34.dp)
+        val plantHeight = (roomHeight * 0.14f).coerceAtLeast(36.dp)
+        val plantOffsetX = ((roomWidth * 0.05f) - (plantWidth / 2f)).coerceAtLeast(0.dp)
+        val plantOffsetY = (roomHeight * 0.74f) - (plantHeight * 0.5f)
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .offset(x = plantOffsetX, y = plantOffsetY)
+                .size(width = plantWidth, height = plantHeight)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) {
+                    onShowFeedback("🌿 Cây xanh đón nắng thu ấm áp, tươi tốt quá! ✨", 3000L)
+                }
+        )
+
+        // 4. Cuộn len chơi đùa trên sàn (roomHeight * 0.12f, padding end = roomWidth * 0.20f)
+        val yarnSize = (roomHeight * 0.12f).coerceIn(22.dp, 38.dp)
+        InteractiveYarnBall(
+            ballSize = yarnSize,
+            onPlayYarn = onPlayYarn,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = roomWidth * 0.20f, bottom = (roomHeight * 0.05f).coerceAtLeast(10.dp))
+        )
+
+        // 5. Cụm trạm ăn & uống (Bát nước gốm sứ + Bát thức ăn)
+        val foodBowlH = (roomHeight * 0.14f).coerceIn(26.dp, 46.dp)
+        val foodBowlW = foodBowlH * 1.5f
+        val waterBowlH = (roomHeight * 0.12f).coerceIn(22.dp, 38.dp)
+        val waterBowlW = waterBowlH * 1.22f
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 12.dp, bottom = (roomHeight * 0.04f).coerceAtLeast(8.dp)),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            WaterBowlInRoom(
+                width = waterBowlW,
+                height = waterBowlH,
+                onDrinkWater = onDrinkWater
+            )
+            FoodBowlInRoom(
+                width = foodBowlW,
+                height = foodBowlH,
+                bowlFood = bowlFood,
+                onBowlClick = onBowlClick
+            )
+        }
+
+        // 6. Chú mèo chuyển động mượt mà (KÍCH THƯỚC TÍNH THEO PHÒNG)
+        val isSleepingMode = petState.isSleeping || actionState == PetActionState.SLEEPING
+        val catHeight = (roomHeight * 0.85f).coerceAtMost(290.dp)
+        val catWidth = if (isSleepingMode) catHeight * 1.29f else catHeight * 0.97f
+        val floorPad = roomHeight * 0.12f
+
+        val maxTravelWidth = (roomWidth - catWidth).coerceAtLeast(0.dp)
+        val currentOffsetX = maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = floorPad),
+            contentAlignment = Alignment.BottomStart
+        ) {
+            Box(
+                modifier = Modifier
+                    .offset(x = currentOffsetX, y = 0.dp)
+                    .size(width = catWidth, height = catHeight)
+                    .pointerInput(petState.isSleeping, actionState) {
+                        if (actionState != PetActionState.WALKING &&
+                            actionState != PetActionState.EATING &&
+                            actionState != PetActionState.STRETCHING
+                        ) {
+                            detectTapGestures(onTap = { onPet() })
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                PetCanvas(
+                    petState = petState,
+                    actionState = actionState,
+                    animState = animValues,
+                    facingDirection = facingDirection,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        // 7. Bong bóng lời thoại tương tác (Comic Speech & Thought Cloud Bubble)
+        if (petState.feedbackMessage.isNotBlank()) {
+            val catCenterX = currentOffsetX + catWidth * 0.5f
+            val catCenterRatio = if (roomWidth > 0.dp) (catCenterX / roomWidth).coerceIn(0f, 1f) else 0.5f
+
+            // Vị trí đầu mèo khi ngủ: đầu mèo nằm ở khoảng 35% từ mép trái thân mèo
+            val catHeadX = currentOffsetX + catWidth * 0.35f
+            val catHeadFraction = if (roomWidth > 0.dp) (catHeadX / roomWidth).coerceIn(0.15f, 0.85f) else 0.25f
+
+            val (bubbleHorizontalBias, tailPositionFraction, bubbleTopPadding) = if (isWideMode) {
+                // Ở chế độ ngang: Đặt bong bóng sang phía đối diện mèo để không che khuất
+                if (catCenterRatio < 0.5f) {
+                    Triple(0.55f, 0.25f, (roomHeight * 0.10f).coerceAtLeast(8.dp))
+                } else {
+                    Triple(-0.55f, 0.75f, (roomHeight * 0.10f).coerceAtLeast(8.dp))
+                }
+            } else {
+                // Ở chế độ dọc
+                if (isSleepingMode) {
+                    val bias = (catHeadFraction - 0.5f) * 1.5f
+                    val tail = (0.5f + bias * 0.25f).coerceIn(0.20f, 0.80f)
+                    val topPad = (roomHeight * 0.10f).coerceAtLeast(8.dp)
+                    Triple(bias, tail, topPad)
+                } else {
+                    val bias = (catCenterRatio - 0.5f) * 1.5f
+                    val tail = (0.5f + bias * 0.22f).coerceIn(0.25f, 0.75f)
+                    val topPad = (roomHeight * 0.035f).coerceAtLeast(8.dp)
+                    Triple(bias, tail, topPad)
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopCenter)
+                    .padding(top = bubbleTopPadding, start = 12.dp, end = 12.dp),
+                contentAlignment = BiasAlignment(horizontalBias = bubbleHorizontalBias, verticalBias = 0f)
+            ) {
+                FeedbackBubble(
+                    message = petState.feedbackMessage,
+                    isSleeping = isSleepingMode,
+                    tailPositionFraction = tailPositionFraction,
+                    onBubbleClick = onClearFeedback
+                )
+            }
+        }
+
+        // 8. Nhãn trạng thái / gợi ý tương tác
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = (roomHeight * 0.02f).coerceAtLeast(4.dp))
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(50))
+                .background(VanillaCream.copy(alpha = 0.90f))
+                .border(1.dp, BlushPetal, RoundedCornerShape(50))
+                .padding(horizontal = 12.dp, vertical = 3.dp)
+        ) {
+            Text(
+                text = when (actionState) {
+                    PetActionState.WALKING -> "🐾 ${petState.petName} đang bước đi..."
+                    PetActionState.EATING -> "🍽️ ${petState.petName} đang thưởng thức món ngon~"
+                    PetActionState.SLEEPING -> "💤 ${petState.petName} đang cuộn tròn ngủ ngoan trên đệm..."
+                    PetActionState.WAKING_UP -> "✨ ${petState.petName} khẽ chớp mắt tỉnh giấc..."
+                    PetActionState.STRETCHING -> "🧘 ${petState.petName} đang vươn vai sảng khoái... Meo~"
+                    PetActionState.PETTING -> "💕 ${petState.petName} đang gầm gừ hạnh phúc vì được vuốt ve ♡"
+                    else -> "Chạm vào ${petState.petName} để vuốt ve ♡"
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = MidnightLagoon,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -428,6 +579,8 @@ fun PetHomeScreen(
 @Composable
 private fun FoodBowlInRoom(
     bowlFood: BowlFood,
+    width: Dp = 66.dp,
+    height: Dp = 44.dp,
     onBowlClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -439,7 +592,7 @@ private fun FoodBowlInRoom(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier.size(width = 66.dp, height = 44.dp),
+            modifier = Modifier.size(width = width, height = height),
             contentAlignment = Alignment.Center
         ) {
             // Bóng đổ nhẹ dưới đáy bát trên sàn
@@ -447,7 +600,7 @@ private fun FoodBowlInRoom(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(0.92f)
-                    .height(9.dp)
+                    .height(height * 0.20f)
             ) {
                 drawOval(
                     color = Color(0x35543D36),
@@ -471,12 +624,14 @@ private fun FoodBowlInRoom(
                     .clip(RoundedCornerShape(8.dp))
                     .background(VanillaCream.copy(alpha = 0.95f))
                     .border(1.dp, Color(0xFF8B6914).copy(alpha = 0.35f), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                    .padding(horizontal = 4.dp, vertical = 1.dp)
             ) {
                 Text(
                     text = bowlFood.displayName,
                     style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.SemiBold),
-                    color = MidnightLagoon
+                    color = MidnightLagoon,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
@@ -494,6 +649,8 @@ private fun FoodBowlInRoom(
 @Composable
 private fun WaterBowlInRoom(
     onDrinkWater: () -> Unit,
+    width: Dp = 44.dp,
+    height: Dp = 36.dp,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -504,7 +661,7 @@ private fun WaterBowlInRoom(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier.size(width = 44.dp, height = 36.dp),
+            modifier = Modifier.size(width = width, height = height),
             contentAlignment = Alignment.Center
         ) {
             // Bóng đổ đáy bát nước trên sàn
@@ -512,7 +669,7 @@ private fun WaterBowlInRoom(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(0.90f)
-                    .height(7.dp)
+                    .height((height * 0.20f).coerceAtLeast(4.dp))
             ) {
                 drawOval(
                     color = Color(0x35543D36),
@@ -534,7 +691,7 @@ private fun WaterBowlInRoom(
                     color = Color(0xFF6E9993),
                     topLeft = Offset(bw * 0.08f, bh * 0.16f),
                     size = Size(bw * 0.84f, bh * 0.68f),
-                    style = Stroke(width = 2.2f)
+                    style = Stroke(width = (bh * 0.06f).coerceAtLeast(1.5f))
                 )
                 // Lòng nước trong xanh
                 drawOval(
@@ -550,7 +707,7 @@ private fun WaterBowlInRoom(
                 )
                 drawCircle(
                     color = Color.White.copy(alpha = 0.90f),
-                    radius = 2.5f,
+                    radius = (bh * 0.07f).coerceAtLeast(1.5f),
                     center = Offset(bw * 0.64f, bh * 0.40f)
                 )
             }
@@ -574,6 +731,7 @@ private fun WaterBowlInRoom(
 @Composable
 private fun InteractiveYarnBall(
     onPlayYarn: () -> Unit,
+    ballSize: Dp = 36.dp,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -584,7 +742,7 @@ private fun InteractiveYarnBall(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
-            modifier = Modifier.size(width = 38.dp, height = 34.dp),
+            modifier = Modifier.size(width = ballSize * 1.12f, height = ballSize),
             contentAlignment = Alignment.Center
         ) {
             // Bóng đổ đáy cuộn len
@@ -592,7 +750,7 @@ private fun InteractiveYarnBall(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(0.85f)
-                    .height(6.dp)
+                    .height((ballSize * 0.18f).coerceAtLeast(4.dp))
             ) {
                 drawOval(
                     color = Color(0x35543D36),
@@ -608,7 +766,7 @@ private fun InteractiveYarnBall(
 
                 // Thân quả cầu
                 drawCircle(color = Color(0xFFE88A7A), radius = r, center = Offset(cx, cy))
-                drawCircle(color = Color(0xFF8C4237), radius = r, center = Offset(cx, cy), style = Stroke(width = 1.8f))
+                drawCircle(color = Color(0xFF8C4237), radius = r, center = Offset(cx, cy), style = Stroke(width = (r * 0.14f).coerceAtLeast(1.2f)))
 
                 // Vân sợi len đan chéo
                 drawArc(
@@ -618,7 +776,7 @@ private fun InteractiveYarnBall(
                     useCenter = false,
                     topLeft = Offset(cx - r * 0.72f, cy - r * 0.72f),
                     size = Size(r * 1.44f, r * 1.44f),
-                    style = Stroke(width = 2f)
+                    style = Stroke(width = (r * 0.15f).coerceAtLeast(1.2f))
                 )
                 drawArc(
                     color = Color(0xFF8C4237),
@@ -627,7 +785,7 @@ private fun InteractiveYarnBall(
                     useCenter = false,
                     topLeft = Offset(cx - r * 0.8f, cy - r * 0.6f),
                     size = Size(r * 1.6f, r * 1.2f),
-                    style = Stroke(width = 1.6f)
+                    style = Stroke(width = (r * 0.12f).coerceAtLeast(1.2f))
                 )
 
                 // Đuôi sợi len uốn lượn lăn dài trên sàn
@@ -638,7 +796,7 @@ private fun InteractiveYarnBall(
                 drawPath(
                     path = yarnThread,
                     color = Color(0xFFE88A7A),
-                    style = Stroke(width = 2.4f, cap = StrokeCap.Round)
+                    style = Stroke(width = (r * 0.18f).coerceAtLeast(1.5f), cap = StrokeCap.Round)
                 )
             }
         }
@@ -663,6 +821,7 @@ private fun PetHeaderSection(
     ) {
         Column(
             modifier = Modifier
+                .weight(1f, fill = false)
                 .clip(RoundedCornerShape(16.dp))
                 .clickable { onEditClick() }
                 .padding(vertical = 2.dp, horizontal = 4.dp)
@@ -674,7 +833,10 @@ private fun PetHeaderSection(
                 Text(
                     text = "${petState.petName} ♡",
                     style = MaterialTheme.typography.titleLarge,
-                    color = MidnightLagoon
+                    color = MidnightLagoon,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
                 petState.accessory?.let { acc ->
                     Text(text = acc.emoji, style = MaterialTheme.typography.bodyMedium)
@@ -699,7 +861,9 @@ private fun PetHeaderSection(
             Text(
                 text = "Lv.$formattedLv · ${petState.levelTitle}",
                 style = MaterialTheme.typography.labelMedium,
-                color = MidnightLagoon.copy(alpha = 0.7f)
+                color = MidnightLagoon.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Spacer(modifier = Modifier.height(3.dp))
@@ -725,6 +889,8 @@ private fun PetHeaderSection(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Row(
             modifier = Modifier
