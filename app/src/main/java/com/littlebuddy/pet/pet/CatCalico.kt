@@ -22,17 +22,8 @@ private val STANDING_BLOBS = listOf(
     CalicoBlob( 0.22f, 0.10f, 0.14f, 0.12f,   0f, dark = false)  // đốm cam nhỏ: vai phải
 )
 
-/**
- * Vẽ các mảng màu đặc trưng của mèo tam thể (Calico) trên thân đứng.
- * Nằm trong khối clipPath(bodyFillPath) để không tràn ra ngoài thân.
- */
 internal fun DrawScope.drawCalicoBodyPatches(
-    cx: Float,
-    cy: Float,
-    u: Float,
-    sx: Float,
-    sy: Float,
-    palette: CatColorPalette
+    cx: Float, cy: Float, u: Float, sx: Float, sy: Float, palette: CatColorPalette
 ) {
     val dark = palette.secondaryPatchColor ?: return
     for (b in STANDING_BLOBS) {

@@ -144,7 +144,7 @@ class PetStateTest {
             energy = 40f,
             isSleeping = true
         )
-        // 10 phút: hunger -2f, happiness -1.5f, energy +40f (4.0f/phút)
+        // 10 phút: hunger -2f, happiness -1.5f, energy +40f (với SLEEP_ENERGY_RECOVER_PER_MINUTE = 4.0f)
         val updated = sleepingPet.applyTimeElapsed(10L)
 
         assertEquals(78f, updated.hunger, 0.01f)

@@ -77,14 +77,17 @@ class PetViewModel(
     private var eatJob: Job? = null
     private var wakeJob: Job? = null
     private var idleLifeJob: Job? = null
+    private var feedbackDismissJob: Job? = null
     private var scratchJob: Job? = null
     private var pettingJob: Job? = null
     private var statsJob: Job? = null
 
+    /** Thời điểm vuốt mèo đang ngủ gần nhất */
+    private var lastSleepPetAt: Long = 0L
+
     /** Thời điểm tương tác gần nhất để chống spam miễn phí */
     private var lastDrinkTimestamp: Long = 0L
     private var lastYarnTimestamp: Long = 0L
-    private var lastSleepPetAt: Long = 0L
 
     /**
      * Thức ăn đang trong phiên ăn hiện tại. Được khoá lại khi bắt đầu ăn để tránh
@@ -98,7 +101,7 @@ class PetViewModel(
     val bedPositionX = 0.12f
 
     init {
-        // Tự động thu hồi phản hồi thoại sau 3.5s tập trung tại một nơi duy nhất
+        // Tự động ẩn phản hồi ở một chỗ duy nhất sau 3.5s
         viewModelScope.launch {
             _petState.map { it.feedbackMessage }
                 .distinctUntilChanged()
@@ -110,37 +113,33 @@ class PetViewModel(
                 }
         }
 
-        // Ticker chu kỳ chỉ số 1 phút duy nhất cho toàn bộ game
+        // Ticker định kỳ 60s cập nhật chỉ số suy giảm & hồi phục thống nhất
         startStatsTicker()
 
         if (_petState.value.isSleeping) {
             _actionState.value = PetActionState.SLEEPING
             _catPositionX.value = bedPositionX
             _facingDirection.value = -1f
+            startSleepCycle()
         } else {
             startIdleLifeCycle()
         }
     }
 
-    /** Xóa thông điệp phản hồi */
-    fun clearFeedback() {
-        _petState.update { it.copy(feedbackMessage = "") }
-    }
-
-    /** Hiển thị phản hồi thoại */
-    fun showFeedback(msg: String, autoDismissMs: Long = 3000L) {
-        _petState.update { it.copy(feedbackMessage = msg) }
-    }
-
-    /** Thông báo nhanh khi mèo đang bận hành động khác */
-    private fun notifyBusy() {
+    private fun notifyBusy() =
         showFeedback("${_petState.value.petName} đang bận, đợi bé một chút nhé~", 2000L)
+
+    private fun startStatsTicker() {
+        statsJob?.cancel()
+        statsJob = viewModelScope.launch {
+            while (true) {
+                delay(60_000L)
+                _petState.update { it.applyTimeElapsed(1L) }
+                repository.persistPetState(_petState.value)
+            }
+        }
     }
 
-    /**
-     * Di chuyển mèo mượt mà theo vận tốc thực (đơn vị: phòng/giây).
-     * Sử dụng đường cong làm mượt ease in-out để bước đi tự nhiên và đồng bộ hoàn hảo với Coroutine.
-     */
     private suspend fun moveCatTo(target: Float, speed: Float = 0.20f) {
         val start = _catPositionX.value
         val duration = (kotlin.math.abs(target - start) / speed).coerceAtLeast(0.01f)
@@ -158,23 +157,37 @@ class PetViewModel(
         _catPositionX.value = target
     }
 
+    /** Xóa thông điệp phản hồi */
+    fun clearFeedback() {
+        _petState.update { it.copy(feedbackMessage = "") }
+    }
+
+    /** Hiển thị phản hồi và tự ẩn sau autoDismissMs */
+    fun showFeedback(msg: String, autoDismissMs: Long = 3000L) {
+        feedbackDismissJob?.cancel()
+        _petState.update { it.copy(feedbackMessage = msg) }
+        if (msg.isNotBlank() && autoDismissMs > 0L) {
+            feedbackDismissJob = viewModelScope.launch {
+                delay(autoDismissMs)
+                _petState.update { if (it.feedbackMessage == msg) it.copy(feedbackMessage = "") else it }
+            }
+        }
+    }
+
     /**
      * Vòng lặp cử động tự nhiên khi mèo rảnh (IDLE):
-     * Tự động lại ăn nếu có thức ăn trong bát và đói, hoặc thỉnh thoảng nhìn quanh, đi dạo vài bước nhẹ.
+     * Thỉnh thoảng nhìn quanh, đi dạo vài bước nhẹ trên thảm hoặc kêu meo meo.
      */
     private fun startIdleLifeCycle() {
         idleLifeJob?.cancel()
         idleLifeJob = viewModelScope.launch {
             while (true) {
                 delay((9000L..15000L).random())
-
-                // Tự động đi ăn nếu trong bát có thức ăn và bé đói
                 if (_actionState.value == PetActionState.IDLE &&
                     _bowlFood.value != BowlFood.EMPTY && _petState.value.hunger < 80f) {
                     startWalkingToBowl()
                     continue
                 }
-
                 if (_actionState.value == PetActionState.IDLE && !_petState.value.isSleeping) {
                     when ((1..3).random()) {
                         1 -> {
@@ -187,7 +200,8 @@ class PetViewModel(
                             // Đi dạo vài bước nhẹ trên thảm
                             val cur = _catPositionX.value
                             val target = if (cur < 0.48f) 0.54f else 0.44f
-                            _facingDirection.value = if (target > cur) 1f else -1f
+                            val start = cur
+                            _facingDirection.value = if (target > start) 1f else -1f
                             _actionState.value = PetActionState.WALKING
                             moveCatTo(target, speed = 0.15f)
                             _actionState.value = PetActionState.IDLE
@@ -198,21 +212,6 @@ class PetViewModel(
                         }
                     }
                 }
-            }
-        }
-    }
-
-    /**
-     * Đồng hồ cập nhật chỉ số định kỳ mỗi phút (1 phút = 1 chu kỳ applyTimeElapsed).
-     * Nguồn chân lý duy nhất cho thời gian tiêu hao và hồi phục chỉ số khi app đang chạy.
-     */
-    private fun startStatsTicker() {
-        statsJob?.cancel()
-        statsJob = viewModelScope.launch {
-            while (true) {
-                delay(60_000L)
-                _petState.update { it.applyTimeElapsed(1L) }
-                repository.persistPetState(_petState.value)
             }
         }
     }
@@ -349,7 +348,7 @@ class PetViewModel(
         _petState.update { it.copy(feedbackMessage = "${it.petName} đang đi tới bát thức ăn...🐾") }
 
         walkJob = viewModelScope.launch {
-            moveCatTo(bowlPositionX)
+            moveCatTo(bowlPositionX, speed = 0.20f)
             startEatingAtBowl()
         }
     }
@@ -408,7 +407,7 @@ class PetViewModel(
     /** Mèo đi bộ về vị trí trung tâm sau khi ăn/chơi */
     private suspend fun walkBackToCenter() {
         _actionState.value = PetActionState.WALKING
-        moveCatTo(0.5f)
+        moveCatTo(0.5f, speed = 0.20f)
         _facingDirection.value = 1f // Quay lại nhìn thẳng / sang phải
         _actionState.value = PetActionState.IDLE
     }
@@ -538,10 +537,11 @@ class PetViewModel(
             _actionState.value = PetActionState.WALKING
 
             walkJob = viewModelScope.launch {
-                moveCatTo(bedPositionX)
+                moveCatTo(bedPositionX, speed = 0.20f)
                 // Chỉ khi đến đệm mới chuyển sang SLEEPING và cập nhật isSleeping = true
                 _actionState.value = PetActionState.SLEEPING
                 _petState.update { it.copy(isSleeping = true, feedbackMessage = "${it.petName} đã nằm cuộn tròn ngủ ngon lành... Khò khò~") }
+                startSleepCycle()
                 repository.persistPetState(_petState.value)
             }
         } else {
@@ -564,7 +564,7 @@ class PetViewModel(
                 // Quay người sang phải và đi ra giữa phòng
                 _facingDirection.value = 1f
                 _actionState.value = PetActionState.WALKING
-                moveCatTo(0.5f)
+                moveCatTo(0.5f, speed = 0.20f)
                 _actionState.value = PetActionState.IDLE
                 _petState.update { it.copy(feedbackMessage = "${it.petName} đã thức dậy đầy năng lượng sẵn sàng chơi rồi! 🐾") }
                 repository.persistPetState(_petState.value)
@@ -692,12 +692,12 @@ class PetViewModel(
 
     fun resetPet() {
         sleepJob?.cancel()
-        statsJob?.cancel()
         walkJob?.cancel()
         eatJob?.cancel()
         wakeJob?.cancel()
         idleLifeJob?.cancel()
         temporaryMoodJob?.cancel()
+        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
         activeMeal = null
@@ -707,11 +707,16 @@ class PetViewModel(
         _bowlFood.value = BowlFood.EMPTY
         val defaultState = repository.resetPetState()
         _petState.value = defaultState
-        startStatsTicker()
         startIdleLifeCycle()
+        startStatsTicker()
     }
 
     // ── NỘI BỘ ───────────────────────────────────────────────────────────────
+
+    private fun startSleepCycle() {
+        sleepJob?.cancel()
+        sleepJob = null
+    }
 
     private fun persistAndScheduleMoodReset() {
         repository.persistPetState(_petState.value)
@@ -737,6 +742,7 @@ class PetViewModel(
         eatJob?.cancel()
         wakeJob?.cancel()
         idleLifeJob?.cancel()
+        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
     }

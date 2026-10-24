@@ -74,7 +74,7 @@ internal fun DrawScope.drawChibiFace(
     }
 
     val hasDarkSide = palette.secondaryPatchColor != null
-    // ox > 0 là mắt phải (nằm trên mảng tối); mắt vàng hổ phách để nổi bật trên nền gần đen
+    // ox > 0 là mắt phải (nằm trên mảng tối); mắt hổ phách để nổi trên nền gần đen
     fun eyeColorAt(ox: Float): Color =
         if (hasDarkSide && ox > 0f) Color(0xFFF2C14E) else palette.eyeColor
 
@@ -129,7 +129,6 @@ internal fun DrawScope.drawChibiFace(
                     topLeft = Offset(cx + ox - eyeW / 2f, eyeY - currentEyeH / 2f),
                     size = Size(eyeW, currentEyeH)
                 )
-
                 if (hasDarkSide && ox > 0f) {
                     drawOval(
                         color = Color(0xFF2B2024),

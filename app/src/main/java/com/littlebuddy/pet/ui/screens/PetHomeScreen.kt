@@ -22,11 +22,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Pets
@@ -113,6 +116,9 @@ fun PetHomeScreen(
     // Quản lý animation đa tầng thời gian thực
     val animValues = rememberPetAnimationState(petState = petState, actionState = actionState)
 
+    // Vị trí di chuyển ngang mượt mà điều khiển trực tiếp bởi ViewModel theo tốc độ thật
+    val animatedCatX = catPositionX
+
     // Feedback tự ẩn đã được xử lý bởi PetViewModel.showFeedback(autoDismissMs) —
     // không cần LaunchedEffect tại đây để tránh cancel kép.
 
@@ -132,9 +138,10 @@ fun PetHomeScreen(
             BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
-                    .systemBarsPadding()
+                    .safeDrawingPadding()
             ) {
                 val wide = maxWidth > maxHeight
+                val compact = maxHeight < 400.dp
                 if (wide) {
                     // Bố cục ngang (Landscape): Phòng chiếm 1.7f và toàn bộ chiều cao, điều khiển bên phải
                     Row(
@@ -152,7 +159,7 @@ fun PetHomeScreen(
                                 petState = petState,
                                 actionState = actionState,
                                 animValues = animValues,
-                                animatedCatX = catPositionX,
+                                animatedCatX = animatedCatX,
                                 facingDirection = facingDirection,
                                 bowlFood = bowlFood,
                                 onPet = { viewModel.pet() },
@@ -170,13 +177,15 @@ fun PetHomeScreen(
                         Column(
                             modifier = Modifier
                                 .weight(1f)
-                                .fillMaxHeight(),
-                            verticalArrangement = Arrangement.SpaceBetween,
+                                .fillMaxHeight()
+                                .verticalScroll(rememberScrollState()),
+                            verticalArrangement = Arrangement.spacedBy(if (compact) 6.dp else 10.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             PetHeaderSection(
                                 petState = petState,
-                                onEditClick = { showProfileDialog = true }
+                                onEditClick = { showProfileDialog = true },
+                                compact = compact
                             )
 
                             CompactStatsRow(
@@ -190,7 +199,8 @@ fun PetHomeScreen(
                                 onPlay = { viewModel.openGamePicker() },
                                 onWardrobe = { viewModel.openWardrobe() },
                                 onToggleSleep = { viewModel.toggleSleep() },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                isGrid = true
                             )
                         }
                     }
@@ -216,7 +226,7 @@ fun PetHomeScreen(
                             petState = petState,
                             actionState = actionState,
                             animValues = animValues,
-                            animatedCatX = catPositionX,
+                            animatedCatX = animatedCatX,
                             facingDirection = facingDirection,
                             bowlFood = bowlFood,
                             onPet = { viewModel.pet() },
@@ -250,7 +260,8 @@ fun PetHomeScreen(
                             onPlay = { viewModel.openGamePicker() },
                             onWardrobe = { viewModel.openWardrobe() },
                             onToggleSleep = { viewModel.toggleSleep() },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            isGrid = false
                         )
                     }
                 }
@@ -801,7 +812,8 @@ private fun InteractiveYarnBall(
 @Composable
 private fun PetHeaderSection(
     petState: PetState,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    compact: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -881,29 +893,31 @@ private fun PetHeaderSection(
             }
         }
 
-        Spacer(modifier = Modifier.width(8.dp))
+        if (!compact) {
+            Spacer(modifier = Modifier.width(8.dp))
 
-        Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(50))
-                .background(SoftWhite)
-                .border(1.2.dp, Rosewood.copy(alpha = 0.35f), RoundedCornerShape(50))
-                .clickable { onEditClick() }
-                .padding(horizontal = 12.dp, vertical = 7.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Edit,
-                contentDescription = "Đổi tên bé mèo",
-                tint = Rosewood,
-                modifier = Modifier.size(15.dp)
-            )
-            Text(
-                text = "Đổi tên",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = Rosewood
-            )
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(50))
+                    .background(SoftWhite)
+                    .border(1.2.dp, Rosewood.copy(alpha = 0.35f), RoundedCornerShape(50))
+                    .clickable { onEditClick() }
+                    .padding(horizontal = 12.dp, vertical = 7.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = "Đổi tên bé mèo",
+                    tint = Rosewood,
+                    modifier = Modifier.size(15.dp)
+                )
+                Text(
+                    text = "Đổi tên",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = Rosewood
+                )
+            }
         }
     }
 }

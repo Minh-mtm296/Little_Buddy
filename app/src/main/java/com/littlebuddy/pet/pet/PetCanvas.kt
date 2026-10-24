@@ -15,14 +15,15 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import com.littlebuddy.pet.wardrobe.CatColorPalette
 import com.littlebuddy.pet.wardrobe.EquippedWardrobe
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
+import kotlin.math.PI
 import kotlin.math.min
+import kotlin.math.sin
 
 /**
  * Composable vẽ nhân vật mèo Little Buddy trên Jetpack Compose Canvas.
  *
  * TỐI ƯU HIỆU NĂNG:
- * Sử dụng CatPose và CatAnimator kết hợp rememberCatClock:
- * Toàn bộ việc tính toán và đọc giá trị hoạt ảnh đa khớp diễn ra bên trong khối Canvas { } (Draw Phase).
+ * Khi truyền [animState], toàn bộ việc đọc giá trị hoạt ảnh diễn ra bên trong khối Canvas { } (Draw Phase).
  * Nhờ đó, việc cập nhật chuyển động liên tục ở 60 FPS không gây Recomposition cho màn hình chứa nó.
  */
 @Composable
@@ -49,36 +50,43 @@ fun PetCanvas(
     lookAt: Offset? = null,
     actionProgress: Float? = null
 ) {
-    val isIdleOrSleeping = actionState == PetActionState.IDLE || actionState == PetActionState.SLEEPING
-    val clock = rememberCatClock(
-        active = true,
-        minDtNanos = if (isIdleOrSleeping) 33_000_000L else 0L
-    )
     val animator = remember { CatAnimator() }
+    val catClock = rememberCatClock(
+        active = true,
+        minDtNanos = if (actionState == PetActionState.IDLE || actionState == PetActionState.SLEEPING) 33_000_000L else 0L
+    )
 
     Canvas(modifier = modifier) {
-        val nowNanos = System.nanoTime()
         val pose = animator.pose(
             action = actionState,
-            t = clock.floatValue,
-            nowNanos = nowNanos,
+            t = catClock.floatValue,
+            nowNanos = System.nanoTime(),
             lookAt = lookAt,
             actionProgress = actionProgress
         )
 
         // Đọc giá trị animation trong Draw phase (DrawScope)
         val curBounceOffsetY = animState?.bounceOffsetY?.invoke() ?: bounceOffsetY
+        val curBreatheScale = animState?.breatheScale?.invoke() ?: breatheScale
         val curEyeScaleY = animState?.eyeScaleY?.invoke() ?: eyeScaleY
+        val curEarWiggleAngle = animState?.earWiggleAngle?.invoke() ?: earWiggleAngle
+        val curTailWagAngle = animState?.tailWagAngle?.invoke() ?: tailWagAngle
         val curChewOffset = animState?.chewOffset?.invoke() ?: chewOffset
         val curEffectProgress = animState?.effectProgress?.invoke() ?: effectProgress
+        val curWalkCycle = animState?.walkCycle?.invoke() ?: walkCycle
+        val curWalkSwayAngle = animState?.walkSwayAngle?.invoke() ?: walkSwayAngle
         val curPurrVibrationY = animState?.purrVibrationY?.invoke() ?: purrVibrationY
-        val curSleepingBreathScale = animState?.sleepingBreathScale?.invoke() ?: pose.bodyScaleY
-        val curTailWagAngle = if (animState != null) animState.tailWagAngle() else pose.tailAngle
+        val curStretchProgress = animState?.stretchProgress?.invoke() ?: stretchProgress
+        val curSleepingBreathScale = animState?.sleepingBreathScale?.invoke() ?: sleepingBreathScale
 
         val width = size.width
         val height = size.height
         val centerX = width / 2f
-        val centerY = (height * 0.51f) + curBounceOffsetY + curPurrVibrationY
+        val isWalking = actionState == PetActionState.WALKING
+
+        // Nhấp nhô bước chân khi đi bộ
+        val walkBob = if (isWalking) sin(curWalkCycle * 4f * PI.toFloat()) * 4.5f else 0f
+        val centerY = (height * 0.51f) + curBounceOffsetY + walkBob + curPurrVibrationY
         val u = min(width, height) * 0.40f
 
         val activeWardrobe = wardrobeOverride ?: petState.wardrobe
@@ -103,25 +111,32 @@ fun PetCanvas(
             )
         } else {
             // ══════════════════════════════════════════════════════════════════
-            // TƯ THẾ ĐỨNG THẲNG MEERKAT CHUẨN MẪU (HỆ THỐNG ĐA KHỚP CatPose)
+            // TƯ THẾ ĐỨNG THẲNG MEERKAT CHUẨN MẪU
             // ══════════════════════════════════════════════════════════════════
             withTransform({
                 scale(scaleX = facingDirection, scaleY = 1f, pivot = Offset(centerX, centerY))
+                if (isWalking) {
+                    rotate(degrees = curWalkSwayAngle, pivot = Offset(centerX, centerY + u * 0.8f))
+                }
             }) {
                 drawStandingChibiCat(
                     cx = centerX,
                     cy = centerY,
-                    u = u,
+                    u = u * curBreatheScale,
                     baseU = u,
                     mood = petState.currentMood,
                     temporaryMood = petState.temporaryMood,
                     actionState = actionState,
-                    pose = pose,
                     eyeScaleY = curEyeScaleY,
+                    earWiggle = curEarWiggleAngle,
+                    tailWag = curTailWagAngle,
                     chewOffset = curChewOffset,
+                    walkCycle = curWalkCycle,
+                    stretchProgress = curStretchProgress,
                     accessory = petState.accessory,
                     palette = palette,
-                    wardrobe = activeWardrobe
+                    wardrobe = activeWardrobe,
+                    pose = pose
                 )
             }
 
@@ -138,7 +153,7 @@ fun PetCanvas(
 }
 
 /**
- * Vẽ chú mèo đứng 2 chân dáng chuông ú tròn chuẩn ảnh mẫu kết hợp các khớp xương CatPose.
+ * Vẽ chú mèo đứng 2 chân dáng chuông ú tròn chuẩn ảnh mẫu.
  */
 private fun DrawScope.drawStandingChibiCat(
     cx: Float,
@@ -148,90 +163,96 @@ private fun DrawScope.drawStandingChibiCat(
     mood: PetMood,
     temporaryMood: PetMood?,
     actionState: PetActionState,
-    pose: CatPose,
     eyeScaleY: Float,
+    earWiggle: Float,
+    tailWag: Float,
     chewOffset: Float,
+    walkCycle: Float,
+    stretchProgress: Float,
     accessory: PetAccessory?,
     palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!,
-    wardrobe: EquippedWardrobe = EquippedWardrobe()
+    wardrobe: EquippedWardrobe = EquippedWardrobe(),
+    pose: CatPose = CatPose()
 ) {
     val strokeW = (baseU * 0.038f).coerceAtLeast(4.8f)
+    val isStretching = stretchProgress > 0.01f || pose.pawReach > 0.05f
 
     // ── BƯỚC 1: Bóng đổ elip dưới sàn ──
-    val shadowW = if (pose.pawReach > 0.1f) baseU * 1.50f else baseU * 1.35f
+    val shadowW = if (isStretching) baseU * 1.50f else baseU * 1.35f
     drawOval(
         color = FloorShadowColor,
         topLeft = Offset(cx - shadowW / 2f, cy + baseU * 1.04f),
         size = Size(shadowW, baseU * 0.16f)
     )
 
-    // ── BƯỚC 2: Đuôi mèo xoay quanh gốc đuôi (cx + 0.50u, cy + 0.68u) ──
+    // ── BƯỚC 2: Đuôi mèo ngúng nguẩy sau hông phải ──
     withTransform({
         rotate(pose.tailAngle, pivot = Offset(cx + u * 0.50f, cy + u * 0.68f))
     }) {
-        drawCuteCatTail(cx, cy, u, tailWag = 0f, strokeW = strokeW, palette = palette)
+        drawCuteCatTail(cx, cy, u, tailWag = 0f, strokeW, palette)
     }
 
-    // ── BƯỚC 3: Hai tai mèo vòm tròn xoay quanh gốc tai ──
+    // ── BƯỚC 3: Hai tai mèo vòm tròn ──
     drawCuteCatEars(
         cx = cx,
         cy = cy,
         u = u,
-        earWiggle = 0f,
+        earWiggle = earWiggle,
         strokeW = strokeW,
         palette = palette,
         earL = pose.earL,
         earR = pose.earR
     )
 
-    // ── BƯỚC 4: Thân hình dáng chuông ú mập (bọc trong withTransform: co giãn quanh chân + nhấp nhô) ──
+    // ── BƯỚC 4: Thân hình dáng chuông ú mập, không thắt eo ──
+    val stretchScaleX = 1f
+    val stretchScaleY = 1f
+    val bodyFillPath = createStandingBodyFillPath(cx, cy, u, stretchScaleX, stretchScaleY)
+
     withTransform({
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
         translate(0f, pose.bodyBob * u)
     }) {
-        val bodyFillPath = createStandingBodyFillPath(cx, cy, u, 1f, 1f)
-
         clipPath(bodyFillPath) {
             // Nền lông theo Skin được chọn
             drawPath(bodyFillPath, color = palette.bodyColor)
 
-            // Các mảng màu đặc trưng tam thể (Calico) trên thân
             if (wardrobe.furSkinId == WardrobeRegistry.ID_FUR_CALICO) {
-                drawCalicoBodyPatches(cx, cy, u, 1f, 1f, palette)
+                drawCalicoBodyPatches(cx, cy, u, stretchScaleX, stretchScaleY, palette)
             }
 
             // Bóng mềm ở đáy bụng
             val bottomShade = Path().apply {
-                moveTo(cx - u * 0.65f, cy + u * 0.82f)
-                quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f, cy + u * 0.82f)
-                lineTo(cx + u * 0.65f, cy + u * 1.15f)
-                lineTo(cx - u * 0.65f, cy + u * 1.15f)
+                moveTo(cx - u * 0.65f * stretchScaleX, cy + u * 0.82f)
+                quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f * stretchScaleX, cy + u * 0.82f)
+                lineTo(cx + u * 0.65f * stretchScaleX, cy + u * 1.15f)
+                lineTo(cx - u * 0.65f * stretchScaleX, cy + u * 1.15f)
                 close()
             }
             drawPath(bottomShade, color = palette.bellyColor.copy(alpha = 0.55f))
         }
 
         // Viền thân màu viền theo Skin
-        drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor, 1f, 1f)
+        drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor, stretchScaleX, stretchScaleY)
 
-        // Trang phục thân người (Bodywear: Áo len, yếm...)
-        drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW, 1f, 1f)
+        // ── BƯỚC 5: Trang phục thân người (Bodywear: Áo len, yếm...) ──
+        drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW, stretchScaleX, stretchScaleY)
     }
 
-    // ── BƯỚC 5: Hai chân sau ngắn đỡ ở đáy sàn (nhấc chân theo hindLift) ──
+    // ── BƯỚC 4: Hai chân sau ngắn đỡ ở đáy sàn ──
     drawShortHindFeet(
         cx = cx,
         cy = cy,
         u = u,
         strokeW = strokeW,
-        walkCycle = 0f,
+        walkCycle = walkCycle,
         isWalking = actionState == PetActionState.WALKING,
         palette = palette,
         hindLiftL = pose.hindLiftL,
         hindLiftR = pose.hindLiftR
     )
 
-    // ── BƯỚC 6: Hai bàn tay trước co tròn hoặc vươn/vồ/nhấc trước ngực ──
+    // ── BƯỚC 6: Hai bàn tay trước co tròn trước ngực ──
     drawCurledFrontPaws(
         cx = cx,
         cy = cy,
@@ -243,12 +264,11 @@ private fun DrawScope.drawStandingChibiCat(
         reach = pose.pawReach
     )
 
-    // ── BƯỚC 7: Đầu và khuôn mặt (Cúi nhịp headDip và nghiêng headTilt quanh cổ) ──
+    // ── BƯỚC 7: Khuôn mặt ngây thơ chuẩn mẫu (Mặt nạ, mắt bean, mũi, miệng ^) ──
     withTransform({
         translate(0f, pose.headDip * u)
-        rotate(pose.headTilt, pivot = Offset(cx, cy - u * 0.25f))
+        rotate(pose.headTilt, pivot = Offset(cx, cy - 0.25f * u))
     }) {
-        // Khuôn mặt ngây thơ chuẩn mẫu (Mặt nạ, mắt bean, mũi, miệng ^)
         drawChibiFace(
             cx = cx,
             cy = cy,
@@ -262,10 +282,10 @@ private fun DrawScope.drawStandingChibiCat(
             palette = palette
         )
 
-        // Vòng cổ & Khăn quàng (Neckwear)
+        // ── BƯỚC 8: Vòng cổ & Khăn quàng (Neckwear) ──
         drawNeckwearOnChibiCat(wardrobe.getNeckwear()?.id, cx, cy, u, strokeW)
 
-        // Nơ & Mũ cài đầu (Headwear)
+        // ── BƯỚC 9: Nơ & Mũ cài đầu (Headwear) ──
         drawHeadwearOnChibiCat(wardrobe.getHeadwear()?.id, cx, cy, u, strokeW)
 
         // Phụ kiện legacy nếu chưa có trang phục trong wardrobe
