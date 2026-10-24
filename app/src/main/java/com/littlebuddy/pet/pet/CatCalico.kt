@@ -17,9 +17,9 @@ private class CalicoBlob(
 
 // Toạ độ theo đơn vị u, gốc = (cx, cy) của thân đứng
 private val STANDING_BLOBS = listOf(
-    CalicoBlob(-0.36f, 0.40f, 0.30f, 0.34f, -20f, dark = false), // cam: hông trái
-    CalicoBlob( 0.40f, 0.62f, 0.26f, 0.30f,  15f, dark = true),  // đen: hông phải
-    CalicoBlob( 0.22f, 0.10f, 0.14f, 0.12f,   0f, dark = false)  // đốm cam nhỏ: vai phải
+    CalicoBlob(-0.36f, 0.40f, 0.30f, 0.34f, -20f, dark = false), // nâu: hông trái
+    CalicoBlob( 0.40f, 0.62f, 0.26f, 0.30f,  15f, dark = true),  // xám: hông phải
+    CalicoBlob( 0.22f, 0.10f, 0.14f, 0.12f,   0f, dark = false)  // đốm nâu nhỏ: vai phải
 )
 
 internal fun DrawScope.drawCalicoBodyPatches(

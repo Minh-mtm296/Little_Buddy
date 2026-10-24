@@ -40,6 +40,7 @@ class WardrobeTest {
         assertNotNull(calico)
         assertEquals("Mèo Tam Thể", calico?.name)
         assertNotNull(calico?.palette?.secondaryPatchColor)
+        assertEquals(2, calico?.levelRequired)
     }
 
     @Test

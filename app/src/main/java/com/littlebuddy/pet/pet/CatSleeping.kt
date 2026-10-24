@@ -193,13 +193,13 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
         } else if (wardrobe.furSkinId == "fur_calico") {
-            // Đốm cam trên lưng
+            // Đốm nâu trên lưng
             drawOval(
                 color = palette.patchColor.copy(alpha = 0.85f),
                 topLeft = pt(0.05f, -0.65f), size = Size(u * 0.40f, u * 0.35f)
             )
-            // Đốm đen nâu bên cạnh
-            val secColor = palette.secondaryPatchColor ?: Color(0xFF3D3436)
+            // Đốm xám bên cạnh
+            val secColor = palette.secondaryPatchColor ?: Color(0xFF6B6E78)
             drawOval(
                 color = secColor.copy(alpha = 0.85f),
                 topLeft = pt(0.35f, -0.50f), size = Size(u * 0.35f, u * 0.30f)

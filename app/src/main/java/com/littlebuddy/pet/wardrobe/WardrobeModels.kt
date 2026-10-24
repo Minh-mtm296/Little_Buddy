@@ -218,20 +218,20 @@ object WardrobeRegistry {
     val FUR_CALICO = WardrobeItem(
         id = ID_FUR_CALICO,
         name = "Mèo Tam Thể",
-        description = "Bộ lông ba màu trắng, vàng cam và nâu đen mang lại may mắn, tài lộc.",
+        description = "Bộ lông ba màu trắng, nâu hạt dẻ và xám khói quý phái, mang lại may mắn và tài lộc.",
         category = WardrobeCategory.FUR_SKIN,
-        levelRequired = 1,
-        previewPrimaryColor = Color(0xFFFAF6F0),
-        previewSecondaryColor = Color(0xFFE8833A),
+        levelRequired = 2,
+        previewPrimaryColor = Color(0xFF825235),
+        previewSecondaryColor = Color(0xFF6B6E78),
         palette = CatColorPalette(
-            bodyColor = Color(0xFFFAF6F0),
-            patchColor = Color(0xFFE8833A),
-            outlineColor = Color(0xFF5D3E44),
-            innerEarColor = Color(0xFFF7B5B5),
-            bellyColor = Color(0xFFEFE8DF),
-            eyeColor = Color(0xFF384E32),
-            noseColor = Color(0xFFE07A7A),
-            secondaryPatchColor = Color(0xFF3D3436)
+            bodyColor = Color(0xFFFAF8F5),
+            patchColor = Color(0xFF825235),
+            outlineColor = Color(0xFF4A3B32),
+            innerEarColor = Color(0xFFF5BDBD),
+            bellyColor = Color(0xFFECE7E1),
+            eyeColor = Color(0xFF3FA372),
+            noseColor = Color(0xFFDF8282),
+            secondaryPatchColor = Color(0xFF6B6E78)
         )
     )
 
