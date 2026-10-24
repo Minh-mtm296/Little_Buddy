@@ -36,7 +36,7 @@ data class PetState(
         /** Tỷ lệ tiêu hao và hồi phục chỉ số theo thời gian (chuẩn hóa gameplay) */
         const val HUNGER_DECAY_PER_MINUTE = 0.2f
         const val HAPPINESS_DECAY_PER_MINUTE = 0.15f
-        const val SLEEP_ENERGY_RECOVER_PER_MINUTE = 0.5f
+        const val SLEEP_ENERGY_RECOVER_PER_MINUTE = 4.0f
 
         /**
          * Chuẩn hóa và kiểm tra tên thú cưng hợp lệ

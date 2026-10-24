@@ -15,6 +15,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.FloatState
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.geometry.Offset
+import kotlin.math.abs
+import kotlin.math.max
 import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.sin
@@ -243,6 +248,170 @@ fun rememberPetAnimationState(
             purrVibrationY = { purrWaveState?.value ?: 0f },
             stretchProgress = { stretchAnimatable.value },
             sleepingBreathScale = { sleepingBreathScaleState?.value ?: 1f }
+        )
+    }
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HỆ THỐNG HOẠT HỌA ĐA KHỚP XƯƠNG (CatPose Procedural Animation Engine)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Đồng hồ thời gian thực duy nhất dựa trên frame clock của Compose.
+ * [minDtNanos]: Giới hạn frame rate (vd: ~33ms = 30fps khi rảnh/ngủ) để tiết kiệm pin.
+ */
+@Composable
+fun rememberCatClock(active: Boolean, minDtNanos: Long = 0L): FloatState {
+    val t = remember { mutableFloatStateOf(0f) }
+    LaunchedEffect(active, minDtNanos) {
+        if (!active) return@LaunchedEffect
+        var last = withFrameNanos { it }
+        while (true) {
+            val now = withFrameNanos { it }
+            if (now - last < minDtNanos) continue
+            t.floatValue += (now - last) / 1_000_000_000f
+            last = now
+        }
+    }
+    return t
+}
+
+/**
+ * Dữ liệu trạng thái tư thế hình học của mèo tại một thời điểm (Data-only struct).
+ * Mọi thông số là số thực đã chuẩn hóa, không chứa logic hay state.
+ */
+data class CatPose(
+    val bodyScaleX: Float = 1f,
+    val bodyScaleY: Float = 1f,
+    val bodyBob: Float = 0f,            // Đơn vị u, dương = nhấp nhô xuống
+    val headTilt: Float = 0f,           // Góc nghiêng đầu (độ)
+    val headDip: Float = 0f,            // Đơn vị u, dương = cúi gật đầu
+    val earL: Float = 0f,
+    val earR: Float = 0f,               // Góc vẫy tai trái/phải (độ)
+    val tailAngle: Float = 0f,          // Góc vẫy đuôi quanh gốc (độ)
+    val pawLiftL: Float = 0f,
+    val pawLiftR: Float = 0f,           // Độ nhấc chân trước (0..1)
+    val pawReach: Float = 0f,           // Độ vươn duỗi chân trước (0..1)
+    val hindLiftL: Float = 0f,
+    val hindLiftR: Float = 0f           // Độ nhấc chân sau (0..1)
+)
+
+/**
+ * Nội suy tuyến tính (Linear Interpolation) giữa hai tư thế mèo.
+ */
+fun lerp(a: CatPose, b: CatPose, f: Float) = CatPose(
+    bodyScaleX = a.bodyScaleX + (b.bodyScaleX - a.bodyScaleX) * f,
+    bodyScaleY = a.bodyScaleY + (b.bodyScaleY - a.bodyScaleY) * f,
+    bodyBob = a.bodyBob + (b.bodyBob - a.bodyBob) * f,
+    headTilt = a.headTilt + (b.headTilt - a.headTilt) * f,
+    headDip = a.headDip + (b.headDip - a.headDip) * f,
+    earL = a.earL + (b.earL - a.earL) * f,
+    earR = a.earR + (b.earR - a.earR) * f,
+    tailAngle = a.tailAngle + (b.tailAngle - a.tailAngle) * f,
+    pawLiftL = a.pawLiftL + (b.pawLiftL - a.pawLiftL) * f,
+    pawLiftR = a.pawLiftR + (b.pawLiftR - a.pawLiftR) * f,
+    pawReach = a.pawReach + (b.pawReach - a.pawReach) * f,
+    hindLiftL = a.hindLiftL + (b.hindLiftL - a.hindLiftL) * f,
+    hindLiftR = a.hindLiftR + (b.hindLiftR - a.hindLiftR) * f
+)
+
+/**
+ * Bộ tạo cử động thời gian thực (Procedural Animation Evaluator).
+ * Giữ trạng thái chuyển tiếp giữa các tư thế (250ms smooth transition), được gọi trong Draw Phase.
+ */
+class CatAnimator {
+    private var lastAction: PetActionState? = null
+    private var enteredAt = 0L
+    private var from = CatPose()
+    private var current = CatPose()
+    private val tw = (2.0 * Math.PI).toFloat()
+
+    fun pose(
+        action: PetActionState,
+        t: Float,
+        nowNanos: Long,
+        lookAt: Offset? = null,
+        actionProgress: Float? = null
+    ): CatPose {
+        if (action != lastAction) {
+            from = current
+            enteredAt = nowNanos
+            lastAction = action
+        }
+        val since = if (enteredAt == 0L) 0f else (nowNanos - enteredAt) / 1e9f
+        val target = when (action) {
+            PetActionState.WALKING -> walking(t)
+            PetActionState.EATING -> eating(t)
+            PetActionState.STRETCHING, PetActionState.WAKING_UP -> stretching(since)
+            PetActionState.PLAYING -> playing(t, lookAt, actionProgress)
+            else -> idle(t)
+        }
+        val k = (since / 0.25f).coerceIn(0f, 1f)
+        current = lerp(from, target, k * k * (3f - 2f * k))   // Nội suy hermite smoothstep 250ms
+        return current
+    }
+
+    private fun idle(t: Float): CatPose {
+        val b = sin(tw * t / 3.2f)
+        return CatPose(
+            bodyScaleY = 1f + 0.015f * b,
+            bodyScaleX = 1f - 0.008f * b,
+            tailAngle = 10f * sin(tw * t / 2.6f),
+            earL = 4f * max(0f, sin(tw * t / 7f))          // Thỉnh thoảng vẫy tai nhẹ
+        )
+    }
+
+    private fun walking(t: Float): CatPose {
+        val p = tw * t * 1.6f                               // Nhịp 1.6 bước/giây
+        val a = sin(p)
+        return CatPose(
+            pawLiftL = max(0f, a),  pawLiftR = max(0f, -a), // Chân trước luân phiên
+            hindLiftR = max(0f, a), hindLiftL = max(0f, -a),// Chéo góc: trước-trái cùng sau-phải
+            bodyBob = 0.02f * abs(a),
+            headTilt = -2f * a,
+            tailAngle = 14f * sin(p * 0.5f)
+        )
+    }
+
+    private fun eating(t: Float): CatPose {
+        val bite = 0.5f + 0.5f * sin(tw * 1.8f * t)         // Nhịp gật đầu nhai 1.8 lần/giây
+        return CatPose(
+            headDip = 0.06f + 0.10f * bite,
+            headTilt = 4f,
+            bodyScaleY = 1f - 0.02f * bite,
+            tailAngle = 6f * sin(tw * t / 2f)
+        )
+    }
+
+    private fun stretching(since: Float): CatPose {
+        val s = (since / 2.0f).coerceIn(0f, 1f)             // Chuỗi vươn vai 2 giây
+        fun seg(a: Float, b: Float) = if (b == a) 0f else ((s - a) / (b - a)).coerceIn(0f, 1f)
+        fun ease(x: Float) = x * x * (3f - 2f * x)
+        val reach = ease(seg(0f, 0.35f)) * (1f - ease(seg(0.70f, 1f)))
+        return CatPose(
+            pawReach = reach,
+            headDip = 0.14f * reach,
+            bodyScaleX = 1f + 0.10f * reach,
+            bodyScaleY = 1f - 0.10f * reach
+        )
+    }
+
+    private fun playing(t: Float, lookAt: Offset?, actionProgress: Float?): CatPose {
+        val lx = lookAt?.x ?: 0f
+        val ly = lookAt?.y ?: 0f
+        val headTilt = (lx * 12f).coerceIn(-12f, 12f)
+        val headDip = (ly * 0.08f).coerceIn(-0.04f, 0.12f)
+        val progress = actionProgress ?: (0.5f + 0.5f * sin(tw * 2f * t))
+        val p = progress.coerceIn(0f, 1f)
+        val pSwipe = sin(p * PI.toFloat())
+        return CatPose(
+            headTilt = headTilt,
+            headDip = headDip,
+            pawLiftR = pSwipe,
+            pawReach = pSwipe * 0.5f,
+            tailAngle = 16f * sin(tw * t * 2.5f),
+            bodyScaleY = 1f - 0.03f * pSwipe
         )
     }
 }

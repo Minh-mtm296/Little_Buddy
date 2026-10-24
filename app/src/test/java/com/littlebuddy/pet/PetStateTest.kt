@@ -144,12 +144,12 @@ class PetStateTest {
             energy = 40f,
             isSleeping = true
         )
-        // 10 phút: hunger -2f, happiness -1.5f, energy +5f
+        // 10 phút: hunger -2f, happiness -1.5f, energy +40f (4.0f/phút)
         val updated = sleepingPet.applyTimeElapsed(10L)
 
         assertEquals(78f, updated.hunger, 0.01f)
         assertEquals(78.5f, updated.happiness, 0.01f)
-        assertEquals(45f, updated.energy, 0.01f)
+        assertEquals(80f, updated.energy, 0.01f)
     }
 
     @Test

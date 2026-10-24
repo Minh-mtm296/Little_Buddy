@@ -153,97 +153,106 @@ internal fun DrawScope.drawCuteCatEars(
     u: Float,
     earWiggle: Float,
     strokeW: Float,
-    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!
+    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!,
+    earL: Float = 0f,
+    earR: Float = 0f
 ) {
-    val wOff = earWiggle * u * 0.005f
     val style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
-    // ── Tai trái: khối màu theo skin ──
-    val leftEarFill = Path().apply {
-        moveTo(cx - u * 0.16f, cy - u * 0.86f)
-        cubicTo(
-            cx - u * 0.20f, cy - u * 0.94f,
-            cx - u * 0.26f + wOff, cy - u * 1.03f,
-            cx - u * 0.32f + wOff, cy - u * 1.07f
-        )
-        cubicTo(
-            cx - u * 0.35f + wOff, cy - u * 1.09f,
-            cx - u * 0.38f + wOff, cy - u * 1.06f,
-            cx - u * 0.39f + wOff, cy - u * 0.98f
-        )
-        cubicTo(
-            cx - u * 0.41f, cy - u * 0.88f,
-            cx - u * 0.41f, cy - u * 0.76f,
-            cx - u * 0.39f, cy - u * 0.65f
-        )
-        close()
-    }
-    drawPath(leftEarFill, color = palette.patchColor)
+    // ── Tai trái: khối màu theo skin, xoay quanh gốc tai trái ──
+    val effEarL = if (earL != 0f) earL else earWiggle
+    withTransform({
+        rotate(effEarL, pivot = Offset(cx - u * 0.28f, cy - u * 0.76f))
+    }) {
+        val leftEarFill = Path().apply {
+            moveTo(cx - u * 0.16f, cy - u * 0.86f)
+            cubicTo(
+                cx - u * 0.20f, cy - u * 0.94f,
+                cx - u * 0.26f, cy - u * 1.03f,
+                cx - u * 0.32f, cy - u * 1.07f
+            )
+            cubicTo(
+                cx - u * 0.35f, cy - u * 1.09f,
+                cx - u * 0.38f, cy - u * 1.06f,
+                cx - u * 0.39f, cy - u * 0.98f
+            )
+            cubicTo(
+                cx - u * 0.41f, cy - u * 0.88f,
+                cx - u * 0.41f, cy - u * 0.76f,
+                cx - u * 0.39f, cy - u * 0.65f
+            )
+            close()
+        }
+        drawPath(leftEarFill, color = palette.patchColor)
 
-    // Viền tai trái: KHÔNG close để gốc tai mở thông liền mạch với đầu
-    val leftEarStroke = Path().apply {
-        moveTo(cx - u * 0.16f, cy - u * 0.86f)
-        cubicTo(
-            cx - u * 0.20f, cy - u * 0.94f,
-            cx - u * 0.26f + wOff, cy - u * 1.03f,
-            cx - u * 0.32f + wOff, cy - u * 1.07f
-        )
-        cubicTo(
-            cx - u * 0.35f + wOff, cy - u * 1.09f,
-            cx - u * 0.38f + wOff, cy - u * 1.06f,
-            cx - u * 0.39f + wOff, cy - u * 0.98f
-        )
-        cubicTo(
-            cx - u * 0.41f, cy - u * 0.88f,
-            cx - u * 0.41f, cy - u * 0.76f,
-            cx - u * 0.39f, cy - u * 0.65f
-        )
+        val leftEarStroke = Path().apply {
+            moveTo(cx - u * 0.16f, cy - u * 0.86f)
+            cubicTo(
+                cx - u * 0.20f, cy - u * 0.94f,
+                cx - u * 0.26f, cy - u * 1.03f,
+                cx - u * 0.32f, cy - u * 1.07f
+            )
+            cubicTo(
+                cx - u * 0.35f, cy - u * 1.09f,
+                cx - u * 0.38f, cy - u * 1.06f,
+                cx - u * 0.39f, cy - u * 0.98f
+            )
+            cubicTo(
+                cx - u * 0.41f, cy - u * 0.88f,
+                cx - u * 0.41f, cy - u * 0.76f,
+                cx - u * 0.39f, cy - u * 0.65f
+            )
+        }
+        drawPath(leftEarStroke, color = palette.outlineColor, style = style)
     }
-    drawPath(leftEarStroke, color = palette.outlineColor, style = style)
 
-    // ── Tai phải đối xứng ──
-    val rightEarFill = Path().apply {
-        moveTo(cx + u * 0.16f, cy - u * 0.86f)
-        cubicTo(
-            cx + u * 0.20f, cy - u * 0.94f,
-            cx + u * 0.26f - wOff, cy - u * 1.03f,
-            cx + u * 0.32f - wOff, cy - u * 1.07f
-        )
-        cubicTo(
-            cx + u * 0.35f - wOff, cy - u * 1.09f,
-            cx + u * 0.38f - wOff, cy - u * 1.06f,
-            cx + u * 0.39f - wOff, cy - u * 0.98f
-        )
-        cubicTo(
-            cx + u * 0.41f, cy - u * 0.88f,
-            cx + u * 0.41f, cy - u * 0.76f,
-            cx + u * 0.39f, cy - u * 0.65f
-        )
-        close()
-    }
-    val rightEarColor = palette.secondaryPatchColor ?: palette.patchColor
-    drawPath(rightEarFill, color = rightEarColor)
+    // ── Tai phải: khối màu theo skin, xoay quanh gốc tai phải ──
+    val effEarR = if (earR != 0f) earR else -earWiggle
+    withTransform({
+        rotate(effEarR, pivot = Offset(cx + u * 0.28f, cy - u * 0.76f))
+    }) {
+        val rightEarFill = Path().apply {
+            moveTo(cx + u * 0.16f, cy - u * 0.86f)
+            cubicTo(
+                cx + u * 0.20f, cy - u * 0.94f,
+                cx + u * 0.26f, cy - u * 1.03f,
+                cx + u * 0.32f, cy - u * 1.07f
+            )
+            cubicTo(
+                cx + u * 0.35f, cy - u * 1.09f,
+                cx + u * 0.38f, cy - u * 1.06f,
+                cx + u * 0.39f, cy - u * 0.98f
+            )
+            cubicTo(
+                cx + u * 0.41f, cy - u * 0.88f,
+                cx + u * 0.41f, cy - u * 0.76f,
+                cx + u * 0.39f, cy - u * 0.65f
+            )
+            close()
+        }
+        val rightEarColor = palette.secondaryPatchColor ?: palette.patchColor
+        drawPath(rightEarFill, color = rightEarColor)
 
-    // Viền tai phải: KHÔNG close để gốc tai mở thông liền mạch với đầu
-    val rightEarStroke = Path().apply {
-        moveTo(cx + u * 0.16f, cy - u * 0.86f)
-        cubicTo(
-            cx + u * 0.20f, cy - u * 0.94f,
-            cx + u * 0.26f - wOff, cy - u * 1.03f,
-            cx + u * 0.32f - wOff, cy - u * 1.07f
-        )
-        cubicTo(
-            cx + u * 0.35f - wOff, cy - u * 1.09f,
-            cx + u * 0.38f - wOff, cy - u * 1.06f,
-            cx + u * 0.39f - wOff, cy - u * 0.98f
-        )
-        cubicTo(
-            cx + u * 0.41f, cy - u * 0.88f,
-            cx + u * 0.41f, cy - u * 0.76f,
-            cx + u * 0.39f, cy - u * 0.65f
-        )
+        val rightEarStroke = Path().apply {
+            moveTo(cx + u * 0.16f, cy - u * 0.86f)
+            cubicTo(
+                cx + u * 0.20f, cy - u * 0.94f,
+                cx + u * 0.26f, cy - u * 1.03f,
+                cx + u * 0.32f, cy - u * 1.07f
+            )
+            cubicTo(
+                cx + u * 0.35f, cy - u * 1.09f,
+                cx + u * 0.38f, cy - u * 1.06f,
+                cx + u * 0.39f, cy - u * 0.98f
+            )
+            cubicTo(
+                cx + u * 0.41f, cy - u * 0.88f,
+                cx + u * 0.41f, cy - u * 0.76f,
+                cx + u * 0.39f, cy - u * 0.65f
+            )
+        }
+        drawPath(rightEarStroke, color = palette.outlineColor, style = style)
     }
-    drawPath(rightEarStroke, color = palette.outlineColor, style = style)
 }
 
 /**
@@ -308,7 +317,10 @@ internal fun DrawScope.drawCurledFrontPaws(
     cy: Float,
     u: Float,
     strokeW: Float,
-    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!
+    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!,
+    liftL: Float = 0f,
+    liftR: Float = 0f,
+    reach: Float = 0f
 ) {
     val paw = Path().apply {
         moveTo(cx - u * 0.52f, cy + u * 0.10f)
@@ -332,12 +344,17 @@ internal fun DrawScope.drawCurledFrontPaws(
     val strokeStyle = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
     // Tay trước trái
-    drawPath(paw, color = palette.patchColor)
-    drawPath(paw, color = palette.outlineColor, style = strokeStyle)
+    withTransform({
+        translate(-reach * 0.14f * u, -liftL * 0.10f * u + reach * 0.20f * u)
+    }) {
+        drawPath(paw, color = palette.patchColor)
+        drawPath(paw, color = palette.outlineColor, style = strokeStyle)
+    }
 
     // Tay trước phải đối xứng qua trục tâm cx
     withTransform({
         scale(-1f, 1f, pivot = Offset(cx, cy))
+        translate(-reach * 0.14f * u, -liftR * 0.10f * u + reach * 0.20f * u)
     }) {
         drawPath(paw, color = palette.patchColor)
         drawPath(paw, color = palette.outlineColor, style = strokeStyle)
@@ -355,11 +372,22 @@ internal fun DrawScope.drawShortHindFeet(
     strokeW: Float,
     walkCycle: Float,
     isWalking: Boolean,
-    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!
+    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!,
+    hindLiftL: Float = 0f,
+    hindLiftR: Float = 0f
 ) {
     val baseFeetY = cy + u * 0.98f
-    val leftPhase = if (isWalking) sin(walkCycle * 2f * PI.toFloat()) * u * 0.05f else 0f
-    val rightPhase = -leftPhase
+    val leftPhase = if (hindLiftL != 0f || hindLiftR != 0f) {
+        -hindLiftL * u * 0.06f
+    } else if (isWalking) {
+        sin(walkCycle * 2f * PI.toFloat()) * u * 0.05f
+    } else 0f
+
+    val rightPhase = if (hindLiftL != 0f || hindLiftR != 0f) {
+        -hindLiftR * u * 0.06f
+    } else {
+        -leftPhase
+    }
 
     // Chân sau trái
     val leftFoot = Path().apply {

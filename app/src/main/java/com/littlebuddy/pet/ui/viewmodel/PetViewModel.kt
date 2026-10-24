@@ -14,6 +14,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -74,13 +77,14 @@ class PetViewModel(
     private var eatJob: Job? = null
     private var wakeJob: Job? = null
     private var idleLifeJob: Job? = null
-    private var feedbackDismissJob: Job? = null
     private var scratchJob: Job? = null
     private var pettingJob: Job? = null
+    private var statsJob: Job? = null
 
     /** Thời điểm tương tác gần nhất để chống spam miễn phí */
     private var lastDrinkTimestamp: Long = 0L
     private var lastYarnTimestamp: Long = 0L
+    private var lastSleepPetAt: Long = 0L
 
     /**
      * Thức ăn đang trong phiên ăn hiện tại. Được khoá lại khi bắt đầu ăn để tránh
@@ -94,11 +98,25 @@ class PetViewModel(
     val bedPositionX = 0.12f
 
     init {
+        // Tự động thu hồi phản hồi thoại sau 3.5s tập trung tại một nơi duy nhất
+        viewModelScope.launch {
+            _petState.map { it.feedbackMessage }
+                .distinctUntilChanged()
+                .collectLatest { msg ->
+                    if (msg.isNotBlank()) {
+                        delay(3500L)
+                        _petState.update { if (it.feedbackMessage == msg) it.copy(feedbackMessage = "") else it }
+                    }
+                }
+        }
+
+        // Ticker chu kỳ chỉ số 1 phút duy nhất cho toàn bộ game
+        startStatsTicker()
+
         if (_petState.value.isSleeping) {
             _actionState.value = PetActionState.SLEEPING
             _catPositionX.value = bedPositionX
             _facingDirection.value = -1f
-            startSleepCycle()
         } else {
             startIdleLifeCycle()
         }
@@ -109,27 +127,54 @@ class PetViewModel(
         _petState.update { it.copy(feedbackMessage = "") }
     }
 
-    /** Hiển thị phản hồi và tự ẩn sau autoDismissMs */
+    /** Hiển thị phản hồi thoại */
     fun showFeedback(msg: String, autoDismissMs: Long = 3000L) {
-        feedbackDismissJob?.cancel()
         _petState.update { it.copy(feedbackMessage = msg) }
-        if (msg.isNotBlank() && autoDismissMs > 0L) {
-            feedbackDismissJob = viewModelScope.launch {
-                delay(autoDismissMs)
-                _petState.update { if (it.feedbackMessage == msg) it.copy(feedbackMessage = "") else it }
-            }
+    }
+
+    /** Thông báo nhanh khi mèo đang bận hành động khác */
+    private fun notifyBusy() {
+        showFeedback("${_petState.value.petName} đang bận, đợi bé một chút nhé~", 2000L)
+    }
+
+    /**
+     * Di chuyển mèo mượt mà theo vận tốc thực (đơn vị: phòng/giây).
+     * Sử dụng đường cong làm mượt ease in-out để bước đi tự nhiên và đồng bộ hoàn hảo với Coroutine.
+     */
+    private suspend fun moveCatTo(target: Float, speed: Float = 0.20f) {
+        val start = _catPositionX.value
+        val duration = (kotlin.math.abs(target - start) / speed).coerceAtLeast(0.01f)
+        var elapsed = 0f
+        var last = System.nanoTime()
+        while (elapsed < duration) {
+            delay(16L)
+            val now = System.nanoTime()
+            elapsed += (now - last) / 1e9f
+            last = now
+            val f = (elapsed / duration).coerceIn(0f, 1f)
+            val eased = f * f * (3f - 2f * f)
+            _catPositionX.value = start + (target - start) * eased
         }
+        _catPositionX.value = target
     }
 
     /**
      * Vòng lặp cử động tự nhiên khi mèo rảnh (IDLE):
-     * Thỉnh thoảng nhìn quanh, đi dạo vài bước nhẹ trên thảm hoặc kêu meo meo.
+     * Tự động lại ăn nếu có thức ăn trong bát và đói, hoặc thỉnh thoảng nhìn quanh, đi dạo vài bước nhẹ.
      */
     private fun startIdleLifeCycle() {
         idleLifeJob?.cancel()
         idleLifeJob = viewModelScope.launch {
             while (true) {
                 delay((9000L..15000L).random())
+
+                // Tự động đi ăn nếu trong bát có thức ăn và bé đói
+                if (_actionState.value == PetActionState.IDLE &&
+                    _bowlFood.value != BowlFood.EMPTY && _petState.value.hunger < 80f) {
+                    startWalkingToBowl()
+                    continue
+                }
+
                 if (_actionState.value == PetActionState.IDLE && !_petState.value.isSleeping) {
                     when ((1..3).random()) {
                         1 -> {
@@ -142,14 +187,9 @@ class PetViewModel(
                             // Đi dạo vài bước nhẹ trên thảm
                             val cur = _catPositionX.value
                             val target = if (cur < 0.48f) 0.54f else 0.44f
-                            val start = cur
-                            _facingDirection.value = if (target > start) 1f else -1f
+                            _facingDirection.value = if (target > cur) 1f else -1f
                             _actionState.value = PetActionState.WALKING
-                            val steps = 14
-                            repeat(steps) { s ->
-                                _catPositionX.value = start + (target - start) * ((s + 1).toFloat() / steps)
-                                delay(60L)
-                            }
+                            moveCatTo(target, speed = 0.15f)
                             _actionState.value = PetActionState.IDLE
                         }
                         3 -> {
@@ -158,6 +198,21 @@ class PetViewModel(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Đồng hồ cập nhật chỉ số định kỳ mỗi phút (1 phút = 1 chu kỳ applyTimeElapsed).
+     * Nguồn chân lý duy nhất cho thời gian tiêu hao và hồi phục chỉ số khi app đang chạy.
+     */
+    private fun startStatsTicker() {
+        statsJob?.cancel()
+        statsJob = viewModelScope.launch {
+            while (true) {
+                delay(60_000L)
+                _petState.update { it.applyTimeElapsed(1L) }
+                repository.persistPetState(_petState.value)
             }
         }
     }
@@ -266,6 +321,7 @@ class PetViewModel(
 
         if (isBusy) {
             _showFoodPicker.value = false
+            notifyBusy()
             return
         }
         _showFoodPicker.value = false
@@ -293,13 +349,7 @@ class PetViewModel(
         _petState.update { it.copy(feedbackMessage = "${it.petName} đang đi tới bát thức ăn...🐾") }
 
         walkJob = viewModelScope.launch {
-            val start = _catPositionX.value
-            val end = bowlPositionX
-            val steps = 24
-            repeat(steps) { i ->
-                _catPositionX.value = start + (end - start) * ((i + 1).toFloat() / steps)
-                delay(65L)
-            }
+            moveCatTo(bowlPositionX)
             startEatingAtBowl()
         }
     }
@@ -358,13 +408,7 @@ class PetViewModel(
     /** Mèo đi bộ về vị trí trung tâm sau khi ăn/chơi */
     private suspend fun walkBackToCenter() {
         _actionState.value = PetActionState.WALKING
-        val start = _catPositionX.value
-        val end = 0.5f
-        val steps = 20
-        repeat(steps) { i ->
-            _catPositionX.value = start + (end - start) * ((i + 1).toFloat() / steps)
-            delay(65L)
-        }
+        moveCatTo(0.5f)
         _facingDirection.value = 1f // Quay lại nhìn thẳng / sang phải
         _actionState.value = PetActionState.IDLE
     }
@@ -376,7 +420,8 @@ class PetViewModel(
     fun pet() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
             val now = System.currentTimeMillis()
-            if (now - _petState.value.lastInteractionTimestamp < 1200L) return
+            if (now - lastSleepPetAt < 5000L) return
+            lastSleepPetAt = now
             _petState.update { it.pet() }
             repository.persistPetState(_petState.value)
             return
@@ -472,6 +517,7 @@ class PetViewModel(
             _actionState.value == PetActionState.WAKING_UP ||
             _actionState.value == PetActionState.STRETCHING
         ) {
+            notifyBusy()
             return
         }
 
@@ -492,17 +538,10 @@ class PetViewModel(
             _actionState.value = PetActionState.WALKING
 
             walkJob = viewModelScope.launch {
-                val start = _catPositionX.value
-                val end = bedPositionX
-                val steps = 20
-                repeat(steps) { i ->
-                    _catPositionX.value = start + (end - start) * ((i + 1).toFloat() / steps)
-                    delay(60L)
-                }
+                moveCatTo(bedPositionX)
                 // Chỉ khi đến đệm mới chuyển sang SLEEPING và cập nhật isSleeping = true
                 _actionState.value = PetActionState.SLEEPING
                 _petState.update { it.copy(isSleeping = true, feedbackMessage = "${it.petName} đã nằm cuộn tròn ngủ ngon lành... Khò khò~") }
-                startSleepCycle()
                 repository.persistPetState(_petState.value)
             }
         } else {
@@ -525,13 +564,7 @@ class PetViewModel(
                 // Quay người sang phải và đi ra giữa phòng
                 _facingDirection.value = 1f
                 _actionState.value = PetActionState.WALKING
-                val start = _catPositionX.value
-                val end = 0.5f
-                val steps = 20
-                repeat(steps) { i ->
-                    _catPositionX.value = start + (end - start) * ((i + 1).toFloat() / steps)
-                    delay(65L)
-                }
+                moveCatTo(0.5f)
                 _actionState.value = PetActionState.IDLE
                 _petState.update { it.copy(feedbackMessage = "${it.petName} đã thức dậy đầy năng lượng sẵn sàng chơi rồi! 🐾") }
                 repository.persistPetState(_petState.value)
@@ -659,12 +692,12 @@ class PetViewModel(
 
     fun resetPet() {
         sleepJob?.cancel()
+        statsJob?.cancel()
         walkJob?.cancel()
         eatJob?.cancel()
         wakeJob?.cancel()
         idleLifeJob?.cancel()
         temporaryMoodJob?.cancel()
-        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
         activeMeal = null
@@ -674,21 +707,11 @@ class PetViewModel(
         _bowlFood.value = BowlFood.EMPTY
         val defaultState = repository.resetPetState()
         _petState.value = defaultState
+        startStatsTicker()
         startIdleLifeCycle()
     }
 
     // ── NỘI BỘ ───────────────────────────────────────────────────────────────
-
-    private fun startSleepCycle() {
-        sleepJob?.cancel()
-        sleepJob = viewModelScope.launch {
-            while (_petState.value.isSleeping) {
-                delay(3000L)
-                _petState.update { it.sleepTick() }
-                repository.persistPetState(_petState.value)
-            }
-        }
-    }
 
     private fun persistAndScheduleMoodReset() {
         repository.persistPetState(_petState.value)
@@ -707,13 +730,13 @@ class PetViewModel(
 
     override fun onCleared() {
         super.onCleared()
+        statsJob?.cancel()
         sleepJob?.cancel()
         temporaryMoodJob?.cancel()
         walkJob?.cancel()
         eatJob?.cancel()
         wakeJob?.cancel()
         idleLifeJob?.cancel()
-        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
     }

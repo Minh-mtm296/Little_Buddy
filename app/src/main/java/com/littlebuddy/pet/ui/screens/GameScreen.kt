@@ -668,7 +668,9 @@ fun YarnChaseGame(
                                 modifier = Modifier.fillMaxSize(),
                                 actionState = yarnGameActionState,
                                 animState = yarnGameAnimState,
-                                facingDirection = 1f
+                                facingDirection = 1f,
+                                lookAt = Offset((yarnX - catPosX.value) * facingDir / 150f, (yarnY - catPosY.value) / 150f),
+                                actionProgress = if (isPouncing) (jumpHeight.value / 60f).coerceIn(0f, 1f) else null
                             )
                         }
                     }
@@ -967,7 +969,9 @@ fun FeatherHuntGame(
                                 modifier = Modifier.fillMaxSize(),
                                 actionState = featherGameActionState,
                                 animState = featherGameAnimState,
-                                facingDirection = 1f
+                                facingDirection = 1f,
+                                lookAt = Offset((featherX - catPosX.value) * facingDir / 150f, (featherY - catPosY.value) / 150f),
+                                actionProgress = if (isJumping) (jumpHeight.value / 120f).coerceIn(0f, 1f) else null
                             )
                         }
                     }

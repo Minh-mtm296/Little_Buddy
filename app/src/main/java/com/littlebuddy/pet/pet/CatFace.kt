@@ -73,6 +73,11 @@ internal fun DrawScope.drawChibiFace(
         drawPath(calicoRightPatch, color = secColor)
     }
 
+    val hasDarkSide = palette.secondaryPatchColor != null
+    // ox > 0 là mắt phải (nằm trên mảng tối); mắt vàng hổ phách để nổi bật trên nền gần đen
+    fun eyeColorAt(ox: Float): Color =
+        if (hasDarkSide && ox > 0f) Color(0xFFF2C14E) else palette.eyeColor
+
     // 2. Mắt dọc hạt đậu nghiêng nhẹ ngơ ngác \ /
     val eyeY = cy - u * 0.44f
     val eyeOffsetX = u * 0.25f
@@ -89,7 +94,7 @@ internal fun DrawScope.drawChibiFace(
                 rotate(rot, pivot = Offset(cx + ox, eyeY))
             }) {
                 drawArc(
-                    color = palette.eyeColor,
+                    color = eyeColorAt(ox),
                     startAngle = 195f,
                     sweepAngle = 150f,
                     useCenter = false,
@@ -103,7 +108,7 @@ internal fun DrawScope.drawChibiFace(
         // Mắt nhắm khi chớp hoặc buồn ngủ
         listOf(-eyeOffsetX, eyeOffsetX).forEach { ox ->
             drawArc(
-                color = palette.eyeColor,
+                color = eyeColorAt(ox),
                 startAngle = 20f,
                 sweepAngle = 140f,
                 useCenter = false,
@@ -120,10 +125,18 @@ internal fun DrawScope.drawChibiFace(
                 rotate(rot, pivot = Offset(cx + ox, eyeY))
             }) {
                 drawOval(
-                    color = palette.eyeColor,
+                    color = eyeColorAt(ox),
                     topLeft = Offset(cx + ox - eyeW / 2f, eyeY - currentEyeH / 2f),
                     size = Size(eyeW, currentEyeH)
                 )
+
+                if (hasDarkSide && ox > 0f) {
+                    drawOval(
+                        color = Color(0xFF2B2024),
+                        topLeft = Offset(cx + ox - eyeW * 0.25f, eyeY - currentEyeH * 0.30f),
+                        size = Size(eyeW * 0.5f, currentEyeH * 0.6f)
+                    )
+                }
             }
         }
     }
