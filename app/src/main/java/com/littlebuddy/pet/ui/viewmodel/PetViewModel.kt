@@ -97,8 +97,8 @@ class PetViewModel(
 
     // Vị trí bát thức ăn (bên phải phòng)
     val bowlPositionX = 0.72f
-    // Vị trí đệm ngủ (bên trái phòng - căn chỉnh theo tỷ lệ mèo mới)
-    val bedPositionX = 0.12f
+    // Vị trí đệm ngủ (sát góc trái phòng trên giường gỗ)
+    val bedPositionX = 0.02f
 
     init {
         // Tự động ẩn phản hồi ở một chỗ duy nhất sau 3.5s

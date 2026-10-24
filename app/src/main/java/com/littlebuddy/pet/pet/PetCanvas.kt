@@ -192,19 +192,20 @@ private fun DrawScope.drawStandingChibiCat(
         drawCuteCatTail(cx, cy, u, tailWag = 0f, strokeW, palette)
     }
 
-    // ── BƯỚC 3: Hai tai mèo vòm tròn ──
-    drawCuteCatEars(
+    // ── BƯỚC 3: Hai chân sau ngắn đỡ ở đáy sàn ──
+    drawShortHindFeet(
         cx = cx,
         cy = cy,
         u = u,
-        earWiggle = earWiggle,
         strokeW = strokeW,
+        walkCycle = walkCycle,
+        isWalking = actionState == PetActionState.WALKING,
         palette = palette,
-        earL = pose.earL,
-        earR = pose.earR
+        hindLiftL = pose.hindLiftL,
+        hindLiftR = pose.hindLiftR
     )
 
-    // ── BƯỚC 4: Thân hình dáng chuông ú mập, không thắt eo ──
+    // ── BƯỚC 4: Toàn bộ thân trên mèo (Tai, Thân, Tay, Đầu) liên kết chung khung xương ──
     val stretchScaleX = 1f
     val stretchScaleY = 1f
     val bodyFillPath = createStandingBodyFillPath(cx, cy, u, stretchScaleX, stretchScaleY)
@@ -213,6 +214,19 @@ private fun DrawScope.drawStandingChibiCat(
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
         translate(0f, pose.bodyBob * u)
     }) {
+        // 4a. Hai tai mèo (vẽ trước thân để chân tai nằm ẩn sau gáy, luôn dính liền đỉnh đầu)
+        drawCuteCatEars(
+            cx = cx,
+            cy = cy,
+            u = u,
+            earWiggle = earWiggle,
+            strokeW = strokeW,
+            palette = palette,
+            earL = pose.earL,
+            earR = pose.earR
+        )
+
+        // 4b. Khối thân hình chuông ú mập
         clipPath(bodyFillPath) {
             // Nền lông theo Skin được chọn
             drawPath(bodyFillPath, color = palette.bodyColor)
@@ -235,63 +249,50 @@ private fun DrawScope.drawStandingChibiCat(
         // Viền thân màu viền theo Skin
         drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor, stretchScaleX, stretchScaleY)
 
-        // ── BƯỚC 5: Trang phục thân người (Bodywear: Áo len, yếm...) ──
+        // Trang phục thân người (Bodywear: Áo len, yếm...)
         drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW, stretchScaleX, stretchScaleY)
-    }
 
-    // ── BƯỚC 4: Hai chân sau ngắn đỡ ở đáy sàn ──
-    drawShortHindFeet(
-        cx = cx,
-        cy = cy,
-        u = u,
-        strokeW = strokeW,
-        walkCycle = walkCycle,
-        isWalking = actionState == PetActionState.WALKING,
-        palette = palette,
-        hindLiftL = pose.hindLiftL,
-        hindLiftR = pose.hindLiftR
-    )
-
-    // ── BƯỚC 6: Hai bàn tay trước co tròn trước ngực ──
-    drawCurledFrontPaws(
-        cx = cx,
-        cy = cy,
-        u = u,
-        strokeW = strokeW,
-        palette = palette,
-        liftL = pose.pawLiftL,
-        liftR = pose.pawLiftR,
-        reach = pose.pawReach
-    )
-
-    // ── BƯỚC 7: Khuôn mặt ngây thơ chuẩn mẫu (Mặt nạ, mắt bean, mũi, miệng ^) ──
-    withTransform({
-        translate(0f, pose.headDip * u)
-        rotate(pose.headTilt, pivot = Offset(cx, cy - 0.25f * u))
-    }) {
-        drawChibiFace(
+        // 4c. Hai bàn tay trước co tròn trước ngực
+        drawCurledFrontPaws(
             cx = cx,
             cy = cy,
             u = u,
-            mood = mood,
-            temporaryMood = temporaryMood,
-            actionState = actionState,
-            eyeScaleY = eyeScaleY,
-            chewOffset = chewOffset,
             strokeW = strokeW,
-            palette = palette
+            palette = palette,
+            liftL = pose.pawLiftL,
+            liftR = pose.pawLiftR,
+            reach = pose.pawReach
         )
 
-        // ── BƯỚC 8: Vòng cổ & Khăn quàng (Neckwear) ──
-        drawNeckwearOnChibiCat(wardrobe.getNeckwear()?.id, cx, cy, u, strokeW)
+        // 4d. Khuôn mặt, mắt, mũi, miệng và phụ kiện đầu/cổ
+        withTransform({
+            translate(0f, pose.headDip * u)
+            rotate(pose.headTilt, pivot = Offset(cx, cy - 0.25f * u))
+        }) {
+            drawChibiFace(
+                cx = cx,
+                cy = cy,
+                u = u,
+                mood = mood,
+                temporaryMood = temporaryMood,
+                actionState = actionState,
+                eyeScaleY = eyeScaleY,
+                chewOffset = chewOffset,
+                strokeW = strokeW,
+                palette = palette
+            )
 
-        // ── BƯỚC 9: Nơ & Mũ cài đầu (Headwear) ──
-        drawHeadwearOnChibiCat(wardrobe.getHeadwear()?.id, cx, cy, u, strokeW)
+            // Vòng cổ & Khăn quàng (Neckwear)
+            drawNeckwearOnChibiCat(wardrobe.getNeckwear()?.id, cx, cy, u, strokeW)
 
-        // Phụ kiện legacy nếu chưa có trang phục trong wardrobe
-        if (wardrobe.getHeadwear() == null && wardrobe.getNeckwear() == null && wardrobe.getBodywear() == null) {
-            accessory?.let { acc ->
-                drawAccessoryOnChibiCat(acc, cx, cy, u)
+            // Nơ & Mũ cài đầu (Headwear)
+            drawHeadwearOnChibiCat(wardrobe.getHeadwear()?.id, cx, cy, u, strokeW)
+
+            // Phụ kiện legacy nếu chưa có trang phục trong wardrobe
+            if (wardrobe.getHeadwear() == null && wardrobe.getNeckwear() == null && wardrobe.getBodywear() == null) {
+                accessory?.let { acc ->
+                    drawAccessoryOnChibiCat(acc, cx, cy, u)
+                }
             }
         }
     }

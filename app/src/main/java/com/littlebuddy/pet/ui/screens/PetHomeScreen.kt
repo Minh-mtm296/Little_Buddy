@@ -455,12 +455,21 @@ private fun PetRoomSection(
 
         // 6. Chú mèo chuyển động mượt mà (KÍCH THƯỚC TÍNH THEO PHÒNG)
         val isSleepingMode = petState.isSleeping || actionState == PetActionState.SLEEPING
-        val catHeight = (roomHeight * 0.85f).coerceAtMost(290.dp)
-        val catWidth = if (isSleepingMode) catHeight * 1.29f else catHeight * 0.97f
-        val floorPad = roomHeight * 0.12f
+        val catHeight = if (isSleepingMode) {
+            (roomHeight * 0.46f).coerceIn(110.dp, 175.dp)
+        } else {
+            (roomHeight * 0.68f).coerceIn(160.dp, 255.dp)
+        }
+        val catWidth = if (isSleepingMode) catHeight * 1.30f else catHeight * 0.95f
+        val floorPad = if (isSleepingMode) roomHeight * 0.14f else roomHeight * 0.10f
 
         val maxTravelWidth = (roomWidth - catWidth).coerceAtLeast(0.dp)
-        val currentOffsetX = maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
+        val currentOffsetX = if (isSleepingMode) {
+            // Mèo ngủ đặt sát góc trái phòng, nằm êm trên chiếc giường gỗ
+            (roomWidth * 0.19f - catWidth * 0.5f).coerceAtLeast(6.dp)
+        } else {
+            maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
+        }
 
         Box(
             modifier = Modifier
@@ -511,10 +520,8 @@ private fun PetRoomSection(
             } else {
                 // Ở chế độ dọc
                 if (isSleepingMode) {
-                    val bias = (catHeadFraction - 0.5f) * 1.5f
-                    val tail = (0.5f + bias * 0.25f).coerceIn(0.20f, 0.80f)
-                    val topPad = (roomHeight * 0.10f).coerceAtLeast(8.dp)
-                    Triple(bias, tail, topPad)
+                    // Mèo ngủ ở góc trái: Bong bóng đặt sang bên phải một chút để không che khuất mèo
+                    Triple(0.35f, 0.20f, (roomHeight * 0.08f).coerceAtLeast(8.dp))
                 } else {
                     val bias = (catCenterRatio - 0.5f) * 1.5f
                     val tail = (0.5f + bias * 0.22f).coerceIn(0.25f, 0.75f)
