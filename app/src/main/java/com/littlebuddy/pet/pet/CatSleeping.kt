@@ -193,16 +193,64 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
         } else if (wardrobe.furSkinId == "fur_calico") {
-            // Đốm nâu trên lưng
-            drawOval(
-                color = palette.patchColor.copy(alpha = 0.85f),
-                topLeft = pt(0.05f, -0.65f), size = Size(u * 0.40f, u * 0.35f)
-            )
-            // Đốm xám bên cạnh
             val secColor = palette.secondaryPatchColor ?: Color(0xFF6B6E78)
+
+            // 1. Tai trên (Tai trái): phủ màu Nâu, ôm trọn theo chóp tai lông xù
+            val earUpperCenter = pt(-0.54f, -0.46f)
+            withTransform({ rotate(-15f, pivot = earUpperCenter) }) {
+                drawOval(
+                    color = palette.patchColor,
+                    topLeft = Offset(earUpperCenter.x - u * 0.18f, earUpperCenter.y - u * 0.20f),
+                    size = Size(u * 0.36f, u * 0.40f)
+                )
+            }
+
+            // 2. Mảng mặt trên: vệt Nâu tự nhiên từ chân tai lan nhẹ qua trán
+            val facePatchCenter = pt(-0.44f, -0.16f)
+            withTransform({ rotate(-20f, pivot = facePatchCenter) }) {
+                drawOval(
+                    color = palette.patchColor.copy(alpha = 0.90f),
+                    topLeft = Offset(facePatchCenter.x - u * 0.14f, facePatchCenter.y - u * 0.13f),
+                    size = Size(u * 0.28f, u * 0.26f)
+                )
+            }
+
+            // 3. Tai dưới (Tai phải): phủ màu Xám, ôm theo viền tai trước
+            val earLowerCenter = pt(-0.96f, 0.34f)
+            withTransform({ rotate(15f, pivot = earLowerCenter) }) {
+                drawOval(
+                    color = secColor,
+                    topLeft = Offset(earLowerCenter.x - u * 0.18f, earLowerCenter.y - u * 0.22f),
+                    size = Size(u * 0.36f, u * 0.44f)
+                )
+            }
+
+            // 4. Mảng Nâu trên sống lưng: tràn qua đỉnh sống lưng (-0.75u) để bị clip theo viền lông xù
+            val backBrownCenter = pt(0.04f, -0.62f)
+            withTransform({ rotate(12f, pivot = backBrownCenter) }) {
+                drawOval(
+                    color = palette.patchColor,
+                    topLeft = Offset(backBrownCenter.x - u * 0.28f, backBrownCenter.y - u * 0.26f),
+                    size = Size(u * 0.56f, u * 0.52f)
+                )
+            }
+
+            // 5. Mảng Xám trên sống lưng sau & hông: ôm tiếp nối theo đường cong lưng mèo
+            val backGreyCenter = pt(0.48f, -0.52f)
+            withTransform({ rotate(-18f, pivot = backGreyCenter) }) {
+                drawOval(
+                    color = secColor,
+                    topLeft = Offset(backGreyCenter.x - u * 0.28f, backGreyCenter.y - u * 0.25f),
+                    size = Size(u * 0.56f, u * 0.50f)
+                )
+            }
+
+            // 6. Đốm Nâu nhỏ điểm xuyết ở vai/cổ (tương thích vai phải ở tư thế đứng)
+            val shoulderPatchCenter = pt(-0.16f, -0.38f)
             drawOval(
-                color = secColor.copy(alpha = 0.85f),
-                topLeft = pt(0.35f, -0.50f), size = Size(u * 0.35f, u * 0.30f)
+                color = palette.patchColor.copy(alpha = 0.90f),
+                topLeft = Offset(shoulderPatchCenter.x - u * 0.10f, shoulderPatchCenter.y - u * 0.09f),
+                size = Size(u * 0.20f, u * 0.18f)
             )
         }
     }
