@@ -99,7 +99,7 @@ fun PetCanvas(
             // ══════════════════════════════════════════════════════════════════
             drawSleepingChibiCat(
                 cx = centerX,
-                cy = centerY + u * 0.08f,
+                cy = centerY + u * 0.22f, // Hạ thấp tâm cy để đáy thân mèo và bóng tiếp đất chuẩn xác cùng vạch sàn
                 u = u,
                 baseU = min(width, height) * 0.40f,
                 tailWag = curTailWagAngle,

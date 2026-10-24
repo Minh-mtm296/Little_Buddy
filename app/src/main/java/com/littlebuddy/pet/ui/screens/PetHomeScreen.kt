@@ -456,17 +456,18 @@ private fun PetRoomSection(
         // 6. Chú mèo chuyển động mượt mà (KÍCH THƯỚC TÍNH THEO PHÒNG)
         val isSleepingMode = petState.isSleeping || actionState == PetActionState.SLEEPING
         val catHeight = if (isSleepingMode) {
-            (roomHeight * 0.46f).coerceIn(110.dp, 175.dp)
+            (roomHeight * 0.50f).coerceIn(120.dp, 185.dp)
         } else {
             (roomHeight * 0.68f).coerceIn(160.dp, 255.dp)
         }
         val catWidth = if (isSleepingMode) catHeight * 1.30f else catHeight * 0.95f
-        val floorPad = if (isSleepingMode) roomHeight * 0.14f else roomHeight * 0.10f
+        // Đồng nhất cao độ sàn tiếp đất cho cả đứng và ngủ để tránh hiện tượng lơ lửng
+        val floorPad = roomHeight * 0.07f
 
         val maxTravelWidth = (roomWidth - catWidth).coerceAtLeast(0.dp)
         val currentOffsetX = if (isSleepingMode) {
             // Mèo ngủ đặt sát góc trái phòng, nằm êm trên chiếc giường gỗ
-            (roomWidth * 0.19f - catWidth * 0.5f).coerceAtLeast(6.dp)
+            (roomWidth * 0.16f - catWidth * 0.5f).coerceAtLeast(6.dp)
         } else {
             maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
         }

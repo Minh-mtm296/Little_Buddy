@@ -121,18 +121,20 @@ internal fun DrawScope.drawSleepingChibiCat(
 
     // ── BƯỚC 1: Bóng đổ elip dưới sàn ──
     val shadowW = u * 2.25f
-    val shadowH = u * 0.46f
+    val shadowH = u * 0.44f
     val shadowX = cx + u * 0.02f
-    val shadowY = cy + u * 0.76f
+    val shadowY = cy + u * 0.74f
+    // Vầng bóng loang mềm mại
     drawOval(
-        color = Color(0x1F3A2922),
+        color = Color(0x332A1F1B),
         topLeft = Offset(shadowX - shadowW / 2f, shadowY - shadowH / 2f),
         size = Size(shadowW, shadowH)
     )
+    // Lớp bóng đậm tiếp xúc sàn ngay sát bụng tạo trọng lực tiếp đất vững chãi
     drawOval(
-        color = Color(0x28634539),
-        topLeft = Offset(shadowX - (shadowW * 0.82f) / 2f, shadowY - (shadowH * 0.70f) / 2f),
-        size = Size(shadowW * 0.82f, shadowH * 0.70f)
+        color = Color(0x543A2720),
+        topLeft = Offset(shadowX - (shadowW * 0.78f) / 2f, shadowY - (shadowH * 0.65f) / 2f),
+        size = Size(shadowW * 0.78f, shadowH * 0.65f)
     )
 
     // ── BƯỚC 2: Thân nguyên khối + màu nước pastel ──
