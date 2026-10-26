@@ -153,100 +153,159 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
     val neckY = cy - u * 0.12f
     when (neckwearId) {
         "neck_bell_collar" -> {
-            val collarW = u * 0.84f
+            // Chiều rộng ôm khít từ sườn trái (cx - topHalfW) sang sườn phải (cx + topHalfW)
+            val topHalfW = u * 0.495f
+            val botHalfW = u * 0.525f
             val collarH = u * 0.12f
-            val collarPath = Path().apply {
-                moveTo(cx - collarW / 2f, neckY - u * 0.04f)
-                quadraticTo(cx, neckY + u * 0.05f, cx + collarW / 2f, neckY - u * 0.04f)
-                lineTo(cx + collarW / 2f, neckY + collarH - u * 0.04f)
-                quadraticTo(cx, neckY + collarH + u * 0.05f, cx - collarW / 2f, neckY + collarH - u * 0.04f)
+            val yTop = neckY - u * 0.03f
+            val yBot = yTop + collarH
+            val sag = u * 0.065f // Độ cong võng tự nhiên ôm theo cổ tròn
+
+            // Bóng đổ nhẹ dưới vòng cổ
+            val collarShadow = Path().apply {
+                moveTo(cx - botHalfW, yBot)
+                quadraticTo(cx, yBot + sag, cx + botHalfW, yBot)
+                lineTo(cx + botHalfW * 0.98f, yBot + u * 0.035f)
+                quadraticTo(cx, yBot + sag + u * 0.035f, cx - botHalfW * 0.98f, yBot + u * 0.035f)
                 close()
             }
-            drawPath(collarPath, color = Color(0xFFE76F51))
+            drawPath(collarShadow, color = Color(0x303A2820))
+
+            // Thân vòng da đỏ thắm ôm trọn sườn mèo
+            val collarPath = Path().apply {
+                moveTo(cx - topHalfW, yTop)
+                quadraticTo(cx, yTop + sag, cx + topHalfW, yTop)
+                lineTo(cx + botHalfW, yBot)
+                quadraticTo(cx, yBot + sag, cx - botHalfW, yBot)
+                close()
+            }
+            drawPath(collarPath, color = Color(0xFFC84B31))
             drawPath(collarPath, color = Color(0xFF5A2A20), style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            val bellY = neckY + u * 0.10f
-            val bellR = u * 0.056f
-            drawCircle(color = Color(0xFFFFD166), radius = bellR, center = Offset(cx, bellY))
-            drawCircle(color = Color(0xFF7A5800), radius = bellR, center = Offset(cx, bellY), style = Stroke(width = strokeW * 0.65f))
-            drawCircle(color = Color(0xFF7A5800), radius = bellR * 0.28f, center = Offset(cx, bellY + bellR * 0.28f))
+            // Rãnh chỉ may da tinh tế
+            val stitchPath = Path().apply {
+                moveTo(cx - topHalfW * 0.90f, yTop + collarH * 0.5f)
+                quadraticTo(cx, yTop + collarH * 0.5f + sag, cx + topHalfW * 0.90f, yTop + collarH * 0.5f)
+            }
+            drawPath(stitchPath, color = Color(0x35FFFFFF), style = Stroke(width = 1.5f, cap = StrokeCap.Round))
+
+            // Quả chuông vàng đính ở điểm võng nhất chính giữa
+            val bellCenter = Offset(cx, yBot + sag * 0.70f)
+            val bellR = u * 0.065f
+
+            // Vòng khoen nối chuông
+            drawCircle(color = Color(0xFF7A5800), radius = bellR * 0.42f, center = Offset(cx, bellCenter.y - bellR * 0.75f), style = Stroke(width = strokeW * 0.5f))
+
+            // Quả chuông vàng tròn trịa
+            drawCircle(color = Color(0xFFFFD166), radius = bellR, center = bellCenter)
+            drawCircle(color = Color(0xFF7A5800), radius = bellR, center = bellCenter, style = Stroke(width = strokeW * 0.65f))
+            drawCircle(color = Color.White.copy(alpha = 0.85f), radius = bellR * 0.30f, center = Offset(bellCenter.x - bellR * 0.32f, bellCenter.y - bellR * 0.32f))
+
+            val slotY = bellCenter.y + bellR * 0.28f
             drawLine(
                 color = Color(0xFF7A5800),
-                start = Offset(cx - bellR * 0.65f, bellY + bellR * 0.28f),
-                end = Offset(cx + bellR * 0.65f, bellY + bellR * 0.28f),
-                strokeWidth = strokeW * 0.45f
+                start = Offset(cx - bellR * 0.68f, slotY),
+                end = Offset(cx + bellR * 0.68f, slotY),
+                strokeWidth = strokeW * 0.5f,
+                cap = StrokeCap.Round
             )
+            drawCircle(color = Color(0xFF5A3E00), radius = bellR * 0.22f, center = Offset(cx, slotY + bellR * 0.12f))
         }
         "neck_warm_scarf" -> {
-            val scarfW = u * 0.88f
+            val topHalfW = u * 0.51f
+            val botHalfW = u * 0.54f
             val scarfH = u * 0.18f
+            val yTop = neckY - u * 0.04f
+            val yBot = yTop + scarfH
+            val sag = u * 0.075f
+
             val scarfPath = Path().apply {
-                moveTo(cx - scarfW / 2f, neckY - u * 0.05f)
-                quadraticTo(cx, neckY + u * 0.06f, cx + scarfW / 2f, neckY - u * 0.05f)
-                quadraticTo(cx + scarfW / 2f * 0.95f, neckY + scarfH, cx, neckY + scarfH + u * 0.04f)
-                quadraticTo(cx - scarfW / 2f * 0.95f, neckY + scarfH, cx - scarfW / 2f, neckY - u * 0.05f)
+                moveTo(cx - topHalfW, yTop)
+                quadraticTo(cx, yTop + sag, cx + topHalfW, yTop)
+                cubicTo(
+                    cx + botHalfW * 1.02f, yTop + scarfH * 0.5f,
+                    cx + botHalfW, yBot - u * 0.02f,
+                    cx + botHalfW, yBot
+                )
+                quadraticTo(cx, yBot + sag + u * 0.02f, cx - botHalfW, yBot)
+                cubicTo(
+                    cx - botHalfW, yBot - u * 0.02f,
+                    cx - botHalfW * 1.02f, yTop + scarfH * 0.5f,
+                    cx - topHalfW, yTop
+                )
                 close()
             }
             drawPath(scarfPath, color = Color(0xFFE07A5F))
             drawPath(scarfPath, color = Color(0xFF5A2A20), style = Stroke(width = strokeW * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
             val tailPath = Path().apply {
-                moveTo(cx + u * 0.12f, neckY + u * 0.08f)
-                lineTo(cx + u * 0.28f, neckY + u * 0.38f)
-                lineTo(cx + u * 0.15f, neckY + u * 0.41f)
-                lineTo(cx + u * 0.02f, neckY + u * 0.12f)
+                moveTo(cx + u * 0.10f, yTop + u * 0.08f)
+                lineTo(cx + u * 0.29f, yTop + u * 0.44f)
+                lineTo(cx + u * 0.15f, yTop + u * 0.47f)
+                lineTo(cx - u * 0.01f, yTop + u * 0.12f)
                 close()
             }
             drawPath(tailPath, color = Color(0xFFD46246))
             drawPath(tailPath, color = Color(0xFF5A2A20), style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            for (i in 0..3) {
-                val tx = cx + u * (0.15f + i * 0.04f)
-                val ty = neckY + u * 0.39f
+            for (i in 0..4) {
+                val tx = cx + u * (0.16f + i * 0.03f)
+                val ty = yTop + u * 0.45f
                 drawLine(
                     color = Color(0xFF5A2A20),
                     start = Offset(tx, ty),
-                    end = Offset(tx + u * 0.02f, ty + u * 0.05f),
+                    end = Offset(tx + u * 0.02f, ty + u * 0.06f),
                     strokeWidth = strokeW * 0.5f,
                     cap = StrokeCap.Round
                 )
             }
         }
         "neck_blue_bow" -> {
-            val bandW = u * 0.80f
+            val topHalfW = u * 0.495f
+            val botHalfW = u * 0.525f
+            val bandH = u * 0.08f
+            val yTop = neckY - u * 0.01f
+            val yBot = yTop + bandH
+            val sag = u * 0.055f
+
             val bandPath = Path().apply {
-                moveTo(cx - bandW / 2f, neckY - u * 0.02f)
-                quadraticTo(cx, neckY + u * 0.04f, cx + bandW / 2f, neckY - u * 0.02f)
-                lineTo(cx + bandW / 2f, neckY + u * 0.04f)
-                quadraticTo(cx, neckY + u * 0.10f, cx - bandW / 2f, neckY + u * 0.04f)
+                moveTo(cx - topHalfW, yTop)
+                quadraticTo(cx, yTop + sag, cx + topHalfW, yTop)
+                lineTo(cx + botHalfW, yBot)
+                quadraticTo(cx, yBot + sag, cx - botHalfW, yBot)
                 close()
             }
             drawPath(bandPath, color = Color(0xFFC7E4E8))
             drawPath(bandPath, color = Color(0xFF33626C), style = Stroke(width = strokeW * 0.65f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            val bw = u * 0.18f
-            val bh = u * 0.11f
-            val by = neckY + u * 0.04f
+            val bowCenter = Offset(cx, yTop + bandH * 0.5f + sag * 0.6f)
+            val bw = u * 0.20f
+            val bh = u * 0.12f
             listOf(-1f, 1f).forEach { side ->
                 val wing = Path().apply {
-                    moveTo(cx, by)
-                    quadraticTo(cx + side * bw, by - bh, cx + side * bw * 1.05f, by)
-                    quadraticTo(cx + side * bw, by + bh, cx, by)
+                    moveTo(bowCenter.x, bowCenter.y)
+                    quadraticTo(bowCenter.x + side * bw, bowCenter.y - bh, bowCenter.x + side * bw * 1.05f, bowCenter.y)
+                    quadraticTo(bowCenter.x + side * bw, bowCenter.y + bh, bowCenter.x, bowCenter.y)
                     close()
                 }
-                drawPath(wing, color = Color(0xFF88C9D4))
-                drawPath(wing, color = Color(0xFF33626C), style = Stroke(width = strokeW * 0.7f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+                drawPath(wing, color = Color(0xFF76B9C4))
+                drawPath(wing, color = Color(0xFF2C565F), style = Stroke(width = strokeW * 0.7f, cap = StrokeCap.Round, join = StrokeJoin.Round))
             }
-            drawCircle(color = Color(0xFF569DAA), radius = bw * 0.28f, center = Offset(cx, by))
-            drawCircle(color = Color(0xFF33626C), radius = bw * 0.28f, center = Offset(cx, by), style = Stroke(width = strokeW * 0.6f))
+            drawCircle(color = Color(0xFF4A8E9A), radius = bw * 0.28f, center = bowCenter)
+            drawCircle(color = Color(0xFF2C565F), radius = bw * 0.28f, center = bowCenter, style = Stroke(width = strokeW * 0.6f))
         }
         "neck_pearl" -> {
-            val count = 9
+            val count = 11
+            val halfW = u * 0.50f
+            val sag = u * 0.14f
+            val yBase = neckY + u * 0.02f
             for (i in 0 until count) {
                 val t = (i - (count - 1) / 2f) / ((count - 1) / 2f)
-                val px = cx + t * (u * 0.38f)
-                val py = neckY + (1f - t * t * 0.45f) * (u * 0.12f)
-                val pearlR = u * 0.036f
+                val px = cx + t * halfW
+                val py = yBase + (1f - t * t * 0.40f) * sag
+                val pearlR = u * 0.038f
+
+                drawCircle(color = Color(0x203A2820), radius = pearlR, center = Offset(px, py + pearlR * 0.3f))
                 drawCircle(color = Color(0xFFFFFDF9), radius = pearlR, center = Offset(px, py))
                 drawCircle(color = Color(0xFFB8ADA0), radius = pearlR, center = Offset(px, py), style = Stroke(width = strokeW * 0.45f))
                 drawCircle(color = Color.White, radius = pearlR * 0.35f, center = Offset(px - pearlR * 0.3f, py - pearlR * 0.3f))
