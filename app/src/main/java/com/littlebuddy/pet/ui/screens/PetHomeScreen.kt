@@ -294,10 +294,12 @@ fun PetHomeScreen(
             petState = petState,
             onSelectYarn = {
                 viewModel.closeGamePicker()
+                viewModel.startPlaying()
                 showYarnGame = true
             },
             onSelectFeather = {
                 viewModel.closeGamePicker()
+                viewModel.startPlaying()
                 showFeatherGame = true
             },
             onDismiss = { viewModel.closeGamePicker() }
@@ -307,22 +309,28 @@ fun PetHomeScreen(
     if (showYarnGame) {
         YarnChaseGame(
             petState = petState,
-            onFinish = { h, e, n ->
+            onFinish = { h, e, n, exp ->
                 showYarnGame = false
-                viewModel.finishPlaying(h, e, n)
+                viewModel.finishPlaying(h, e, n, exp)
             },
-            onDismiss = { showYarnGame = false }
+            onDismiss = {
+                showYarnGame = false
+                viewModel.cancelPlaying()
+            }
         )
     }
 
     if (showFeatherGame) {
         FeatherHuntGame(
             petState = petState,
-            onFinish = { h, e, n ->
+            onFinish = { h, e, n, exp ->
                 showFeatherGame = false
-                viewModel.finishPlaying(h, e, n)
+                viewModel.finishPlaying(h, e, n, exp)
             },
-            onDismiss = { showFeatherGame = false }
+            onDismiss = {
+                showFeatherGame = false
+                viewModel.cancelPlaying()
+            }
         )
     }
 }

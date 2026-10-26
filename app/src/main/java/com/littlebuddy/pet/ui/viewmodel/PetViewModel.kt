@@ -479,17 +479,35 @@ class PetViewModel(
 
     fun closeGamePicker() { _showGamePicker.value = false }
 
-    /** Kết thúc mini-game */
-    fun finishPlaying(happinessGain: Float = 25f, energyCost: Float = 20f, hungerCost: Float = 15f) {
-        // Chỉ chuyển về IDLE nếu đang thực sự ở PLAYING, tránh ghi đè trạng thái khác
+    /** Bắt đầu chơi mini-game */
+    fun startPlaying() {
+        idleLifeJob?.cancel()
+        walkJob?.cancel()
+        _actionState.value = PetActionState.PLAYING
+    }
+
+    /** Thoát/Hủy mini-game khi người chơi đóng bảng mà chưa bắt xong */
+    fun cancelPlaying() {
         if (_actionState.value == PetActionState.PLAYING) {
             _actionState.value = PetActionState.IDLE
+            startIdleLifeCycle()
         }
+    }
+
+    /** Kết thúc mini-game và nhận thưởng theo đúng thông số trên thẻ & bảng chiến thắng */
+    fun finishPlaying(
+        happinessGain: Float = 25f,
+        energyCost: Float = 18f,
+        hungerCost: Float = 12f,
+        expGain: Int = 15
+    ) {
+        _actionState.value = PetActionState.IDLE
         _petState.update { state ->
             val newHappiness = (state.happiness + happinessGain).coerceIn(0f, 100f)
             val newEnergy = (state.energy - energyCost).coerceIn(0f, 100f)
             val newHunger = (state.hunger - hungerCost).coerceIn(0f, 100f)
-            val (newExp, newLevel) = gainExp(state, 25)
+            val (newExp, newLevel) = gainExp(state, expGain)
+            val levelUpMsg = if (newLevel > state.level) " 🎉 Chúc mừng ${state.petName} đã lên Cấp $newLevel!" else ""
             state.copy(
                 happiness = newHappiness,
                 energy = newEnergy,
@@ -498,11 +516,12 @@ class PetViewModel(
                 level = newLevel,
                 intimacyScore = (state.intimacyScore + 15).coerceAtMost(PetState.MAX_INTIMACY_SCORE),
                 temporaryMood = PetMood.PLAYFUL,
-                feedbackMessage = "Bắt được rồi! Chơi cùng ${state.petName} nữa đi bạn ơi!",
+                feedbackMessage = "Bắt được rồi! Chơi cùng ${state.petName} nữa đi bạn ơi!$levelUpMsg",
                 lastInteractionTimestamp = System.currentTimeMillis()
             )
         }
         persistAndScheduleMoodReset()
+        startIdleLifeCycle()
     }
 
     /**

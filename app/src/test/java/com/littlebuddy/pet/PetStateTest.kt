@@ -64,6 +64,19 @@ class PetStateTest {
     }
 
     @Test
+    fun play_withMiniGameRewards_appliesConfiguredExpAndCosts() {
+        val initial = PetState(happiness = 50f, energy = 80f, hunger = 60f, exp = 10)
+        // Mô phỏng trò chơi Cuộn len: +25% Niềm vui, -18% Năng lượng, -12% Đói, +15 EXP
+        val yarnGameResult = initial.play(happinessGain = 25f, energyCost = 18f, hungerCost = 12f, expGain = 15)
+
+        assertEquals(75f, yarnGameResult.happiness, 0.01f)
+        assertEquals(62f, yarnGameResult.energy, 0.01f)
+        assertEquals(48f, yarnGameResult.hunger, 0.01f)
+        assertEquals(25, yarnGameResult.exp)
+        assertEquals(PetMood.PLAYFUL, yarnGameResult.temporaryMood)
+    }
+
+    @Test
     fun play_failsWhenEnergyIsTooLow() {
         val initial = PetState(happiness = 50f, energy = 10f)
         assertFalse(initial.canPlay)

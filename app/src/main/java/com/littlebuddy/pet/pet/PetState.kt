@@ -154,7 +154,12 @@ data class PetState(
     /**
      * Chơi đùa (Play): Tăng niềm vui nhưng tiêu tốn năng lượng và giảm độ no
      */
-    fun play(): PetState {
+    fun play(
+        happinessGain: Float = 25f,
+        energyCost: Float = 20f,
+        hungerCost: Float = 15f,
+        expGain: Int = 25
+    ): PetState {
         if (isSleeping) {
             return copy(feedbackMessage = "$petName đang ngủ rồi, để bé nghỉ ngơi nhé!")
         }
@@ -165,10 +170,10 @@ data class PetState(
                 copy(feedbackMessage = "$petName đang đói meo, cho bé ăn trước khi chơi nhé!")
             }
         }
-        val newHappiness = (happiness + 25f).coerceIn(0f, 100f)
-        val newEnergy = (energy - 20f).coerceIn(0f, 100f)
-        val newHunger = (hunger - 15f).coerceIn(0f, 100f)
-        val (newExp, newLevel) = gainExp(25)
+        val newHappiness = (happiness + happinessGain).coerceIn(0f, 100f)
+        val newEnergy = (energy - energyCost).coerceIn(0f, 100f)
+        val newHunger = (hunger - hungerCost).coerceIn(0f, 100f)
+        val (newExp, newLevel) = gainExp(expGain)
         return copy(
             happiness = newHappiness,
             energy = newEnergy,

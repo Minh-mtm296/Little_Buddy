@@ -379,7 +379,7 @@ private fun RewardBadge(
 @Composable
 fun YarnChaseGame(
     petState: PetState,
-    onFinish: (happinessGain: Float, energyCost: Float, hungerCost: Float) -> Unit,
+    onFinish: (happinessGain: Float, energyCost: Float, hungerCost: Float, expGain: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -544,7 +544,7 @@ fun YarnChaseGame(
                         expGain = 15,
                         energyCost = 18,
                         onConfirm = {
-                            onFinish(25f, 18f, 12f)
+                            onFinish(25f, 18f, 12f, 15)
                         }
                     )
                 } else {
@@ -694,7 +694,7 @@ fun YarnChaseGame(
 @Composable
 fun FeatherHuntGame(
     petState: PetState,
-    onFinish: (happinessGain: Float, energyCost: Float, hungerCost: Float) -> Unit,
+    onFinish: (happinessGain: Float, energyCost: Float, hungerCost: Float, expGain: Int) -> Unit,
     onDismiss: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -863,7 +863,7 @@ fun FeatherHuntGame(
                         expGain = 15,
                         energyCost = 15,
                         onConfirm = {
-                            onFinish(20f, 15f, 10f)
+                            onFinish(20f, 15f, 10f, 15)
                         }
                     )
                 } else {
