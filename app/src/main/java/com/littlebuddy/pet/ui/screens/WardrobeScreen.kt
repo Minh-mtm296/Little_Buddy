@@ -140,7 +140,6 @@ fun WardrobeScreen(
                     .padding(horizontal = 12.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-                // Cột trái (42%): Sân khấu thử đồ + Khay phụ kiện đang mặc
                 Column(
                     modifier = Modifier
                         .weight(0.42f)
@@ -166,7 +165,6 @@ fun WardrobeScreen(
                     )
                 }
 
-                // Cột phải (58%): Danh mục Tabs + Lưới vật phẩm + Nút Lưu
                 Column(
                     modifier = Modifier
                         .weight(0.58f)
@@ -260,7 +258,7 @@ fun WardrobeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 5. Thanh nút Lưu thay đổi cố định đáy
+                // 5. Thanh nút Lưu thay đổi
                 WardrobeBottomActions(
                     onConfirm = onConfirm,
                     compact = false
@@ -604,9 +602,6 @@ private fun WardrobeCategoryFloatingTabs(
     }
 }
 
-/**
- * Extension vẽ thanh cuộn dọc (vertical scrollbar) tự động cho LazyVerticalGrid
- */
 private fun Modifier.drawVerticalScrollbar(
     state: LazyGridState,
     thumbColor: Color = Rosewood.copy(alpha = 0.6f),
@@ -654,9 +649,6 @@ private fun Modifier.drawVerticalScrollbar(
     }
 }
 
-/**
- * Lưới hiển thị các vật phẩm theo danh mục với hỗ trợ thanh cuộn và layout ngang/dọc
- */
 @Composable
 private fun WardrobeItemsGrid(
     category: WardrobeCategory,
@@ -969,9 +961,7 @@ private fun WardrobeItemThumbnail(
     }
 }
 
-/**
- * Vẽ đầu mèo chibi đại diện cho từng loại Skin màu lông
- */
+
 private fun DrawScope.drawChibiFurSkinThumbnail(
     item: WardrobeItem,
     cx: Float,
@@ -1089,14 +1079,12 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     if (item.id == WardrobeRegistry.ID_FUR_CALICO) {
         drawCircle(color = p.eyeColor.copy(alpha = alpha), radius = eyeRadius, center = Offset(cx - eyeOx, eyeOy))
         drawCircle(color = Color(0xFFF2C14E).copy(alpha = alpha), radius = eyeRadius, center = Offset(cx + eyeOx, eyeOy))
-        // Đồng tử mắt phải
         drawCircle(color = Color(0xFF2B2024).copy(alpha = alpha), radius = eyeRadius * 0.5f, center = Offset(cx + eyeOx, eyeOy))
     } else {
         drawCircle(color = p.eyeColor.copy(alpha = alpha), radius = eyeRadius, center = Offset(cx - eyeOx, eyeOy))
         drawCircle(color = p.eyeColor.copy(alpha = alpha), radius = eyeRadius, center = Offset(cx + eyeOx, eyeOy))
     }
 
-    // Đốm sáng phản chiếu mắt
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx - eyeOx - 1.2f, eyeOy - 1.2f))
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx + eyeOx - 1.2f, eyeOy - 1.2f))
 
@@ -1293,15 +1281,41 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
         WardrobeRegistry.ID_BODY_ROYAL_CAPE -> {
             val capePath = Path().apply {
                 moveTo(cx - w * 0.22f, cy - h * 0.20f)
-                lineTo(cx + w * 0.22f, cy - h * 0.20f)
-                cubicTo(cx + w * 0.40f, cy + h * 0.10f, cx + w * 0.38f, cy + h * 0.28f, cx, cy + h * 0.24f)
-                cubicTo(cx - w * 0.38f, cy + h * 0.28f, cx - w * 0.40f, cy + h * 0.10f, cx - w * 0.22f, cy - h * 0.20f)
+                cubicTo(cx - w * 0.42f, cy + h * 0.05f, cx - w * 0.44f, cy + h * 0.32f, cx - w * 0.36f, cy + h * 0.36f)
+                quadraticTo(cx, cy + h * 0.40f, cx + w * 0.36f, cy + h * 0.36f)
+                cubicTo(cx + w * 0.44f, cy + h * 0.32f, cx + w * 0.42f, cy + h * 0.05f, cx + w * 0.22f, cy - h * 0.20f)
                 close()
             }
-            drawPath(capePath, color = Color(0xFF9E2A2B).copy(alpha = alpha))
-            drawPath(capePath, color = Color(0xFF4D0E10).copy(alpha = alpha), style = Stroke(width = 2.2f))
-            drawOval(color = Color(0xFFFFF8F0).copy(alpha = alpha), topLeft = Offset(cx - w * 0.24f, cy - h * 0.24f), size = Size(w * 0.48f, h * 0.12f))
-            drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.045f, center = Offset(cx, cy - h * 0.16f))
+            drawPath(capePath, color = Color(0xFFA82A2D).copy(alpha = alpha))
+            drawPath(capePath, color = Color(0xFF480E12).copy(alpha = alpha), style = Stroke(width = 2f))
+
+            val trimL = Path().apply {
+                moveTo(cx - w * 0.20f, cy - h * 0.16f)
+                cubicTo(cx - w * 0.38f, cy + h * 0.05f, cx - w * 0.40f, cy + h * 0.30f, cx - w * 0.32f, cy + h * 0.34f)
+            }
+            val trimR = Path().apply {
+                moveTo(cx + w * 0.20f, cy - h * 0.16f)
+                cubicTo(cx + w * 0.38f, cy + h * 0.05f, cx + w * 0.40f, cy + h * 0.30f, cx + w * 0.32f, cy + h * 0.34f)
+            }
+            drawPath(trimL, color = Color(0xFFFFD460).copy(alpha = alpha), style = Stroke(width = 1.8f))
+            drawPath(trimR, color = Color(0xFFFFD460).copy(alpha = alpha), style = Stroke(width = 1.8f))
+
+            val collar = Path().apply {
+                moveTo(cx - w * 0.26f, cy - h * 0.20f)
+                quadraticTo(cx, cy - h * 0.08f, cx + w * 0.26f, cy - h * 0.20f)
+                quadraticTo(cx + w * 0.20f, cy - h * 0.02f, cx, cy + h * 0.02f)
+                quadraticTo(cx - w * 0.20f, cy - h * 0.02f, cx - w * 0.26f, cy - h * 0.20f)
+                close()
+            }
+            drawPath(collar, color = Color(0xFFFFF9F0).copy(alpha = alpha))
+            drawPath(collar, color = Color(0xFF480E12).copy(alpha = alpha), style = Stroke(width = 1.8f))
+
+            listOf(-0.15f, -0.05f, 0.05f, 0.15f).forEach { fx ->
+                drawCircle(color = Color(0xFF2C2424).copy(alpha = alpha), radius = w * 0.018f, center = Offset(cx + fx * w, cy - h * 0.11f))
+            }
+
+            drawCircle(color = Color(0xFFFFD460).copy(alpha = alpha), radius = w * 0.045f, center = Offset(cx, cy - h * 0.05f))
+            drawCircle(color = Color(0xFFD90429).copy(alpha = alpha), radius = w * 0.025f, center = Offset(cx, cy - h * 0.05f))
         }
     }
 }

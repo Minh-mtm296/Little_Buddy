@@ -312,8 +312,124 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
     }
 }
 
-internal fun DrawScope.drawBodywearOnChibiCat(
+/**
+ * Vẽ trang phục phía sau lưng mèo (như áo choàng hoàng gia xòe tà bồng bềnh phía sau).
+ * Được vẽ trước khi vẽ khối thân để lưng áo tự nhiên nằm sau thân và lộ ra 2 bên sườn.
+ */
+internal fun DrawScope.drawBackBodywearOnChibiCat(
     bodywearId: String?,
+    cx: Float,
+    cy: Float,
+    u: Float,
+    strokeW: Float,
+    scaleX: Float = 1f,
+    scaleY: Float = 1f
+) {
+    if (bodywearId == null) return
+    when (bodywearId) {
+        "body_royal_cape" -> {
+            val velvetRed = Color(0xFFA82A2D)
+            val velvetDark = Color(0xFF480E12)
+            val velvetShadow = Color(0xFF6E1619)
+            val royalGold = Color(0xFFFFD460)
+
+            // 1. Bản áo choàng sau lưng rủ xòe rộng sang 2 bên và sau gót chân
+            val backCapePath = Path().apply {
+                moveTo(cx - u * 0.42f * scaleX, cy - u * 0.16f * scaleY)
+                // Cạnh xòe bên trái
+                cubicTo(
+                    cx - u * 0.65f * scaleX, cy + u * 0.10f * scaleY,
+                    cx - u * 0.88f * scaleX, cy + u * 0.55f * scaleY,
+                    cx - u * 0.82f * scaleX, cy + u * 1.05f * scaleY
+                )
+                // Gấu áo phía dưới quét vòng cung sang phải sau chân
+                quadraticTo(
+                    cx, cy + u * 1.09f * scaleY,
+                    cx + u * 0.82f * scaleX, cy + u * 1.05f * scaleY
+                )
+                // Cạnh xòe bên phải
+                cubicTo(
+                    cx + u * 0.88f * scaleX, cy + u * 0.55f * scaleY,
+                    cx + u * 0.65f * scaleX, cy + u * 0.10f * scaleY,
+                    cx + u * 0.42f * scaleX, cy - u * 0.16f * scaleY
+                )
+                close()
+            }
+            drawPath(backCapePath, color = velvetRed)
+
+            // 2. Nếp bóng nhung uốn lượn sâu ở hai bên hông
+            val leftFoldShadow = Path().apply {
+                moveTo(cx - u * 0.42f * scaleX, cy - u * 0.16f * scaleY)
+                cubicTo(
+                    cx - u * 0.65f * scaleX, cy + u * 0.10f * scaleY,
+                    cx - u * 0.88f * scaleX, cy + u * 0.55f * scaleY,
+                    cx - u * 0.82f * scaleX, cy + u * 1.05f * scaleY
+                )
+                cubicTo(
+                    cx - u * 0.75f * scaleX, cy + u * 0.60f * scaleY,
+                    cx - u * 0.55f * scaleX, cy + u * 0.20f * scaleY,
+                    cx - u * 0.42f * scaleX, cy - u * 0.16f * scaleY
+                )
+                close()
+            }
+            drawPath(leftFoldShadow, color = velvetShadow)
+
+            val rightFoldShadow = Path().apply {
+                moveTo(cx + u * 0.42f * scaleX, cy - u * 0.16f * scaleY)
+                cubicTo(
+                    cx + u * 0.65f * scaleX, cy + u * 0.10f * scaleY,
+                    cx + u * 0.88f * scaleX, cy + u * 0.55f * scaleY,
+                    cx + u * 0.82f * scaleX, cy + u * 1.05f * scaleY
+                )
+                cubicTo(
+                    cx + u * 0.75f * scaleX, cy + u * 0.60f * scaleY,
+                    cx + u * 0.55f * scaleX, cy + u * 0.20f * scaleY,
+                    cx + u * 0.42f * scaleX, cy - u * 0.16f * scaleY
+                )
+                close()
+            }
+            drawPath(rightFoldShadow, color = velvetShadow)
+
+            // 3. Viền ngoài áo choàng
+            drawPath(
+                backCapePath,
+                color = velvetDark,
+                style = Stroke(width = strokeW * 0.9f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            )
+
+            // 4. Viền thêu chỉ vàng hoàng gia óng ánh dọc theo 2 tà áo ngoài
+            val leftGoldTrim = Path().apply {
+                moveTo(cx - u * 0.38f * scaleX, cy - u * 0.14f * scaleY)
+                cubicTo(
+                    cx - u * 0.62f * scaleX, cy + u * 0.12f * scaleY,
+                    cx - u * 0.84f * scaleX, cy + u * 0.55f * scaleY,
+                    cx - u * 0.78f * scaleX, cy + u * 1.02f * scaleY
+                )
+            }
+            val rightGoldTrim = Path().apply {
+                moveTo(cx + u * 0.38f * scaleX, cy - u * 0.14f * scaleY)
+                cubicTo(
+                    cx + u * 0.62f * scaleX, cy + u * 0.12f * scaleY,
+                    cx + u * 0.84f * scaleX, cy + u * 0.55f * scaleY,
+                    cx + u * 0.78f * scaleX, cy + u * 1.02f * scaleY
+                )
+            }
+            val bottomGoldTrim = Path().apply {
+                moveTo(cx - u * 0.78f * scaleX, cy + u * 1.02f * scaleY)
+                quadraticTo(
+                    cx, cy + u * 1.06f * scaleY,
+                    cx + u * 0.78f * scaleX, cy + u * 1.02f * scaleY
+                )
+            }
+            val trimStyle = Stroke(width = strokeW * 0.55f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            drawPath(leftGoldTrim, color = royalGold, style = trimStyle)
+            drawPath(rightGoldTrim, color = royalGold, style = trimStyle)
+            drawPath(bottomGoldTrim, color = royalGold, style = trimStyle)
+        }
+    }
+}
+
+internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
     cx: Float,
     cy: Float,
     u: Float,
@@ -557,57 +673,83 @@ internal fun DrawScope.drawBodywearOnChibiCat(
             }
         }
         "body_royal_cape" -> {
-            val velvetRed = Color(0xFF9E2A2B)
-            val velvetDark = Color(0xFF480E10)
-            val royalGold = Color(0xFFFFD166)
+            val velvetRed = Color(0xFFA82A2D)
+            val velvetDark = Color(0xFF480E12)
+            val royalGold = Color(0xFFFFD460)
+            val goldOutline = Color(0xFF8C6200)
 
-            val capePath = Path().apply {
-                moveTo(cx - u * 0.38f * scaleX, cy - u * 0.18f * scaleY)
-                quadraticTo(cx, cy - u * 0.12f * scaleY, cx + u * 0.38f * scaleX, cy - u * 0.18f * scaleY)
-                cubicTo(
-                    cx + u * 0.65f * scaleX, cy + u * 0.08f * scaleY,
-                    cx + u * 0.80f * scaleX, cy + u * 0.50f * scaleY,
-                    cx + u * 0.76f * scaleX, cy + u * 0.94f * scaleY
+            // 1. Cầu vai nhung đỏ bên trái ôm lấy vai ngoài (phía trước mở, không che bụng & tay)
+            val leftShoulder = Path().apply {
+                moveTo(cx - u * 0.40f * scaleX, cy - u * 0.18f * scaleY)
+                quadraticTo(
+                    cx - u * 0.28f * scaleX, cy - u * 0.12f * scaleY,
+                    cx - u * 0.22f * scaleX, cy - u * 0.08f * scaleY
+                )
+                quadraticTo(
+                    cx - u * 0.28f * scaleX, cy + u * 0.08f * scaleY,
+                    cx - u * 0.42f * scaleX, cy + u * 0.20f * scaleY
                 )
                 cubicTo(
-                    cx + u * 0.40f * scaleX, cy + u * 0.88f * scaleY,
-                    cx + u * 0.20f * scaleX, cy + u * 0.96f * scaleY,
-                    cx, cy + u * 0.92f * scaleY
+                    cx - u * 0.56f * scaleX, cy + u * 0.22f * scaleY,
+                    cx - u * 0.64f * scaleX, cy + u * 0.16f * scaleY,
+                    cx - u * 0.60f * scaleX, cy + u * 0.04f * scaleY
                 )
                 cubicTo(
-                    cx - u * 0.20f * scaleX, cy + u * 0.96f * scaleY,
-                    cx - u * 0.40f * scaleX, cy + u * 0.88f * scaleY,
-                    cx - u * 0.76f * scaleX, cy + u * 0.94f * scaleY
-                )
-                cubicTo(
-                    cx - u * 0.80f * scaleX, cy + u * 0.50f * scaleY,
-                    cx - u * 0.65f * scaleX, cy + u * 0.08f * scaleY,
-                    cx - u * 0.38f * scaleX, cy - u * 0.18f * scaleY
+                    cx - u * 0.56f * scaleX, cy - u * 0.08f * scaleY,
+                    cx - u * 0.50f * scaleX, cy - u * 0.15f * scaleY,
+                    cx - u * 0.40f * scaleX, cy - u * 0.18f * scaleY
                 )
                 close()
             }
-            drawPath(capePath, color = velvetRed)
-            drawPath(capePath, color = velvetDark, style = Stroke(width = strokeW * 0.85f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+            drawPath(leftShoulder, color = velvetRed)
+            drawPath(leftShoulder, color = velvetDark, style = Stroke(width = strokeW * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            val goldTrimLeft = Path().apply {
-                moveTo(cx - u * 0.32f * scaleX, cy - u * 0.14f * scaleY)
-                cubicTo(
-                    cx - u * 0.58f * scaleX, cy + u * 0.12f * scaleY,
-                    cx - u * 0.72f * scaleX, cy + u * 0.50f * scaleY,
-                    cx - u * 0.68f * scaleX, cy + u * 0.90f * scaleY
+            // Chỉ viền vàng cầu vai trái
+            val leftShoulderTrim = Path().apply {
+                moveTo(cx - u * 0.26f * scaleX, cy - u * 0.06f * scaleY)
+                quadraticTo(
+                    cx - u * 0.32f * scaleX, cy + u * 0.08f * scaleY,
+                    cx - u * 0.44f * scaleX, cy + u * 0.18f * scaleY
                 )
             }
-            val goldTrimRight = Path().apply {
-                moveTo(cx + u * 0.32f * scaleX, cy - u * 0.14f * scaleY)
+            drawPath(leftShoulderTrim, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
+
+            // 2. Cầu vai nhung đỏ bên phải đối xứng
+            val rightShoulder = Path().apply {
+                moveTo(cx + u * 0.40f * scaleX, cy - u * 0.18f * scaleY)
+                quadraticTo(
+                    cx + u * 0.28f * scaleX, cy - u * 0.12f * scaleY,
+                    cx + u * 0.22f * scaleX, cy - u * 0.08f * scaleY
+                )
+                quadraticTo(
+                    cx + u * 0.28f * scaleX, cy + u * 0.08f * scaleY,
+                    cx + u * 0.42f * scaleX, cy + u * 0.20f * scaleY
+                )
                 cubicTo(
-                    cx + u * 0.58f * scaleX, cy + u * 0.12f * scaleY,
-                    cx + u * 0.72f * scaleX, cy + u * 0.50f * scaleY,
-                    cx + u * 0.68f * scaleX, cy + u * 0.90f * scaleY
+                    cx + u * 0.56f * scaleX, cy + u * 0.22f * scaleY,
+                    cx + u * 0.64f * scaleX, cy + u * 0.16f * scaleY,
+                    cx + u * 0.60f * scaleX, cy + u * 0.04f * scaleY
+                )
+                cubicTo(
+                    cx + u * 0.56f * scaleX, cy - u * 0.08f * scaleY,
+                    cx + u * 0.50f * scaleX, cy - u * 0.15f * scaleY,
+                    cx + u * 0.40f * scaleX, cy - u * 0.18f * scaleY
+                )
+                close()
+            }
+            drawPath(rightShoulder, color = velvetRed)
+            drawPath(rightShoulder, color = velvetDark, style = Stroke(width = strokeW * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+
+            val rightShoulderTrim = Path().apply {
+                moveTo(cx + u * 0.26f * scaleX, cy - u * 0.06f * scaleY)
+                quadraticTo(
+                    cx + u * 0.32f * scaleX, cy + u * 0.08f * scaleY,
+                    cx + u * 0.44f * scaleX, cy + u * 0.18f * scaleY
                 )
             }
-            drawPath(goldTrimLeft, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
-            drawPath(goldTrimRight, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
+            drawPath(rightShoulderTrim, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
 
+            // 3. Khăn choàng cổ lông thú Ermine trắng muốt
             val furCollar = Path().apply {
                 moveTo(cx - u * 0.40f * scaleX, cy - u * 0.20f * scaleY)
                 quadraticTo(cx, cy - u * 0.06f * scaleY, cx + u * 0.40f * scaleX, cy - u * 0.20f * scaleY)
@@ -617,17 +759,34 @@ internal fun DrawScope.drawBodywearOnChibiCat(
                 close()
             }
             drawPath(furCollar, color = Color(0xFFFFF9F0))
-            drawPath(furCollar, color = velvetDark, style = Stroke(width = strokeW * 0.7f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+            drawPath(furCollar, color = velvetDark, style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            listOf(-0.24f, -0.10f, 0.10f, 0.24f).forEach { fx ->
-                drawCircle(color = Color(0xFF2C2424), radius = u * 0.016f, center = Offset(cx + fx * u * scaleX, cy - u * 0.08f * scaleY))
+            // 4. Các đốm lông hoàng gia Ermine màu đen tuyền
+            listOf(-0.25f, -0.10f, 0.10f, 0.25f).forEach { fx ->
+                val spotX = cx + fx * u * scaleX
+                val spotY = cy - u * 0.07f * scaleY
+                drawCircle(color = Color(0xFF2C2424), radius = u * 0.018f, center = Offset(spotX, spotY))
+                // Đuôi chóp nhỏ đặc trưng của lông chồn Ermine
+                val tailPath = Path().apply {
+                    moveTo(spotX - u * 0.008f, spotY + u * 0.010f)
+                    lineTo(spotX + u * 0.008f, spotY + u * 0.010f)
+                    lineTo(spotX, spotY + u * 0.028f)
+                    close()
+                }
+                drawPath(tailPath, color = Color(0xFF2C2424))
             }
 
-            val broochY = cy - u * 0.04f * scaleY
-            val broochR = u * 0.046f
+            // 5. Trâm cài hoàng gia bằng vàng nạm ngọc Ruby rực rỡ
+            val broochY = cy - u * 0.035f * scaleY
+            val broochR = u * 0.048f
             drawCircle(color = royalGold, radius = broochR, center = Offset(cx, broochY))
-            drawCircle(color = Color(0xFF7A5800), radius = broochR, center = Offset(cx, broochY), style = Stroke(width = strokeW * 0.5f))
-            drawCircle(color = Color(0xFFD90429), radius = broochR * 0.55f, center = Offset(cx, broochY))
+            drawCircle(color = goldOutline, radius = broochR, center = Offset(cx, broochY), style = Stroke(width = strokeW * 0.5f))
+
+            // Ngọc Ruby đỏ thắm ở tâm trâm cài
+            val rubyR = broochR * 0.58f
+            drawCircle(color = Color(0xFFD90429), radius = rubyR, center = Offset(cx, broochY))
+            // Điểm sáng phản chiếu trên viên ngọc
+            drawCircle(color = Color.White.copy(alpha = 0.9f), radius = rubyR * 0.30f, center = Offset(cx - rubyR * 0.35f, broochY - rubyR * 0.35f))
         }
     }
 }
