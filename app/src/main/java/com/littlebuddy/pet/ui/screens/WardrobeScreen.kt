@@ -15,6 +15,12 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -171,9 +177,10 @@ fun WardrobeScreen(
                         onSelectCategory = {
                             selectedCategory = it
                             inspectedItem = null
-                        }
+                        },
+                        compact = true
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     WardrobeItemsGrid(
                         category = selectedCategory,
                         petLevel = petState.level,
@@ -184,13 +191,15 @@ fun WardrobeScreen(
                             onSelectItem(item)
                         },
                         columns = 4,
+                        isLandscape = true,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth()
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     WardrobeBottomActions(
-                        onConfirm = onConfirm
+                        onConfirm = onConfirm,
+                        compact = true
                     )
                 }
             }
@@ -226,7 +235,8 @@ fun WardrobeScreen(
                     onSelectCategory = {
                         selectedCategory = it
                         inspectedItem = null
-                    }
+                    },
+                    compact = false
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -242,6 +252,7 @@ fun WardrobeScreen(
                         onSelectItem(item)
                     },
                     columns = 3,
+                    isLandscape = false,
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth()
@@ -251,7 +262,8 @@ fun WardrobeScreen(
 
                 // 5. Thanh nút Lưu thay đổi cố định đáy
                 WardrobeBottomActions(
-                    onConfirm = onConfirm
+                    onConfirm = onConfirm,
+                    compact = false
                 )
             }
         }
@@ -539,10 +551,11 @@ private fun EquippedTrayChip(
 @Composable
 private fun WardrobeCategoryFloatingTabs(
     selectedCategory: WardrobeCategory,
-    onSelectCategory: (WardrobeCategory) -> Unit
+    onSelectCategory: (WardrobeCategory) -> Unit,
+    compact: Boolean = false
 ) {
     Surface(
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(if (compact) 14.dp else 18.dp),
         color = SoftWhite,
         border = BorderStroke(1.dp, CardBorderColor.copy(alpha = 0.6f)),
         shadowElevation = 1.dp,
@@ -551,15 +564,15 @@ private fun WardrobeCategoryFloatingTabs(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .padding(if (compact) 3.dp else 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp)
         ) {
             WardrobeCategory.values().forEach { category ->
                 val isSelected = category == selectedCategory
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .clip(RoundedCornerShape(14.dp))
+                        .clip(RoundedCornerShape(if (compact) 10.dp else 14.dp))
                         .background(
                             if (isSelected) {
                                 Brush.horizontalGradient(listOf(Rosewood, Color(0xFFB55454)))
@@ -568,17 +581,17 @@ private fun WardrobeCategoryFloatingTabs(
                             }
                         )
                         .clickable { onSelectCategory(category) }
-                        .padding(vertical = 8.dp),
+                        .padding(vertical = if (compact) 5.dp else 8.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        horizontalArrangement = Arrangement.spacedBy(if (compact) 2.dp else 4.dp)
                     ) {
-                        Text(text = category.icon, fontSize = 13.sp)
+                        Text(text = category.icon, fontSize = if (compact) 11.sp else 13.sp)
                         Text(
                             text = category.displayName,
-                            fontSize = 11.5.sp,
+                            fontSize = if (compact) 10.5.sp else 11.5.sp,
                             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             color = if (isSelected) SoftWhite else MidnightLagoon.copy(alpha = 0.75f),
                             maxLines = 1,
@@ -592,7 +605,57 @@ private fun WardrobeCategoryFloatingTabs(
 }
 
 /**
- * Lưới hiển thị các vật phẩm theo danh mục
+ * Extension vẽ thanh cuộn dọc (vertical scrollbar) tự động cho LazyVerticalGrid
+ */
+private fun Modifier.drawVerticalScrollbar(
+    state: LazyGridState,
+    thumbColor: Color = Rosewood.copy(alpha = 0.6f),
+    trackColor: Color = Color(0x14000000),
+    barWidth: Dp = 4.dp
+): Modifier = this.drawWithContent {
+    drawContent()
+    val layoutInfo = state.layoutInfo
+    val totalItems = layoutInfo.totalItemsCount
+    val visibleItems = layoutInfo.visibleItemsInfo
+    if (totalItems > 0 && visibleItems.size < totalItems) {
+        val firstVisible = state.firstVisibleItemIndex
+        val lastVisible = visibleItems.lastOrNull()?.index ?: firstVisible
+        val visibleCount = (lastVisible - firstVisible + 1).coerceAtLeast(1)
+
+        val viewportHeight = size.height
+        val visibleFraction = (visibleCount.toFloat() / totalItems).coerceIn(0.12f, 0.85f)
+        val thumbHeight = (viewportHeight * visibleFraction).coerceAtLeast(24.dp.toPx())
+
+        val itemHeight = visibleItems.firstOrNull()?.size?.height ?: 1
+        val offsetFraction = if (itemHeight > 0) state.firstVisibleItemScrollOffset.toFloat() / itemHeight else 0f
+        val continuousFirstIndex = firstVisible + offsetFraction
+
+        val maxScrollable = (totalItems - visibleCount).coerceAtLeast(1)
+        val scrollFraction = (continuousFirstIndex / maxScrollable).coerceIn(0f, 1f)
+        val thumbY = (viewportHeight - thumbHeight) * scrollFraction
+
+        val wPx = barWidth.toPx()
+        val x = size.width - wPx - 1.dp.toPx()
+
+        // Đường ray nền cuộn
+        drawRoundRect(
+            color = trackColor,
+            topLeft = Offset(x, 0f),
+            size = Size(wPx, viewportHeight),
+            cornerRadius = CornerRadius(wPx / 2f)
+        )
+        // Con trượt cuộn
+        drawRoundRect(
+            color = thumbColor,
+            topLeft = Offset(x, thumbY),
+            size = Size(wPx, thumbHeight),
+            cornerRadius = CornerRadius(wPx / 2f)
+        )
+    }
+}
+
+/**
+ * Lưới hiển thị các vật phẩm theo danh mục với hỗ trợ thanh cuộn và layout ngang/dọc
  */
 @Composable
 private fun WardrobeItemsGrid(
@@ -602,15 +665,24 @@ private fun WardrobeItemsGrid(
     actualWardrobe: EquippedWardrobe,
     onSelectItem: (WardrobeItem) -> Unit,
     columns: Int,
+    isLandscape: Boolean = false,
     modifier: Modifier = Modifier
 ) {
     val itemsList = WardrobeRegistry.getItemsForCategory(category)
+    val gridState = rememberLazyGridState()
 
     LazyVerticalGrid(
+        state = gridState,
         columns = GridCells.Fixed(columns),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        modifier = modifier
+        horizontalArrangement = Arrangement.spacedBy(if (isLandscape) 6.dp else 10.dp),
+        verticalArrangement = Arrangement.spacedBy(if (isLandscape) 6.dp else 10.dp),
+        contentPadding = PaddingValues(
+            start = 2.dp,
+            end = 6.dp,
+            top = 2.dp,
+            bottom = if (isLandscape) 18.dp else 24.dp
+        ),
+        modifier = modifier.drawVerticalScrollbar(gridState)
     ) {
         items(itemsList, key = { it.id }) { item ->
             val isLocked = petLevel < item.levelRequired
@@ -622,6 +694,7 @@ private fun WardrobeItemsGrid(
                 isLocked = isLocked,
                 isPreviewEquipped = isPreviewEquipped,
                 isActuallyEquipped = isActuallyEquipped,
+                compact = isLandscape,
                 onClick = { onSelectItem(item) }
             )
         }
@@ -634,6 +707,7 @@ private fun WardrobeItemCard(
     isLocked: Boolean,
     isPreviewEquipped: Boolean,
     isActuallyEquipped: Boolean,
+    compact: Boolean = false,
     onClick: () -> Unit
 ) {
     val borderColor = when {
@@ -641,7 +715,7 @@ private fun WardrobeItemCard(
         isActuallyEquipped -> SageLeaf
         else -> CardBorderColor.copy(alpha = 0.8f)
     }
-    val borderWidth = if (isPreviewEquipped) 2.dp else if (isActuallyEquipped) 1.5.dp else 1.dp
+    val borderWidth = if (isPreviewEquipped) (if (compact) 1.5.dp else 2.dp) else if (isActuallyEquipped) 1.5.dp else 1.dp
     val bgColor = when {
         isPreviewEquipped -> Color(0xFFFFF0EC)
         isActuallyEquipped -> Color(0xFFF2F8F5)
@@ -649,26 +723,28 @@ private fun WardrobeItemCard(
         else -> SoftWhite
     }
 
+    val cardShape = RoundedCornerShape(if (compact) 14.dp else 20.dp)
+
     Surface(
-        shape = RoundedCornerShape(20.dp),
+        shape = cardShape,
         color = bgColor,
         border = BorderStroke(borderWidth, borderColor),
-        shadowElevation = if (isPreviewEquipped) 3.dp else 1.dp,
+        shadowElevation = if (isPreviewEquipped) (if (compact) 2.dp else 3.dp) else 1.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(cardShape)
             .clickable(onClick = onClick)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp),
+                    .padding(horizontal = if (compact) 4.dp else 8.dp, vertical = if (compact) 5.dp else 8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
                     modifier = Modifier
-                        .size(62.dp)
+                        .size(if (compact) 44.dp else 62.dp)
                         .clip(CircleShape)
                         .background(Color(0xFFFBF6EE)),
                     contentAlignment = Alignment.Center
@@ -676,16 +752,17 @@ private fun WardrobeItemCard(
                     WardrobeItemThumbnail(
                         item = item,
                         isLocked = isLocked,
-                        modifier = Modifier.size(54.dp)
+                        modifier = Modifier.size(if (compact) 38.dp else 54.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(if (compact) 3.dp else 6.dp))
 
                 // Tên vật phẩm
                 Text(
                     text = item.name,
-                    style = MaterialTheme.typography.labelMedium,
+                    style = if (compact) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium,
+                    fontSize = if (compact) 11.sp else 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = if (isLocked) MidnightLagoon.copy(alpha = 0.55f) else MidnightLagoon,
                     textAlign = TextAlign.Center,
@@ -699,29 +776,29 @@ private fun WardrobeItemCard(
                 when {
                     isPreviewEquipped -> {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(if (compact) 6.dp else 8.dp),
                             color = Rosewood
                         ) {
                             Text(
                                 text = "Đang thử",
                                 color = SoftWhite,
-                                fontSize = 9.sp,
+                                fontSize = if (compact) 8.sp else 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.5.dp)
+                                modifier = Modifier.padding(horizontal = if (compact) 4.dp else 6.dp, vertical = 1.dp)
                             )
                         }
                     }
                     isActuallyEquipped -> {
                         Surface(
-                            shape = RoundedCornerShape(8.dp),
+                            shape = RoundedCornerShape(if (compact) 6.dp else 8.dp),
                             color = SageLeaf
                         ) {
                             Text(
                                 text = "Đang mặc",
                                 color = SoftWhite,
-                                fontSize = 9.sp,
+                                fontSize = if (compact) 8.sp else 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 1.5.dp)
+                                modifier = Modifier.padding(horizontal = if (compact) 4.dp else 6.dp, vertical = 1.dp)
                             )
                         }
                     }
@@ -729,7 +806,7 @@ private fun WardrobeItemCard(
                         Text(
                             text = "Cần Cấp ${item.levelRequired}",
                             color = Color(0xFF948177),
-                            fontSize = 9.5.sp,
+                            fontSize = if (compact) 8.5.sp else 9.5.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -737,7 +814,7 @@ private fun WardrobeItemCard(
                         Text(
                             text = "Sẵn sàng",
                             color = SageLeaf.copy(alpha = 0.85f),
-                            fontSize = 9.5.sp,
+                            fontSize = if (compact) 8.5.sp else 9.5.sp,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -746,12 +823,18 @@ private fun WardrobeItemCard(
 
             if (isLocked) {
                 Surface(
-                    shape = RoundedCornerShape(topEnd = 18.dp, bottomStart = 10.dp),
+                    shape = RoundedCornerShape(
+                        topEnd = if (compact) 14.dp else 18.dp,
+                        bottomStart = if (compact) 8.dp else 10.dp
+                    ),
                     color = Color(0xCC3D3436),
                     modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 2.dp),
+                        modifier = Modifier.padding(
+                            horizontal = if (compact) 4.dp else 5.dp,
+                            vertical = if (compact) 1.5.dp else 2.dp
+                        ),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
@@ -759,12 +842,12 @@ private fun WardrobeItemCard(
                             imageVector = Icons.Rounded.Lock,
                             contentDescription = "Khóa",
                             tint = Color(0xFFFFD166),
-                            modifier = Modifier.size(10.dp)
+                            modifier = Modifier.size(if (compact) 8.dp else 10.dp)
                         )
                         Text(
                             text = "Lv.${item.levelRequired}",
                             color = SoftWhite,
-                            fontSize = 8.5.sp,
+                            fontSize = if (compact) 7.5.sp else 8.5.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -776,15 +859,15 @@ private fun WardrobeItemCard(
                     color = Rosewood,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                        .size(16.dp)
+                        .padding(if (compact) 3.dp else 4.dp)
+                        .size(if (compact) 14.dp else 16.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = "Đang thử",
                             tint = SoftWhite,
-                            modifier = Modifier.size(11.dp)
+                            modifier = Modifier.size(if (compact) 9.dp else 11.dp)
                         )
                     }
                 }
@@ -795,15 +878,15 @@ private fun WardrobeItemCard(
                     color = SageLeaf,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(4.dp)
-                        .size(16.dp)
+                        .padding(if (compact) 3.dp else 4.dp)
+                        .size(if (compact) 14.dp else 16.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Rounded.Check,
                             contentDescription = "Đang mặc",
                             tint = SoftWhite,
-                            modifier = Modifier.size(11.dp)
+                            modifier = Modifier.size(if (compact) 9.dp else 11.dp)
                         )
                     }
                 }
@@ -812,13 +895,13 @@ private fun WardrobeItemCard(
     }
 }
 
-
 @Composable
 private fun WardrobeBottomActions(
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    compact: Boolean = false
 ) {
     Surface(
-        shape = RoundedCornerShape(22.dp),
+        shape = RoundedCornerShape(if (compact) 16.dp else 22.dp),
         color = SoftWhite,
         border = BorderStroke(1.dp, CardBorderColor.copy(alpha = 0.6f)),
         shadowElevation = 4.dp,
@@ -827,11 +910,14 @@ private fun WardrobeBottomActions(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp)
+                .padding(
+                    horizontal = if (compact) 10.dp else 14.dp,
+                    vertical = if (compact) 6.dp else 10.dp
+                )
         ) {
             Button(
                 onClick = onConfirm,
-                shape = RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(if (compact) 14.dp else 18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Rosewood,
                     contentColor = SoftWhite
@@ -839,13 +925,13 @@ private fun WardrobeBottomActions(
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(46.dp)
+                    .height(if (compact) 38.dp else 46.dp)
             ) {
                 Text(
                     text = "Lưu thay đổi",
                     color = SoftWhite,
                     fontWeight = FontWeight.Bold,
-                    fontSize = 14.sp
+                    fontSize = if (compact) 13.sp else 14.sp
                 )
             }
         }
