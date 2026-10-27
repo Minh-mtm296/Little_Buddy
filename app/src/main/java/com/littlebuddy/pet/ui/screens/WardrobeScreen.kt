@@ -85,8 +85,7 @@ import com.littlebuddy.pet.wardrobe.WardrobeItem
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 
 /**
- * Màn hình Tủ đồ & Cá nhân hóa thú cưng (Wardrobe & Dressing Studio)
- * Phong cách thiết kế hiện đại, ấm áp, tinh tế và chuẩn responsive cả Portrait lẫn Landscape.
+ * Màn hình Tủ đồ & Cá nhân hóa thú cưng.
  */
 @Composable
 fun WardrobeScreen(
@@ -102,8 +101,7 @@ fun WardrobeScreen(
     var selectedCategory by remember { mutableStateOf(WardrobeCategory.FUR_SKIN) }
     var inspectedItem by remember { mutableStateOf<WardrobeItem?>(null) }
 
-    // Hoạt ảnh thở phập phồng & vẫy đuôi nhẹ nhàng trên sân khấu thử đồ
-    val infiniteTransition = rememberInfiniteTransition(label = "wardrobe_anim")
+        val infiniteTransition = rememberInfiniteTransition(label = "wardrobe_anim")
     val breatheScale by infiniteTransition.animateFloat(
         initialValue = 0.985f,
         targetValue = 1.015f,
@@ -132,7 +130,7 @@ fun WardrobeScreen(
         val isLandscape = maxWidth > maxHeight
 
         if (isLandscape) {
-            // ── BỐ CỤC XOAY NGANG (LANDSCAPE RESPONSIVE) ─────────────────────────
+
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -201,7 +199,7 @@ fun WardrobeScreen(
                 }
             }
         } else {
-            // ── BỐ CỤC XOAY DỌC (PORTRAIT) ──────────────────────────────────────
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()

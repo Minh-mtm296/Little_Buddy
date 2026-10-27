@@ -192,7 +192,7 @@ private fun DrawScope.drawStandingChibiCat(
         drawCuteCatTail(cx, cy, u, tailWag = 0f, strokeW, palette)
     }
 
-    // ── BƯỚC 3: Hai chân sau ngắn đỡ ở đáy sàn ──
+    // Chân sau
     drawShortHindFeet(
         cx = cx,
         cy = cy,
@@ -205,14 +205,14 @@ private fun DrawScope.drawStandingChibiCat(
         hindLiftR = pose.hindLiftR
     )
 
-    // ── BƯỚC 4: Toàn bộ thân trên mèo (Tai, Thân, Tay, Đầu) liên kết chung khung xương ──
+    // Thân trên, tai, tay và đầu
     val bodyFillPath = createStandingBodyFillPath(cx, cy, u)
 
     withTransform({
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
         translate(0f, pose.bodyBob * u)
     }) {
-        // 4a. Hai tai mèo (vẽ trước thân để chân tai nằm ẩn sau gáy, luôn dính liền đỉnh đầu)
+        // Tai mèo
         drawCuteCatEars(
             cx = cx,
             cy = cy,
@@ -224,16 +224,16 @@ private fun DrawScope.drawStandingChibiCat(
             earR = pose.earR
         )
 
-        // 4b. Khối thân hình chuông ú mập
+        // Khối thân
         clipPath(bodyFillPath) {
-            // Nền lông theo Skin được chọn
+            
             drawPath(bodyFillPath, color = palette.bodyColor)
 
             if (wardrobe.furSkinId == WardrobeRegistry.ID_FUR_CALICO) {
                 drawCalicoBodyPatches(cx, cy, u, palette = palette)
             }
 
-            // Bóng mềm ở đáy bụng
+            // Bóng đáy bụng
             val bottomShade = Path().apply {
                 moveTo(cx - u * 0.65f, cy + u * 0.82f)
                 quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f, cy + u * 0.82f)
@@ -244,13 +244,13 @@ private fun DrawScope.drawStandingChibiCat(
             drawPath(bottomShade, color = palette.bellyColor.copy(alpha = 0.55f))
         }
 
-        // Viền thân màu viền theo Skin
+        // Viền thân
         drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor)
 
-        // Trang phục thân người (Bodywear: Áo len, yếm...)
+        // Trang phục thân
         drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
 
-        // 4c. Hai bàn tay trước co tròn trước ngực
+        // Hai bàn tay trước
         drawCurledFrontPaws(
             cx = cx,
             cy = cy,
@@ -262,7 +262,7 @@ private fun DrawScope.drawStandingChibiCat(
             reach = pose.pawReach
         )
 
-        // 4d. Khuôn mặt, mắt, mũi, miệng và phụ kiện đầu/cổ
+        // Khuôn mặt và phụ kiện
         withTransform({
             translate(0f, pose.headDip * u)
             rotate(pose.headTilt, pivot = Offset(cx, cy - 0.25f * u))

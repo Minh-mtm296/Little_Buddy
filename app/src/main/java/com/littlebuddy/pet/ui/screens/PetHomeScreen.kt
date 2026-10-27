@@ -85,15 +85,7 @@ import com.littlebuddy.pet.ui.viewmodel.PetViewModel
 private val RoomFrameBrown = Color(0xFF6E5240)
 
 /**
- * Màn hình chính Little Buddy — Virtual Pet
- *
- * Tích hợp hệ thống Hoạt họa Đa Khớp Xương (Procedural Animation) bằng Jetpack Compose Canvas:
- * - 100% Canvas vector mượt mà 60 FPS, không sử dụng ảnh PNG tĩnh gây cứng nhắc.
- * - Mèo quay đầu theo chiều di chuyển (quay phải khi tới bát ăn, quay trái khi về đệm).
- * - Bước chân so le, thân lắc lư nhấp nhô nhịp bước khi đi bộ.
- * - Nằm cuộn tròn ngủ thực sự trên đệm với nhịp thở sâu chậm rãi.
- * - Chuỗi động tác vươn vai (stretching) duỗi 2 chân trước trước khi thức dậy đi ra phòng.
- * - Phản ứng vuốt ve gầm gừ purr vibration, híp mắt cười hạnh phúc ^ ^ và trái tim bay lượn.
+ * Màn hình chính của Little Buddy.
  */
 @Composable
 fun PetHomeScreen(
@@ -113,14 +105,9 @@ fun PetHomeScreen(
     var showYarnGame by remember { mutableStateOf(false) }
     var showFeatherGame by remember { mutableStateOf(false) }
 
-    // Quản lý animation đa tầng thời gian thực
     val animValues = rememberPetAnimationState(petState = petState, actionState = actionState)
 
-    // Vị trí di chuyển ngang mượt mà điều khiển trực tiếp bởi ViewModel theo tốc độ thật
     val animatedCatX = catPositionX
-
-    // Feedback tự ẩn đã được xử lý bởi PetViewModel.showFeedback(autoDismissMs) —
-    // không cần LaunchedEffect tại đây để tránh cancel kép.
 
     if (showWardrobe) {
         WardrobeScreen(
@@ -268,8 +255,6 @@ fun PetHomeScreen(
             }
         }
     }
-
-    // ── DIALOGS ──────────────────────────────────────────────────────────────
 
     if (showProfileDialog) {
         PetProfileDialog(

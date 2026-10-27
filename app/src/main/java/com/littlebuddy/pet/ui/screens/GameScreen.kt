@@ -87,10 +87,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-// ═══════════════════════════════════════════════════════════════════
-// BẢNG CHỌN TRÒ CHƠI
-// ═══════════════════════════════════════════════════════════════════
-
 /** Số lần bắt cần thiết để kết thúc 1 mini-game và hiện Victory Card */
 private const val GAME_MAX_CATCH = 3
 
@@ -223,10 +219,6 @@ private fun GameCard(
         }
     }
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// BẢNG TỔNG KẾT CHIẾN THẮNG (VICTORY POPUP)
-// ═══════════════════════════════════════════════════════════════════
 
 @Composable
 fun GameVictoryCard(
@@ -364,10 +356,6 @@ private fun RewardBadge(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// TRÒ CHƠI A: ĐUỔI BẮT CUỘN LEN (YARN CHASE)
-// ═══════════════════════════════════════════════════════════════════
-
 /**
  * Màn hình mini-game Đuổi bắt cuộn len.
  * Đồng bộ nhân vật Mèo Chibi Canvas thật của bé mèo (giữ Skin + phụ kiện mũ/nơ).
@@ -431,11 +419,9 @@ fun YarnChaseGame(
             // Hướng mặt mèo quay về cuộn len
             facingDir = if (targetX >= catPosX.value) 1f else -1f
 
-            // ── BƯỚC 1: Crouch (Nhún người lấy đà) ──
             catScaleY.animateTo(0.78f, tween(150, easing = FastOutSlowInEasing))
             catScaleX.animateTo(1.18f, tween(150, easing = FastOutSlowInEasing))
 
-            // ── BƯỚC 2: Parabolic Leap (Phóng vọt parabol) ──
             val startX = catPosX.value
             val startY = catPosY.value
             val landX = (targetX - (facingDir * 32f)).coerceIn(40f, arenaW - 40f)
@@ -468,7 +454,6 @@ fun YarnChaseGame(
                 delay(stepDelay)
             }
 
-            // ── BƯỚC 3: Land & Catch (Tiếp đất vồ trúng) ──
             isCatchSuccess = true
             catchCount++
 
@@ -681,10 +666,6 @@ fun YarnChaseGame(
         }
     }
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// TRÒ CHƠI B: SĂN LÔNG VŨ (FEATHER HUNT)
-// ═══════════════════════════════════════════════════════════════════
 
 /**
  * Màn hình mini-game Săn lông vũ.
@@ -982,10 +963,6 @@ fun FeatherHuntGame(
         }
     }
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// CÁC HÀM VẼ CANVAS VECTOR CHO MINI-GAME
-// ═══════════════════════════════════════════════════════════════════
 
 /** Vẽ cuộn len có vân chỉ cuộn tròn và đuôi len uốn lượn */
 private fun DrawScope.drawYarnBall(

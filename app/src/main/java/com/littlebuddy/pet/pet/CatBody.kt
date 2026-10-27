@@ -24,60 +24,49 @@ private fun Path.appendStandingBodyContour(
     scaleX: Float,
     scaleY: Float
 ) {
-    // Má phải phúng phính
     cubicTo(
         cx + u * 0.43f * scaleX, cy - u * 0.55f * scaleY,
         cx + u * 0.46f * scaleX, cy - u * 0.46f * scaleY,
         cx + u * 0.47f * scaleX, cy - u * 0.38f * scaleY
     )
-    // Tép lông nhỏ má phải
     lineTo(cx + u * 0.50f * scaleX, cy - u * 0.35f * scaleY)
     lineTo(cx + u * 0.47f * scaleX, cy - u * 0.30f * scaleY)
 
-    // Thân & sườn phải nở dần liên tục xuống (DÁNG CHUÔNG Ú MẬP, KHÔNG THẮT EO)
     cubicTo(
         cx + u * 0.48f * scaleX, cy - u * 0.15f * scaleY,
         cx + u * 0.54f * scaleX, cy + u * 0.05f * scaleY,
         cx + u * 0.58f * scaleX, cy + u * 0.25f * scaleY
     )
-    // Bụng dưới phải ú tròn phình rộng tối đa
     cubicTo(
         cx + u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
         cx + u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
         cx + u * 0.67f * scaleX, cy + u * 0.88f * scaleY
     )
-    // Bo góc đáy phải
     cubicTo(
         cx + u * 0.63f * scaleX, cy + u * 0.98f * scaleY,
         cx + u * 0.52f * scaleX, cy + u * 1.02f * scaleY,
         cx + u * 0.25f * scaleX, cy + u * 1.02f * scaleY
     )
-    // Đáy bụng giữa 2 chân sau
     lineTo(cx - u * 0.25f * scaleX, cy + u * 1.02f * scaleY)
 
-    // Bo góc đáy trái
     cubicTo(
         cx - u * 0.52f * scaleX, cy + u * 1.02f * scaleY,
         cx - u * 0.63f * scaleX, cy + u * 0.98f * scaleY,
         cx - u * 0.67f * scaleX, cy + u * 0.88f * scaleY
     )
-    // Bụng dưới trái ú tròn phình rộng
     cubicTo(
         cx - u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
         cx - u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
         cx - u * 0.58f * scaleX, cy + u * 0.25f * scaleY
     )
-    // Sườn trái nở dần
     cubicTo(
         cx - u * 0.54f * scaleX, cy + u * 0.05f * scaleY,
         cx - u * 0.48f * scaleX, cy - u * 0.15f * scaleY,
         cx - u * 0.47f * scaleX, cy - u * 0.30f * scaleY
     )
-    // Tép lông nhỏ má trái
     lineTo(cx - u * 0.50f * scaleX, cy - u * 0.35f * scaleY)
     lineTo(cx - u * 0.47f * scaleX, cy - u * 0.38f * scaleY)
 
-    // Má trái lên gốc ngoài tai trái
     cubicTo(
         cx - u * 0.46f * scaleX, cy - u * 0.46f * scaleY,
         cx - u * 0.43f * scaleX, cy - u * 0.55f * scaleY,
@@ -86,9 +75,7 @@ private fun Path.appendStandingBodyContour(
 }
 
 /**
- * Đường bao điền thân đứng (dáng chuông ú tròn, không thắt eo).
- * Là một đường khép kín đơn duy nhất (single contour) ôm trọn từ đỉnh đầu,
- * trán, hai má, sườn đến đáy bụng, đảm bảo phủ kín 100% màu lông.
+ * Đường bao điền thân đứng dáng chuông liền mạch từ đầu đến bụng.
  */
 internal fun createStandingBodyFillPath(
     cx: Float,
@@ -97,25 +84,18 @@ internal fun createStandingBodyFillPath(
     scaleX: Float = 1f,
     scaleY: Float = 1f
 ): Path = Path().apply {
-    // 1. Đỉnh đầu giữa 2 tai
     moveTo(cx - u * 0.16f * scaleX, cy - u * 0.86f * scaleY)
     quadraticTo(cx, cy - u * 0.88f * scaleY, cx + u * 0.16f * scaleX, cy - u * 0.86f * scaleY)
 
-    // 2. Nối liền ra gốc ngoài tai phải
     lineTo(cx + u * 0.39f * scaleX, cy - u * 0.65f * scaleY)
 
-    // 3. Chu vi thân vòng qua sườn phải, đáy bụng, sang sườn trái đến gốc ngoài tai trái
     appendStandingBodyContour(cx, cy, u, scaleX, scaleY)
 
-    // 4. Đóng đường dẫn liền mạch về điểm xuất phát (gốc trong tai trái)
     close()
 }
 
 /**
- * Vẽ viền thân chuẩn:
- * - Viền đỉnh đầu giữa 2 tai
- * - Viền thân từ gốc ngoài tai phải qua má, sườn, đáy bụng sang má trái
- * Không có nét viền cắt ngang qua gốc tai để hai tai liền mạch với đầu.
+ * Vẽ viền thân ngoài của mèo.
  */
 internal fun DrawScope.drawStandingBodyOutline(
     cx: Float,
@@ -128,14 +108,12 @@ internal fun DrawScope.drawStandingBodyOutline(
 ) {
     val style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
-    // 1. Viền đỉnh đầu giữa 2 tai
     val headTop = Path().apply {
         moveTo(cx - u * 0.16f * scaleX, cy - u * 0.86f * scaleY)
         quadraticTo(cx, cy - u * 0.88f * scaleY, cx + u * 0.16f * scaleX, cy - u * 0.86f * scaleY)
     }
     drawPath(headTop, color = outlineColor, style = style)
 
-    // 2. Viền thân từ gốc ngoài tai phải, qua má, sườn, đáy bụng sang má trái
     val bodyPerimeter = Path().apply {
         moveTo(cx + u * 0.39f * scaleX, cy - u * 0.65f * scaleY)
         appendStandingBodyContour(cx, cy, u, scaleX, scaleY)
@@ -159,7 +137,6 @@ internal fun DrawScope.drawCuteCatEars(
 ) {
     val style = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
-    // ── Tai trái: khối màu theo skin, xoay quanh gốc tai trái ──
     val effEarL = if (earL != 0f) earL else earWiggle
     withTransform({
         rotate(effEarL, pivot = Offset(cx - u * 0.28f, cy - u * 0.76f))
@@ -206,7 +183,6 @@ internal fun DrawScope.drawCuteCatEars(
         drawPath(leftEarStroke, color = palette.outlineColor, style = style)
     }
 
-    // ── Tai phải: khối màu theo skin, xoay quanh gốc tai phải ──
     val effEarR = if (earR != 0f) earR else -earWiggle
     withTransform({
         rotate(effEarR, pivot = Offset(cx + u * 0.28f, cy - u * 0.76f))

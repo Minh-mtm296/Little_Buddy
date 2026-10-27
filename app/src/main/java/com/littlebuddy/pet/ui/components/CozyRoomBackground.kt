@@ -25,9 +25,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.dp
 
-// ═════════════════════════════════════════════════════════════════════════════
-// BẢNG MÀU CĂN PHÒNG ẤM CÚNG (CHUẨN THEO HÌNH MẪU BÊN PHẢI)
-// ═════════════════════════════════════════════════════════════════════════════
 private val WallStripeLight = Color(0xFFFCF6E6)
 private val WallStripeDark = Color(0xFFF0EAD8)
 private val WainscotBg = Color(0xFFEAE2CE)
@@ -56,15 +53,7 @@ private val PlaidCream = Color(0xFFFFF7E4)
 private val PlaidGreen = Color(0xFF9EB584)
 
 /**
- * Background căn phòng ấm cúng vẽ bằng Compose Canvas theo đúng bố cục hình mẫu bên phải:
- * - Tường kẻ sọc kem & phào chân tường cổ điển
- * - Sàn gạch bông màu kem nâu ấm
- * - Cửa sổ gỗ mái vòm nhọn bên trái nhìn ra rừng thu + rèm ren + chậu cây rủ
- * - Giường gỗ tai mèo trải chăn caro ở góc trái dưới
- * - Đèn cây cổ điển tỏa ánh sáng vàng ấm áp (có hiệu ứng lung linh nhẹ)
- * - Kệ gỗ cốc hoa, khung tranh nấm, khung tranh bí ngô & bộ 3 tranh nhỏ trên tường
- * - Bàn tủ gỗ phủ khăn đỏ + Ghế bành sofa caro hồng ở góc phải dưới
- * - Thảm tròn xanh sage điểm hoa nhỏ dưới sàn nơi mèo đứng
+ * Hình nền căn phòng ấm cúng vẽ bằng Compose Canvas.
  */
 @Composable
 fun CozyRoomBackground(modifier: Modifier = Modifier) {
@@ -97,32 +86,23 @@ fun CozyRoomBackground(modifier: Modifier = Modifier) {
             val h = size.height
             val horizonY = h * 0.40f // Hạ chân tường xuống 40%, sàn rộng chiếm 60%
 
-            // 1. Tường sọc dọc & Phào chân tường + Đèn dây đom đóm ấm áp
-            drawStripedWallAndWainscot(w, h, horizonY)
+                    drawStripedWallAndWainscot(w, h, horizonY)
 
-            // 2. Sàn gạch bông hoa văn rộng rãi
-            drawPatternedTileFloor(w, h, horizonY)
+                    drawPatternedTileFloor(w, h, horizonY)
 
-            // 3. Thảm tròn xanh sage viền hoa ở giữa sàn nơi mèo đứng
-            drawRoundFloralRug(w, h)
+                    drawRoundFloralRug(w, h)
 
-            // 4. Cửa sổ gỗ vòm nhọn mùa thu + Rèm ren (Góc trên trái)
-            drawGothicAutumnWindow(w, h)
+                    drawGothicAutumnWindow(w, h)
 
-            // 5. Cụm đồ trang trí Gallery Wall & Kệ gỗ gắn kết
-            drawWallFramesAndShelf(w, h)
+                    drawWallFramesAndShelf(w, h)
 
-            // 6. Bàn tủ gỗ & Ghế sofa ở góc phải sàn
-            drawRightCabinetAndArmchair(w, h)
+                    drawRightCabinetAndArmchair(w, h)
 
-            // 7. Đèn cây cổ điển (thân đèn, không glow)
-            drawVintageFloorLamp(w, h)
+                    drawVintageFloorLamp(w, h)
 
-            // 8. Giường gỗ tai mèo & Chăn caro (Góc dưới trái)
-            drawCatEarWoodenBed(w, h)
+                    drawCatEarWoodenBed(w, h)
 
-            // 9. Đồ vật trang trí trên sàn (Cột cào móng, chậu cây)
-            drawFloorAccessories(w, h)
+                    drawFloorAccessories(w, h)
         }
 
         // Lớp động: chỉ nắng, quầng đèn, bụi

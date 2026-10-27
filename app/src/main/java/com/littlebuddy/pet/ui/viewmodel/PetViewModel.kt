@@ -21,16 +21,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
- * ViewModel quản lý logic tương tác và trạng thái của Little Buddy.
- *
- * State Machine hành động vật lý (actionState):
- * - IDLE: Đứng yên tại vị trí trung tâm (catPositionX = 0.5f), thở phập phồng nhẹ.
- * - WALKING: Mèo đang di chuyển với bước chân so le, hướng thân xoay theo facingDirection.
- * - EATING: Đang ăn tại bát, đầu gật gù nhai nhóp nhép.
- * - SLEEPING: Nằm cuộn tròn trên đệm, thở sâu chậm rãi, Zzz bay lượn.
- * - WAKING_UP / STRETCHING: Tỉnh giấc, duỗi 2 chân trước, cong lưng vươn vai rồi mới đi ra.
- * - PLAYING: Đang trong mini-game.
- * - PETTING: Đang được vuốt ve (rung rinh purr vibration, híp mắt hạnh phúc, tim bay).
+ * ViewModel quản lý logic tương tác, hoạt ảnh và trạng thái của thú cưng.
  */
 class PetViewModel(
     private val repository: PetRepository
@@ -39,35 +30,35 @@ class PetViewModel(
     private val _petState = MutableStateFlow(repository.getInitialPetState())
     val petState: StateFlow<PetState> = _petState.asStateFlow()
 
-    /** Trạng thái hành động vật lý hiện tại của mèo */
+    
     private val _actionState = MutableStateFlow(PetActionState.IDLE)
     val actionState: StateFlow<PetActionState> = _actionState.asStateFlow()
 
-    /** Vị trí ngang của mèo (0.0 = cạnh trái, 1.0 = cạnh phải) — dùng để animation đi bộ */
+    // Vị trí ngang (0.0: cạnh trái, 1.0: cạnh phải)
     private val _catPositionX = MutableStateFlow(0.5f)
     val catPositionX: StateFlow<Float> = _catPositionX.asStateFlow()
 
-    /** Hướng nhìn của mèo: 1f = nhìn sang phải, -1f = nhìn sang trái (xoay theo chiều đi) */
+    // 1f: nhìn phải, -1f: nhìn trái
     private val _facingDirection = MutableStateFlow(1f)
     val facingDirection: StateFlow<Float> = _facingDirection.asStateFlow()
 
-    /** Nội dung bát thức ăn trong phòng */
+    
     private val _bowlFood = MutableStateFlow(BowlFood.EMPTY)
     val bowlFood: StateFlow<BowlFood> = _bowlFood.asStateFlow()
 
-    /** Điều khiển hiển thị tủ đồ phụ kiện */
+    
     private val _showWardrobe = MutableStateFlow(false)
     val showWardrobe: StateFlow<Boolean> = _showWardrobe.asStateFlow()
 
-    /** Trạng thái tủ đồ đang thử (Live Preview) trong màn hình Wardrobe */
+    // Trạng thái live preview trong tủ đồ
     private val _previewWardrobe = MutableStateFlow(repository.getInitialPetState().wardrobe)
     val previewWardrobe: StateFlow<com.littlebuddy.pet.wardrobe.EquippedWardrobe> = _previewWardrobe.asStateFlow()
 
-    /** Điều khiển hiển thị bảng chọn thức ăn */
+    
     private val _showFoodPicker = MutableStateFlow(false)
     val showFoodPicker: StateFlow<Boolean> = _showFoodPicker.asStateFlow()
 
-    /** Điều khiển hiển thị bảng chọn trò chơi */
+    
     private val _showGamePicker = MutableStateFlow(false)
     val showGamePicker: StateFlow<Boolean> = _showGamePicker.asStateFlow()
 
@@ -87,10 +78,10 @@ class PetViewModel(
      */
     private var lastForegroundTimestamp: Long = System.currentTimeMillis()
 
-    /** Thời điểm vuốt mèo đang ngủ gần nhất */
+    
     private var lastSleepPetAt: Long = 0L
 
-    /** Thời điểm tương tác gần nhất để chống spam miễn phí */
+    // Chống spam tương tác
     private var lastDrinkTimestamp: Long = 0L
     private var lastYarnTimestamp: Long = 0L
 
@@ -100,13 +91,11 @@ class PetViewModel(
      */
     private var activeMeal: BowlFood? = null
 
-    // Vị trí bát thức ăn (bên phải phòng)
     val bowlPositionX = 0.72f
-    // Vị trí đệm ngủ (sát góc trái phòng trên giường gỗ)
     val bedPositionX = 0.02f
 
     init {
-        // Tự động ẩn phản hồi ở một chỗ duy nhất sau 3.5s
+        // Tự động ẩn thông báo sau 3.5s
         viewModelScope.launch {
             _petState.map { it.feedbackMessage }
                 .distinctUntilChanged()
@@ -118,7 +107,7 @@ class PetViewModel(
                 }
         }
 
-        // Ticker định kỳ 60s cập nhật chỉ số suy giảm & hồi phục thống nhất
+        // Chu kỳ 60s cập nhật chỉ số
         startStatsTicker()
 
         if (_petState.value.isSleeping) {
@@ -163,20 +152,15 @@ class PetViewModel(
         _catPositionX.value = target
     }
 
-    /** Xóa thông điệp phản hồi */
     fun clearFeedback() {
         _petState.update { it.copy(feedbackMessage = "") }
     }
 
-    /** Hiển thị phản hồi — tự động ẩn sau 3.5s qua cơ chế collectLatest trong init{} */
     fun showFeedback(msg: String, autoDismissMs: Long = 3000L) {
         _petState.update { it.copy(feedbackMessage = msg) }
     }
 
-    /**
-     * Vòng lặp cử động tự nhiên khi mèo rảnh (IDLE):
-     * Thỉnh thoảng nhìn quanh, đi dạo vài bước nhẹ trên thảm hoặc kêu meo meo.
-     */
+    // Hành vi ngẫu nhiên khi mèo ở trạng thái rảnh
     private fun startIdleLifeCycle() {
         idleLifeJob?.cancel()
         idleLifeJob = viewModelScope.launch {
@@ -215,16 +199,12 @@ class PetViewModel(
         }
     }
 
-    /**
-     * Kiểm tra mèo có đang rảnh để nhận tương tác phụ (uống nước, vờn len, cào móng, vuốt ve).
-     * Chỉ cho phép khi đang IDLE hoặc PETTING và không ngủ.
-     */
+    // Kiểm tra mèo có rảnh để thực hiện tương tác phụ không
     private fun isFreeForSideAction(): Boolean {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) return false
         return _actionState.value == PetActionState.IDLE || _actionState.value == PetActionState.PETTING
     }
 
-    /** Uống nước từ bát nước bên cạnh bát thức ăn */
     fun drinkWater() {
         if (!isFreeForSideAction()) return
         val now = System.currentTimeMillis()
@@ -246,7 +226,6 @@ class PetViewModel(
         repository.persistPetState(_petState.value)
     }
 
-    /** Tương tác cuộn len trên sàn */
     fun playWithYarn() {
         if (!isFreeForSideAction()) return
         val now = System.currentTimeMillis()
@@ -268,7 +247,6 @@ class PetViewModel(
         repository.persistPetState(_petState.value)
     }
 
-    /** Cào móng ở cột cào móng */
     fun scratchPost() {
         if (!isFreeForSideAction()) return
         scratchJob?.cancel()
@@ -284,12 +262,6 @@ class PetViewModel(
         }
     }
 
-    // ── HÀNH ĐỘNG TƯƠNG TÁC ──────────────────────────────────────────────────
-
-    /**
-     * Mở bảng chọn thức ăn.
-     * Chỉ cho phép nếu mèo không đang ngủ hoặc đang bận hành động khác.
-     */
     fun openFoodPicker() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
             _petState.update { it.copy(feedbackMessage = "${it.petName} đang ngủ say, đừng đánh thức bé nha!") }
@@ -304,10 +276,7 @@ class PetViewModel(
 
     fun closeFoodPicker() { _showFoodPicker.value = false }
 
-    /**
-     * Chọn món ăn → đặt vào bát → nếu đủ điều kiện thì mèo quay đầu và đi tới ăn.
-     * Không cho phép chọn thức ăn khi đang bận hành động khác hoặc đang ngủ để tránh race condition.
-     */
+    // Đặt thức ăn vào bát và điều hướng mèo tới ăn nếu đang rảnh
     fun selectFood(food: BowlFood) {
         val isBusy = _actionState.value == PetActionState.EATING ||
                 _actionState.value == PetActionState.WALKING ||
@@ -336,9 +305,7 @@ class PetViewModel(
         }
     }
 
-    /**
-     * Mèo xoay người nhìn sang phải và đi bộ tới bát thức ăn.
-     */
+    
     private fun startWalkingToBowl() {
         walkJob?.cancel()
         eatJob?.cancel()
@@ -352,10 +319,7 @@ class PetViewModel(
         }
     }
 
-    /**
-     * Mèo đang ăn tại bát: chuyển sang EATING, cập nhật stats, sau đó quay đầu đi về giữa phòng.
-     * [activeMeal] được khoá ngay khi bắt đầu ăn để tránh [selectFood] thay đổi món giữa chừng.
-     */
+    // Xử lý ăn tại bát và quay về giữa phòng
     private fun startEatingAtBowl() {
         val food = _bowlFood.value
         if (food == BowlFood.EMPTY) {
@@ -389,7 +353,7 @@ class PetViewModel(
         }
     }
 
-    /** Mèo đi bộ về vị trí trung tâm sau khi ăn/chơi */
+    
     private suspend fun walkBackToCenter() {
         _actionState.value = PetActionState.WALKING
         moveCatTo(0.5f, speed = 0.20f)
@@ -397,10 +361,7 @@ class PetViewModel(
         _actionState.value = PetActionState.IDLE
     }
 
-    /**
-     * Vuốt ve thú cưng (Pet) - phản ứng rung rinh purr và híp mắt cười.
-     * Khi chạm liên tục trong cùng một chu kỳ, chỉ gia hạn animation chứ không cộng dồn chỉ số (chống spam cày EXP).
-     */
+    // Vuốt ve mèo; chạm liên tục chỉ gia hạn hiệu ứng chứ không cộng dồn chỉ số
     fun pet() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
             val now = System.currentTimeMillis()
@@ -440,7 +401,6 @@ class PetViewModel(
         }
     }
 
-    /** Mở bảng chọn trò chơi */
     fun openGamePicker() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
             _petState.update { it.copy(feedbackMessage = "${it.petName} đang ngủ rồi, để bé nghỉ ngơi nhé!") }
@@ -464,14 +424,12 @@ class PetViewModel(
 
     fun closeGamePicker() { _showGamePicker.value = false }
 
-    /** Bắt đầu chơi mini-game */
     fun startPlaying() {
         idleLifeJob?.cancel()
         walkJob?.cancel()
         _actionState.value = PetActionState.PLAYING
     }
 
-    /** Thoát/Hủy mini-game khi người chơi đóng bảng mà chưa bắt xong */
     fun cancelPlaying() {
         if (_actionState.value == PetActionState.PLAYING) {
             _actionState.value = PetActionState.IDLE
@@ -479,7 +437,6 @@ class PetViewModel(
         }
     }
 
-    /** Kết thúc mini-game và nhận thưởng theo đúng thông số trên thẻ & bảng chiến thắng */
     fun finishPlaying(
         happinessGain: Float = 25f,
         energyCost: Float = 18f,
@@ -492,11 +449,7 @@ class PetViewModel(
         startIdleLifeCycle()
     }
 
-    /**
-     * Bật/Tắt chế độ ngủ với chuỗi chuyển động hoàn chỉnh:
-     * - Khi ngủ: Mèo quay trái, đi bộ tới đệm (vẫn thức khi đi), nằm cuộn tròn ngủ (mới đặt isSleeping = true).
-     * - Khi thức: Mèo mở mắt (isSleeping = false), vươn vai (stretching) duỗi 2 chân trước, rồi mới đi ra giữa phòng.
-     */
+    // Chuyển đổi trạng thái ngủ với chuỗi cử động di chuyển và vươn vai
     fun toggleSleep() {
         // Chặn spam thao tác khi đang trong chuỗi chuyển tiếp đi lại hoặc vươn vai
         if (_actionState.value == PetActionState.WALKING ||
@@ -561,8 +514,6 @@ class PetViewModel(
         }
     }
 
-    // ── TỦ ĐỒ PHỤ KIỆN & CÁ NHÂN HÓA ──────────────────────────────────────────
-
     fun openWardrobe() {
         if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
             showFeedback("${_petState.value.petName} đang ngủ say, đợi bé dậy rồi thay đồ nha! 💤", 2500L)
@@ -584,10 +535,7 @@ class PetViewModel(
         _showWardrobe.value = false
     }
 
-    /**
-     * Chọn xem trước một vật phẩm trong tủ đồ.
-     * Kiểm tra cấp độ mở khóa, nếu chưa đủ cấp sẽ thông báo phản hồi.
-     */
+    // Thử trang phục trong tủ đồ (có kiểm tra cấp độ mở khóa)
     fun selectPreviewItem(item: com.littlebuddy.pet.wardrobe.WardrobeItem) {
         val currentLevel = _petState.value.level
         if (currentLevel < item.levelRequired) {
@@ -616,7 +564,6 @@ class PetViewModel(
         }
     }
 
-    /** Tháo toàn bộ phụ kiện trong một danh mục đang xem trước */
     fun unequipCategoryInPreview(category: com.littlebuddy.pet.wardrobe.WardrobeCategory) {
         _previewWardrobe.update { current ->
             when (category) {
@@ -630,17 +577,14 @@ class PetViewModel(
         }
     }
 
-    /** Hoàn tác xem trước, quay lại bộ đồ đang mặc thực tế */
     fun resetPreviewToCurrent() {
         _previewWardrobe.value = _petState.value.wardrobe
     }
 
-    /** Khôi phục tủ đồ xem trước về mặc định (Mèo Xiêm nguyên bản, không phụ kiện) */
     fun resetPreviewToDefault() {
         _previewWardrobe.value = com.littlebuddy.pet.wardrobe.EquippedWardrobe()
     }
 
-    /** Xác nhận lưu và áp dụng trang phục đang xem trước cho nhân vật mèo */
     fun confirmWardrobe() {
         val newWardrobe = _previewWardrobe.value
         _petState.update { state ->
@@ -665,8 +609,6 @@ class PetViewModel(
         }
         repository.persistPetState(_petState.value)
     }
-
-    // ── QUẢN LÝ HỒ SƠ ────────────────────────────────────────────────────────
 
     fun renamePet(newName: String) {
         val validName = PetState.sanitizeName(newName) ?: return
@@ -709,8 +651,6 @@ class PetViewModel(
         startStatsTicker()
     }
 
-    // ── NỘI BỘ ───────────────────────────────────────────────────────────────
-
     private fun persistAndScheduleMoodReset() {
         repository.persistPetState(_petState.value)
         temporaryMoodJob?.cancel()
@@ -719,8 +659,6 @@ class PetViewModel(
             _petState.update { it.copy(temporaryMood = null) }
         }
     }
-
-
 
     /**
      * Gọi từ Activity.onResume() để bù trừ thời gian app bị background.

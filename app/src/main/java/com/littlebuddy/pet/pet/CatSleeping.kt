@@ -119,7 +119,7 @@ internal fun DrawScope.drawSleepingChibiCat(
     }
     fun pt(x: Float, y: Float) = Offset(tx(x, y), ty(y))
 
-    // ── BƯỚC 1: Bóng đổ elip dưới sàn ──
+    // Bóng đổ sàn
     val shadowW = u * 2.25f
     val shadowH = u * 0.44f
     val shadowX = cx + u * 0.02f
@@ -137,7 +137,7 @@ internal fun DrawScope.drawSleepingChibiCat(
         size = Size(shadowW * 0.78f, shadowH * 0.65f)
     )
 
-    // ── BƯỚC 2: Thân nguyên khối + màu nước pastel ──
+    // Thân mèo
     val bodyPath = Path().also { polyline(it, SILHOUETTE, close = true) }
 
     clipPath(bodyPath) {
@@ -170,7 +170,7 @@ internal fun DrawScope.drawSleepingChibiCat(
             )
         }
 
-        // ── BƯỚC 3: Hoa văn skin (cắt theo thân) ──
+        // Đốm lông Calico
         if (wardrobe.furSkinId == "fur_siamese") {
             drawCircle(
                 color = palette.patchColor.copy(alpha = 0.75f),
@@ -215,7 +215,7 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
 
-            // 3. Tai dưới (Tai phải): phủ màu Xám, ôm theo viền tai trước
+            
             val earLowerCenter = pt(-0.96f, 0.34f)
             withTransform({ rotate(15f, pivot = earLowerCenter) }) {
                 drawOval(
@@ -255,7 +255,7 @@ internal fun DrawScope.drawSleepingChibiCat(
         }
     }
 
-    // ── BƯỚC 4: Ruột tai, mũi, má hồng ──
+    // Tai trong, mũi, má hồng
     fun fillPoly(coords: FloatArray, color: Color) {
         val p = Path().also { polyline(it, coords, close = true) }
         drawPath(p, color = color)
@@ -282,7 +282,7 @@ internal fun DrawScope.drawSleepingChibiCat(
         }
     }
 
-    // ── BƯỚC 5: Nét viền (3 lớp: chính / mảnh / mắt) ──
+    // Nét viền
     fun strokeLayer(list: List<FloatArray>, width: Float, alpha: Float) {
         val p = Path()
         list.forEach { polyline(p, it) }
@@ -300,10 +300,10 @@ internal fun DrawScope.drawSleepingChibiCat(
     strokeLayer(FINE_STROKES, lineW * 0.60f, 0.70f)
     strokeLayer(EYE_STROKES, lineW * 1.30f, 1.00f)
 
-    // ── BƯỚC 6: Trang phục thân (Bodywear) ──
+    // Trang phục thân
     drawSleepingBodywear(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
 
-    // ── BƯỚC 7: Vòng cổ / Khăn quàng (Neckwear) ──
+    // Trang phục cổ
     val headRadius = u * HEAD_RADIUS_U
     val headCx = cx + u * HEAD_CX_U
     val headCy = cy + u * HEAD_CY_U
@@ -315,7 +315,7 @@ internal fun DrawScope.drawSleepingChibiCat(
     }
     drawSleepingNeckwear(effectiveNeckwear, headCx, headCy, u, strokeW)
 
-    // ── BƯỚC 8: Mũ / Nơ cài đầu (Headwear) ──
+    // Trang phục đầu
     val effectiveHeadwear = wardrobe.getHeadwear()?.id ?: when (legacyAccessory) {
         PetAccessory.RIBBON -> "head_ribbon"
         PetAccessory.HAT -> "head_straw_hat"
@@ -325,7 +325,7 @@ internal fun DrawScope.drawSleepingChibiCat(
         drawSleepingHeadwear(effectiveHeadwear, headCx, headCy, headRadius, u, strokeW)
     }
 
-    // ── BƯỚC 9: Chữ Zzz bay lượn & ngôi sao giấc mơ ──
+    // Hiệu ứng Zzz
     drawSleepingZzzEffects(
         headCx = headCx,
         headCy = headCy,
