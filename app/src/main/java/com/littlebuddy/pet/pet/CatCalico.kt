@@ -23,7 +23,7 @@ private val STANDING_BLOBS = listOf(
 )
 
 internal fun DrawScope.drawCalicoBodyPatches(
-    cx: Float, cy: Float, u: Float, sx: Float, sy: Float, palette: CatColorPalette
+    cx: Float, cy: Float, u: Float, sx: Float = 1f, sy: Float = 1f, palette: CatColorPalette
 ) {
     val dark = palette.secondaryPatchColor ?: return
     for (b in STANDING_BLOBS) {

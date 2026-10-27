@@ -206,9 +206,7 @@ private fun DrawScope.drawStandingChibiCat(
     )
 
     // ── BƯỚC 4: Toàn bộ thân trên mèo (Tai, Thân, Tay, Đầu) liên kết chung khung xương ──
-    val stretchScaleX = 1f
-    val stretchScaleY = 1f
-    val bodyFillPath = createStandingBodyFillPath(cx, cy, u, stretchScaleX, stretchScaleY)
+    val bodyFillPath = createStandingBodyFillPath(cx, cy, u)
 
     withTransform({
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
@@ -232,25 +230,25 @@ private fun DrawScope.drawStandingChibiCat(
             drawPath(bodyFillPath, color = palette.bodyColor)
 
             if (wardrobe.furSkinId == WardrobeRegistry.ID_FUR_CALICO) {
-                drawCalicoBodyPatches(cx, cy, u, stretchScaleX, stretchScaleY, palette)
+                drawCalicoBodyPatches(cx, cy, u, palette = palette)
             }
 
             // Bóng mềm ở đáy bụng
             val bottomShade = Path().apply {
-                moveTo(cx - u * 0.65f * stretchScaleX, cy + u * 0.82f)
-                quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f * stretchScaleX, cy + u * 0.82f)
-                lineTo(cx + u * 0.65f * stretchScaleX, cy + u * 1.15f)
-                lineTo(cx - u * 0.65f * stretchScaleX, cy + u * 1.15f)
+                moveTo(cx - u * 0.65f, cy + u * 0.82f)
+                quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f, cy + u * 0.82f)
+                lineTo(cx + u * 0.65f, cy + u * 1.15f)
+                lineTo(cx - u * 0.65f, cy + u * 1.15f)
                 close()
             }
             drawPath(bottomShade, color = palette.bellyColor.copy(alpha = 0.55f))
         }
 
         // Viền thân màu viền theo Skin
-        drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor, stretchScaleX, stretchScaleY)
+        drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor)
 
         // Trang phục thân người (Bodywear: Áo len, yếm...)
-        drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW, stretchScaleX, stretchScaleY)
+        drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
 
         // 4c. Hai bàn tay trước co tròn trước ngực
         drawCurledFrontPaws(
