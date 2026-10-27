@@ -831,109 +831,75 @@ private fun PetHeaderSection(
     onEditClick: () -> Unit,
     compact: Boolean = false
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 2.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = 2.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onEditClick() }
+            .padding(vertical = 2.dp, horizontal = 4.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .weight(1f, fill = false)
-                .clip(RoundedCornerShape(16.dp))
-                .clickable { onEditClick() }
-                .padding(vertical = 2.dp, horizontal = 4.dp)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = "${petState.petName} ♡",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MidnightLagoon,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false)
-                )
-                petState.accessory?.let { acc ->
-                    Text(text = acc.emoji, style = MaterialTheme.typography.bodyMedium)
-                }
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(CircleShape)
-                        .background(BlushPetal.copy(alpha = 0.7f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Edit,
-                        contentDescription = "Đổi tên",
-                        tint = Rosewood,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
-            }
-
-            val formattedLv = petState.level.toString().padStart(2, '0')
             Text(
-                text = "Lv.$formattedLv · ${petState.levelTitle}",
-                style = MaterialTheme.typography.labelMedium,
-                color = MidnightLagoon.copy(alpha = 0.7f),
+                text = "${petState.petName} ♡",
+                style = MaterialTheme.typography.titleLarge,
+                color = MidnightLagoon,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
             )
-
-            Spacer(modifier = Modifier.height(3.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(5.dp)
+            petState.accessory?.let { acc ->
+                Text(text = acc.emoji, style = MaterialTheme.typography.bodyMedium)
+            }
+            Box(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clip(CircleShape)
+                    .background(BlushPetal.copy(alpha = 0.7f)),
+                contentAlignment = Alignment.Center
             ) {
-                Text(text = "EXP", style = MaterialTheme.typography.labelSmall, color = Rosewood)
-                LinearProgressIndicator(
-                    progress = { petState.expProgress },
-                    modifier = Modifier
-                        .width(90.dp)
-                        .height(5.dp)
-                        .clip(RoundedCornerShape(50)),
-                    color = Rosewood,
-                    trackColor = BlushPetal.copy(alpha = 0.45f)
-                )
-                Text(
-                    text = "${petState.exp}/${petState.expToNextLevel}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MidnightLagoon.copy(alpha = 0.55f)
+                Icon(
+                    imageVector = Icons.Rounded.Edit,
+                    contentDescription = "Đổi tên",
+                    tint = Rosewood,
+                    modifier = Modifier.size(14.dp)
                 )
             }
         }
 
-        if (!compact) {
-            Spacer(modifier = Modifier.width(8.dp))
+        val formattedLv = petState.level.toString().padStart(2, '0')
+        Text(
+            text = "Lv.$formattedLv · ${petState.levelTitle}",
+            style = MaterialTheme.typography.labelMedium,
+            color = MidnightLagoon.copy(alpha = 0.7f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
 
-            Row(
+        Spacer(modifier = Modifier.height(3.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            Text(text = "EXP", style = MaterialTheme.typography.labelSmall, color = Rosewood)
+            LinearProgressIndicator(
+                progress = { petState.expProgress },
                 modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(SoftWhite)
-                    .border(1.2.dp, Rosewood.copy(alpha = 0.35f), RoundedCornerShape(50))
-                    .clickable { onEditClick() }
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Edit,
-                    contentDescription = "Đổi tên bé mèo",
-                    tint = Rosewood,
-                    modifier = Modifier.size(15.dp)
-                )
-                Text(
-                    text = "Đổi tên",
-                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = Rosewood
-                )
-            }
+                    .width(90.dp)
+                    .height(5.dp)
+                    .clip(RoundedCornerShape(50)),
+                color = Rosewood,
+                trackColor = BlushPetal.copy(alpha = 0.45f)
+            )
+            Text(
+                text = "${petState.exp}/${petState.expToNextLevel}",
+                style = MaterialTheme.typography.labelSmall,
+                color = MidnightLagoon.copy(alpha = 0.55f)
+            )
         }
     }
 }
