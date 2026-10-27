@@ -42,7 +42,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -193,7 +192,6 @@ fun WardrobeScreen(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     WardrobeBottomActions(
-                        onBack = onBack,
                         onConfirm = onConfirm
                     )
                 }
@@ -256,9 +254,8 @@ fun WardrobeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 5. Thanh nút Lưu diện mạo cố định đáy
+                // 5. Thanh nút Lưu thay đổi cố định đáy
                 WardrobeBottomActions(
-                    onBack = onBack,
                     onConfirm = onConfirm
                 )
             }
@@ -849,11 +846,10 @@ private fun WardrobeItemCard(
 }
 
 /**
- * Thanh nút Xác nhận / Quay lại cố định dưới cùng
+ * Thanh nút Lưu thay đổi cố định dưới cùng
  */
 @Composable
 private fun WardrobeBottomActions(
-    onBack: () -> Unit,
     onConfirm: () -> Unit
 ) {
     Surface(
@@ -863,45 +859,11 @@ private fun WardrobeBottomActions(
         shadowElevation = 4.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 14.dp, vertical = 10.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 14.dp, vertical = 10.dp)
         ) {
-            // Nút Quay lại
-            OutlinedButton(
-                onClick = onBack,
-                shape = RoundedCornerShape(18.dp),
-                border = BorderStroke(1.dp, CardBorderColor),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MidnightLagoon
-                ),
-                modifier = Modifier
-                    .weight(1f)
-                    .height(46.dp)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Quay lại",
-                        tint = MidnightLagoon,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = "Quay lại",
-                        color = MidnightLagoon,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 13.sp
-                    )
-                }
-            }
-
-            // Nút Lưu diện mạo sang trọng
             Button(
                 onClick = onConfirm,
                 shape = RoundedCornerShape(18.dp),
@@ -911,21 +873,15 @@ private fun WardrobeBottomActions(
                 ),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
                 modifier = Modifier
-                    .weight(1.4f)
+                    .fillMaxWidth()
                     .height(46.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(text = "✨", fontSize = 14.sp)
-                    Text(
-                        text = "Lưu diện mạo",
-                        color = SoftWhite,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.5.sp
-                    )
-                }
+                Text(
+                    text = "Lưu thay đổi",
+                    color = SoftWhite,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
             }
         }
     }
