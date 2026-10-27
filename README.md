@@ -7,13 +7,13 @@
 ## 1. Giới thiệu tổng quan
 
 - **Tên dự án**: Little Buddy — Virtual Pet
-- **Ý tưởng**: Mô phỏng việc chăm sóc chú mèo cưng trong căn phòng mùa thu ấm áp (*Cozy Autumn Room*). Toàn bộ nhân vật mèo, tủ đồ phụ kiện và bối cảnh căn phòng được vẽ **100% bằng Compose Canvas** (thuần vector đồ họa toán học, không sử dụng ảnh bitmap tĩnh toàn thân cho nhân vật).
+- **Ý tưởng**: Mô phỏng việc chăm sóc chú mèo cưng trong căn phòng mùa thu ấm áp (_Cozy Autumn Room_). Toàn bộ nhân vật mèo, tủ đồ phụ kiện và bối cảnh căn phòng được vẽ **100% bằng Compose Canvas** (thuần vector đồ họa toán học, không sử dụng ảnh bitmap tĩnh toàn thân cho nhân vật).
 - **Điểm nổi bật**:
   1. **Đồ họa Canvas Vector đa tầng**: Mèo có đầy đủ cử chỉ tự nhiên: nhịp thở phập phồng, chớp mắt, quay đầu theo hướng đi, chân bước so le, vươn vai duỗi người khi thức giấc, cuộn tròn khi ngủ say và híp mắt cười khi được vuốt ve.
   2. **Tối ưu Draw-Phase Animation (60 FPS)**: Đọc trạng thái hoạt ảnh trực tiếp ở pha Vẽ (Draw Phase) qua `rememberCatClock` và các lambda provider, bỏ qua hoàn toàn Recomposition và Layout Phase không cần thiết.
-  3. **Hệ thống Tủ đồ & Cá nhân hóa (Wardrobe Studio)**: Đổi màu lông (Mèo Xiêm, Tam thể, Mướp gừng, Đen mun, Tuyết trắng) và phối phụ kiện đa dạng (mũ nơ, vòng cổ chuông, khăn quàng ấm, áo yếm). Hỗ trợ responsive layout cả xoay dọc lẫn xoay ngang (*Portrait & Landscape*).
+  3. **Hệ thống Tủ đồ & Cá nhân hóa (Wardrobe Studio)**: Đổi màu lông (Mèo Xiêm, Tam thể, Mướp gừng, Đen mun, Tuyết trắng) và phối phụ kiện đa dạng (mũ nơ, vòng cổ chuông, khăn quàng ấm, áo yếm). Hỗ trợ responsive layout cả xoay dọc lẫn xoay ngang (_Portrait & Landscape_).
   4. **State Machine & Gameplay Loop chặt chẽ**: Quản lý rành mạch các trạng thái hành động (`IDLE`, `WALKING`, `EATING`, `SLEEPING`, `WAKING_UP`, `STRETCHING`, `PLAYING`, `PETTING`).
-  5. **Bền vững dữ liệu & Đồng bộ thời gian thực**: Lưu trữ qua `SharedPreferences`, tự động bù trừ chỉ số suy giảm khi app chạy ngầm (*Android Doze Mode*) thông qua vòng đời Activity.
+  5. **Bền vững dữ liệu & Đồng bộ thời gian thực**: Lưu trữ qua `SharedPreferences`, tự động bù trừ chỉ số suy giảm khi app chạy ngầm (_Android Doze Mode_) thông qua vòng đời Activity.
   6. **Clean Code & Unit Testing**: Áp dụng nguyên tắc SOLID, phân tách rõ ràng Domain Model (`PetState`) và UI Controller (`PetViewModel`), bộ 27 Unit Test cases tự động đạt tỷ lệ pass 100%.
 
 ---
@@ -22,13 +22,13 @@
 
 Ứng dụng tuân thủ nghiêm ngặt hệ thống 6 gam màu pastel ấm áp:
 
-| Màu sắc | Mã Hex | Vai trò trong giao diện |
-| :--- | :--- | :--- |
-| **Vanilla Cream** | `#FFF7E6` | Màu nền chính toàn ứng dụng, tạo cảm giác êm dịu, ấm cúng |
-| **Blush Petal** | `#F7C8D3` | Màu má hồng kawaii, nền thẻ thông tin và chi tiết trang trí |
-| **Rosewood** | `#B46A72` | Màu nhấn chính cho nút hành động, viền nét và trạng thái active |
-| **Sage Leaf** | `#A8B58A` | Đại diện cho chỉ số sức khỏe, độ vui vẻ và năng lượng tích cực |
-| **Misty Sky** | `#A9B7C6` | Màu phụ cho thanh năng lượng và trạng thái giấc ngủ ban đêm |
+| Màu sắc             | Mã Hex    | Vai trò trong giao diện                                           |
+| :------------------ | :-------- | :---------------------------------------------------------------- |
+| **Vanilla Cream**   | `#FFF7E6` | Màu nền chính toàn ứng dụng, tạo cảm giác êm dịu, ấm cúng         |
+| **Blush Petal**     | `#F7C8D3` | Màu má hồng kawaii, nền thẻ thông tin và chi tiết trang trí       |
+| **Rosewood**        | `#B46A72` | Màu nhấn chính cho nút hành động, viền nét và trạng thái active   |
+| **Sage Leaf**       | `#A8B58A` | Đại diện cho chỉ số sức khỏe, độ vui vẻ và năng lượng tích cực    |
+| **Misty Sky**       | `#A9B7C6` | Màu phụ cho thanh năng lượng và trạng thái giấc ngủ ban đêm       |
 | **Midnight Lagoon** | `#2D3A47` | Màu chữ chính, tiêu đề, nét vẽ mắt mũi, đảm bảo độ tương phản cao |
 
 ---
@@ -107,19 +107,20 @@ $$\text{Composition} \longrightarrow \text{Layout} \longrightarrow \text{Draw}$$
 
 ### 5.1. Bảng quy chuẩn tương tác
 
-| Tương tác | Độ no (Hunger) | Niềm vui (Happiness) | Năng lượng (Energy) | Kinh nghiệm (EXP) | Thân thiết (Intimacy) |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Cho ăn: Hạt khô** | **+25%** | **+5%** | Giữ nguyên | **+15 EXP** | **+5 điểm** |
-| **Cho ăn: Pate** | **+35%** | **+12%** | Giữ nguyên | **+15 EXP** | **+5 điểm** |
-| **Cho ăn: Cá khô** | **+30%** | **+20%** | Giữ nguyên | **+15 EXP** | **+5 điểm** |
-| **Vuốt ve (Pet)** | Giữ nguyên | **+15%** *(hoặc +5% khi ngủ)* | Giữ nguyên | **+10 EXP** | **+10 điểm** *(hoặc +2 khi ngủ)* |
-| **Mini-game (Play)** | **-12%** | **+25%** | **-18%** | **+15 EXP** | **+15 điểm** |
-| **Uống nước** | Giữ nguyên | **+6%** | **+10%** | Giữ nguyên | Giữ nguyên |
-| **Vờn len sàn** | Giữ nguyên | **+10%** | **-5%** | Giữ nguyên | Giữ nguyên |
-| **Cào móng** | Giữ nguyên | **+8%** | Giữ nguyên | Giữ nguyên | Giữ nguyên |
-| **Đi ngủ (Sleep)** | Tiêu hao **-0.05f/phút** *(giảm 75%)* | Giảm **-0.15f/phút** | Hồi phục **+4.0f/phút** | Giữ nguyên | Giữ nguyên |
+| Tương tác            | Độ no (Hunger)                        | Niềm vui (Happiness)          | Năng lượng (Energy)     | Kinh nghiệm (EXP) | Thân thiết (Intimacy)            |
+| :------------------- | :------------------------------------ | :---------------------------- | :---------------------- | :---------------- | :------------------------------- |
+| **Cho ăn: Hạt khô**  | **+25%**                              | **+5%**                       | Giữ nguyên              | **+15 EXP**       | **+5 điểm**                      |
+| **Cho ăn: Pate**     | **+35%**                              | **+12%**                      | Giữ nguyên              | **+15 EXP**       | **+5 điểm**                      |
+| **Cho ăn: Cá khô**   | **+30%**                              | **+20%**                      | Giữ nguyên              | **+15 EXP**       | **+5 điểm**                      |
+| **Vuốt ve (Pet)**    | Giữ nguyên                            | **+15%** _(hoặc +5% khi ngủ)_ | Giữ nguyên              | **+10 EXP**       | **+10 điểm** _(hoặc +2 khi ngủ)_ |
+| **Mini-game (Play)** | **-12%**                              | **+25%**                      | **-18%**                | **+15 EXP**       | **+15 điểm**                     |
+| **Uống nước**        | Giữ nguyên                            | **+6%**                       | **+10%**                | Giữ nguyên        | Giữ nguyên                       |
+| **Vờn len sàn**      | Giữ nguyên                            | **+10%**                      | **-5%**                 | Giữ nguyên        | Giữ nguyên                       |
+| **Cào móng**         | Giữ nguyên                            | **+8%**                       | Giữ nguyên              | Giữ nguyên        | Giữ nguyên                       |
+| **Đi ngủ (Sleep)**   | Tiêu hao **-0.05f/phút** _(giảm 75%)_ | Giảm **-0.15f/phút**          | Hồi phục **+4.0f/phút** | Giữ nguyên        | Giữ nguyên                       |
 
 ### 5.2. Các quy tắc quan trọng
+
 - **Giới hạn an toàn**: Mọi chỉ số luôn được giới hạn chặt chẽ trong khoảng `[0.0f, 100.0f]`. Điểm thân thiết tối đa là 200.
 - **Lên cấp lũy tiến (`gainExp`)**: Mỗi cấp độ yêu cầu 100 EXP. Khi nhận lượng lớn EXP cùng lúc, hàm xử lý vòng lặp thăng nhiều cấp chuẩn xác mà không bị tràn số.
 - **Trao đổi chất khi ngủ**: Tiêu hao đói giảm 75% so với lúc thức (`SLEEP_HUNGER_DECAY_PER_MINUTE = 0.05f`), giúp mèo không bị kiệt sức hoàn toàn sau giấc ngủ qua đêm.
@@ -130,14 +131,14 @@ $$\text{Composition} \longrightarrow \text{Layout} \longrightarrow \text{Draw}$$
 
 ## 6. Hệ thống Tủ đồ & Cá nhân hóa (Wardrobe Studio)
 
-Màn hình Tủ đồ (`WardrobeScreen`) sở hữu bục thời trang xoay quanh nhân vật với chế độ thử đồ trực tiếp (*Live Preview*):
+Màn hình Tủ đồ (`WardrobeScreen`) sở hữu bục thời trang xoay quanh nhân vật với chế độ thử đồ trực tiếp (_Live Preview_):
 
 1. **Bộ lông (Fur Skin)**:
-   - *Mèo Xiêm (Siamese - Mặc định)*: Bộ lông màu kem, mặt nạ, tai và 4 chân màu taupe sẫm đặc trưng.
-   - *Mèo Tam thể (Calico)*: Bộ lông 3 màu trắng - cam nâu - xám đan xen tự nhiên.
-   - *Mèo Mướp gừng (Ginger Tabby)*: Bộ lông cam ấm áp cùng các vệt sọc tinh nghịch.
-   - *Mèo Đen mun (Midnight Black)*: Lông đen tuyền cùng đôi mắt hổ phách huyền bí.
-   - *Mèo Tuyết trắng (Pure White)*: Bộ lông trắng muốt như bông tuyết.
+   - _Mèo Xiêm (Siamese - Mặc định)_: Bộ lông màu kem, mặt nạ, tai và 4 chân màu taupe sẫm đặc trưng.
+   - _Mèo Tam thể (Calico)_: Bộ lông 3 màu trắng - cam nâu - xám đan xen tự nhiên.
+   - _Mèo Mướp gừng (Ginger Tabby)_: Bộ lông cam ấm áp cùng các vệt sọc tinh nghịch.
+   - _Mèo Đen mun (Midnight Black)_: Lông đen tuyền cùng đôi mắt hổ phách huyền bí.
+   - _Mèo Tuyết trắng (Pure White)_: Bộ lông trắng muốt như bông tuyết.
 2. **Mũ & Nơ (Headwear)**: Mũ nồi họa sĩ Beret, Nơ hoa cúc vàng, Mũ cói mùa hè.
 3. **Vòng cổ & Khăn quàng (Neckwear)**: Vòng cổ chuông vàng may mắn, Khăn quàng len đỏ ấm áp, Nơ bướm xanh.
 4. **Trang phục thân (Bodywear)**: Quần yếm denim vintage, Áo len dệt kim kẻ sọc mùa đông.
@@ -164,11 +165,13 @@ Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn di�
 ## 8. Hướng dẫn cài đặt & Chạy ứng dụng
 
 ### Yêu cầu môi trường
+
 - **Android Studio**: Bản Ladybug / Hedgehog / Meerkat hoặc mới hơn.
 - **JDK**: Java 17 trở lên.
 - **Thiết bị chạy**: Android 7.0 (API 24) trở lên, khuyến nghị Android 12+.
 
 ### Các bước thực hiện
+
 1. Clone mã nguồn về máy:
    ```bash
    git clone https://github.com/Minh-mtm296/Little_Buddy.git
@@ -185,11 +188,11 @@ Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn di�
 
 ## 9. Phân công nhiệm vụ nhóm
 
-| Thành viên | Vai trò | Trách nhiệm chính |
-| :--- | :--- | :--- |
-| **Minh (Trưởng nhóm)** | Kiến trúc & Tích hợp | Điều phối kiến trúc Clean Code / MVVM, `MainActivity`, `PetViewModel`, `PetState`, đồng bộ thời gian thực, Unit Tests, Git. |
-| **Ngọc Anh** | UI/UX & Components | Design System 6 màu, Typography Material 3, `StatBar`, `ActionButtons`, `FeedbackBubble`, `PetProfileDialog`, `FoodPickerDialog`. |
-| **Kiều Vy** | Canvas & Wardrobe | Toàn bộ hình vẽ Canvas nhân vật mèo (`CatBody`, `CatFace`, `CatSleeping`, `CatCalico`, `CatWardrobeCanvas`), `WardrobeScreen`, `CozyRoomBackground`. |
+| Thành viên   | Vai trò              | Trách nhiệm chính                                                                                                                                    |
+| :----------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Thu Minh** | Kiến trúc & Tích hợp | Điều phối kiến trúc Clean Code / MVVM, `MainActivity`, `PetViewModel`, `PetState`, đồng bộ thời gian thực, Unit Tests, Git.                          |
+| **Ngọc Anh** | UI/UX & Components   | Design System 6 màu, Typography Material 3, `StatBar`, `ActionButtons`, `FeedbackBubble`, `PetProfileDialog`, `FoodPickerDialog`.                    |
+| **Kiều Vy**  | Canvas & Wardrobe    | Toàn bộ hình vẽ Canvas nhân vật mèo (`CatBody`, `CatFace`, `CatSleeping`, `CatCalico`, `CatWardrobeCanvas`), `WardrobeScreen`, `CozyRoomBackground`. |
 
 ---
 
