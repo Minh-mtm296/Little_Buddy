@@ -1246,18 +1246,19 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
         }
         WardrobeRegistry.ID_BODY_OVERALLS -> {
             val ovPath = Path().apply {
-                moveTo(cx - w * 0.30f, cy - h * 0.05f)
-                lineTo(cx + w * 0.30f, cy - h * 0.05f)
-                lineTo(cx + w * 0.34f, cy + h * 0.28f)
-                lineTo(cx - w * 0.34f, cy + h * 0.28f)
+                moveTo(cx - w * 0.24f, cy - h * 0.05f)
+                lineTo(cx + w * 0.24f, cy - h * 0.05f)
+                lineTo(cx + w * 0.26f, cy + h * 0.12f)
+                cubicTo(cx + w * 0.36f, cy + h * 0.18f, cx + w * 0.36f, cy + h * 0.28f, cx, cy + h * 0.28f)
+                cubicTo(cx - w * 0.36f, cy + h * 0.28f, cx - w * 0.36f, cy + h * 0.18f, cx - w * 0.26f, cy + h * 0.12f)
                 close()
             }
-            drawPath(ovPath, color = Color(0xFF6B9AC4).copy(alpha = alpha))
-            drawPath(ovPath, color = Color(0xFF2C4A70).copy(alpha = alpha), style = Stroke(width = 2.2f))
-            drawLine(color = Color(0xFF6B9AC4).copy(alpha = alpha), start = Offset(cx - w * 0.18f, cy - h * 0.28f), end = Offset(cx - w * 0.18f, cy - h * 0.05f), strokeWidth = 6f, cap = StrokeCap.Round)
-            drawLine(color = Color(0xFF6B9AC4).copy(alpha = alpha), start = Offset(cx + w * 0.18f, cy - h * 0.28f), end = Offset(cx + w * 0.18f, cy - h * 0.05f), strokeWidth = 6f, cap = StrokeCap.Round)
-            drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.038f, center = Offset(cx - w * 0.18f, cy - h * 0.02f))
-            drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.038f, center = Offset(cx + w * 0.18f, cy - h * 0.02f))
+            drawPath(ovPath, color = Color(0xFF5B8CB9).copy(alpha = alpha))
+            drawPath(ovPath, color = Color(0xFF223A5E).copy(alpha = alpha), style = Stroke(width = 2.2f))
+            drawLine(color = Color(0xFF5B8CB9).copy(alpha = alpha), start = Offset(cx - w * 0.16f, cy - h * 0.24f), end = Offset(cx - w * 0.16f, cy - h * 0.05f), strokeWidth = 5f, cap = StrokeCap.Round)
+            drawLine(color = Color(0xFF5B8CB9).copy(alpha = alpha), start = Offset(cx + w * 0.16f, cy - h * 0.24f), end = Offset(cx + w * 0.16f, cy - h * 0.05f), strokeWidth = 5f, cap = StrokeCap.Round)
+            drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.038f, center = Offset(cx - w * 0.16f, cy - h * 0.02f))
+            drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.038f, center = Offset(cx + w * 0.16f, cy - h * 0.02f))
         }
         WardrobeRegistry.ID_BODY_ROYAL_CAPE -> {
             val capePath = Path().apply {
