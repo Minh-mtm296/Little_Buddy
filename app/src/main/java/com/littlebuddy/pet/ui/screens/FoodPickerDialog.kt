@@ -37,6 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.window.DialogProperties
 import com.littlebuddy.pet.R
 import com.littlebuddy.pet.pet.BowlFood
 import com.littlebuddy.pet.pet.PetState
@@ -47,11 +52,7 @@ import com.littlebuddy.pet.ui.theme.SageLeaf
 import com.littlebuddy.pet.ui.theme.SoftWhite
 import com.littlebuddy.pet.ui.theme.VanillaCream
 
-/**
- * Bảng chọn thức ăn cho thú cưng.
- * Hiện 3 lựa chọn: Hạt khô, Pate, Cá tươi.
- * Hiển thị boost stats để người dùng biết lựa chọn của mình ảnh hưởng gì.
- */
+
 @Composable
 fun FoodPickerDialog(
     petState: PetState,
@@ -66,16 +67,26 @@ fun FoodPickerDialog(
         label = "dialogScale"
     )
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        val configuration = LocalConfiguration.current
+        val isCompact = configuration.screenHeightDp < 460
         Box(
             modifier = Modifier
+                .widthIn(max = if (isCompact) 460.dp else 360.dp)
+                .fillMaxWidth(if (isCompact) 0.85f else 0.92f)
                 .scale(scale)
                 .shadow(16.dp, RoundedCornerShape(28.dp))
                 .clip(RoundedCornerShape(28.dp))
                 .background(VanillaCream)
-                .padding(24.dp)
+                .padding(if (isCompact) 14.dp else 24.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 // Tiêu đề
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -108,21 +119,21 @@ fun FoodPickerDialog(
                         food = BowlFood.DRY_FOOD,
                         color = Color(0xFFE8D4B8),
                         accentColor = Color(0xFF8B6914),
-                        description = "Ngon, tiện và bổ dưỡng",
+                        description = "",
                         onClick = { onSelectFood(BowlFood.DRY_FOOD) }
                     )
                     FoodOptionCard(
                         food = BowlFood.PATE,
                         color = Color(0xFFF5C5C5),
                         accentColor = Rosewood,
-                        description = "Mềm mịn, thơm ngon hơn",
+                        description = "",
                         onClick = { onSelectFood(BowlFood.PATE) }
                     )
                     FoodOptionCard(
                         food = BowlFood.FISH,
                         color = Color(0xFFBFDDD8),
                         accentColor = Color(0xFF2D7F77),
-                        description = "Món ưa thích của mèo! Tăng nhiều Niềm vui",
+                        description = "",
                         onClick = { onSelectFood(BowlFood.FISH) }
                     )
                 }

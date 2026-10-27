@@ -71,6 +71,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.window.DialogProperties
 import com.littlebuddy.pet.pet.PetActionState
 import com.littlebuddy.pet.pet.PetCanvas
 import com.littlebuddy.pet.pet.PetMood
@@ -108,16 +113,26 @@ fun GamePickerDialog(
         label = "gamePickerScale"
     )
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        val configuration = LocalConfiguration.current
+        val isCompact = configuration.screenHeightDp < 460
         Box(
             modifier = Modifier
+                .widthIn(max = if (isCompact) 480.dp else 360.dp)
+                .fillMaxWidth(if (isCompact) 0.85f else 0.92f)
                 .scale(scale)
                 .shadow(16.dp, RoundedCornerShape(28.dp))
                 .clip(RoundedCornerShape(28.dp))
                 .background(VanillaCream)
-                .padding(24.dp)
+                .padding(if (isCompact) 14.dp else 24.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Text(
                     text = "🎮 Chơi cùng ${petState.petName}",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -230,6 +245,9 @@ fun GameVictoryCard(
     energyCost: Int,
     onConfirm: () -> Unit
 ) {
+    val configuration = LocalConfiguration.current
+    val isCompact = configuration.screenHeightDp < 460
+
     var star1Visible by remember { mutableStateOf(false) }
     var star2Visible by remember { mutableStateOf(false) }
     var star3Visible by remember { mutableStateOf(false) }
@@ -265,39 +283,43 @@ fun GameVictoryCard(
             .clip(RoundedCornerShape(26.dp))
             .background(VanillaCream)
             .border(2.dp, BlushPetal, RoundedCornerShape(26.dp))
-            .padding(22.dp),
+            .padding(horizontal = if (isCompact) 16.dp else 22.dp, vertical = if (isCompact) 10.dp else 22.dp),
         contentAlignment = Alignment.Center
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier.verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             // 3 Sao vàng nảy lên lần lượt
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "⭐", fontSize = 34.sp, modifier = Modifier.scale(s1))
-                Text(text = "⭐", fontSize = 44.sp, modifier = Modifier.scale(s2).offset(y = (-4).dp))
-                Text(text = "⭐", fontSize = 34.sp, modifier = Modifier.scale(s3))
+                Text(text = "⭐", fontSize = if (isCompact) 26.sp else 34.sp, modifier = Modifier.scale(s1))
+                Text(text = "⭐", fontSize = if (isCompact) 34.sp else 44.sp, modifier = Modifier.scale(s2).offset(y = (-3).dp))
+                Text(text = "⭐", fontSize = if (isCompact) 26.sp else 34.sp, modifier = Modifier.scale(s3))
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(if (isCompact) 4.dp else 10.dp))
 
             Text(
                 text = "🎉 Bắt trúng xuất sắc!",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = if (isCompact) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                       else MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 color = MidnightLagoon,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(if (isCompact) 2.dp else 6.dp))
 
             Text(
                 text = "${petState.petName} vừa có những cú vồ mồi siêu đỉnh và đang cực kỳ hạnh phúc! ♡🐾",
-                style = MaterialTheme.typography.bodyMedium,
+                style = if (isCompact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
                 color = MidnightLagoon.copy(alpha = 0.8f),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(if (isCompact) 8.dp else 18.dp))
 
             // Thống kê phần thưởng
             Row(
@@ -306,18 +328,18 @@ fun GameVictoryCard(
                     .clip(RoundedCornerShape(16.dp))
                     .background(SoftWhite)
                     .border(1.2.dp, BlushPetal, RoundedCornerShape(16.dp))
-                    .padding(vertical = 12.dp, horizontal = 10.dp),
+                    .padding(vertical = if (isCompact) 6.dp else 12.dp, horizontal = if (isCompact) 8.dp else 10.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RewardBadge(emoji = "💖", value = "+$happinessGain%", label = "Niềm vui", color = Rosewood)
-                Box(modifier = Modifier.width(1.dp).height(28.dp).background(BlushPetal))
-                RewardBadge(emoji = "⭐", value = "+$expGain", label = "EXP", color = Color(0xFFE67E22))
-                Box(modifier = Modifier.width(1.dp).height(28.dp).background(BlushPetal))
-                RewardBadge(emoji = "⚡", value = "-$energyCost%", label = "Năng lượng", color = Color(0xFF5B8CA3))
+                RewardBadge(emoji = "💖", value = "+$happinessGain%", label = "Niềm vui", color = Rosewood, isCompact = isCompact)
+                Box(modifier = Modifier.width(1.dp).height(if (isCompact) 20.dp else 28.dp).background(BlushPetal))
+                RewardBadge(emoji = "⭐", value = "+$expGain", label = "EXP", color = Color(0xFFE67E22), isCompact = isCompact)
+                Box(modifier = Modifier.width(1.dp).height(if (isCompact) 20.dp else 28.dp).background(BlushPetal))
+                RewardBadge(emoji = "⚡", value = "-$energyCost%", label = "Năng lượng", color = Color(0xFF5B8CA3), isCompact = isCompact)
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(if (isCompact) 10.dp else 20.dp))
 
             Button(
                 onClick = onConfirm,
@@ -325,11 +347,12 @@ fun GameVictoryCard(
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
+                    .height(if (isCompact) 42.dp else 50.dp)
             ) {
                 Text(
                     text = "🐾 Nhận thưởng & Về phòng",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    style = if (isCompact) MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                           else MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                     color = SoftWhite
                 )
             }
@@ -342,17 +365,27 @@ private fun RewardBadge(
     emoji: String,
     value: String,
     label: String,
-    color: Color
+    color: Color,
+    isCompact: Boolean = false
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
-            Text(text = emoji, fontSize = 13.sp)
-            Text(text = value, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold), color = color)
+            Text(text = emoji, fontSize = if (isCompact) 11.sp else 13.sp)
+            Text(
+                text = value,
+                style = if (isCompact) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                       else MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                color = color
+            )
         }
-        Text(text = label, style = MaterialTheme.typography.labelSmall, color = MidnightLagoon.copy(alpha = 0.55f))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = if (isCompact) 9.5.sp else 11.sp),
+            color = MidnightLagoon.copy(alpha = 0.55f)
+        )
     }
 }
 
@@ -484,9 +517,16 @@ fun YarnChaseGame(
         }
     }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        val configuration = LocalConfiguration.current
+        val isCompact = configuration.screenHeightDp < 460
         Box(
             modifier = Modifier
+                .widthIn(max = if (isCompact) 480.dp else 360.dp)
+                .fillMaxWidth(if (isCompact) 0.85f else 0.92f)
                 .shadow(24.dp, RoundedCornerShape(28.dp))
                 .clip(RoundedCornerShape(28.dp))
                 .background(Color(0xFFFFF7ED))
@@ -496,7 +536,7 @@ fun YarnChaseGame(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                        .padding(horizontal = 16.dp, vertical = if (isCompact) 8.dp else 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -549,7 +589,7 @@ fun YarnChaseGame(
                     BoxWithConstraints(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(310.dp)
+                            .height(if (isCompact) 210.dp else 310.dp)
                             .padding(horizontal = 10.dp)
                             .clip(RoundedCornerShape(22.dp))
                             .background(Color(0xFFF8EDE0))
@@ -800,9 +840,16 @@ fun FeatherHuntGame(
         }
     }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        val configuration = LocalConfiguration.current
+        val isCompact = configuration.screenHeightDp < 460
         Box(
             modifier = Modifier
+                .widthIn(max = if (isCompact) 480.dp else 360.dp)
+                .fillMaxWidth(if (isCompact) 0.85f else 0.92f)
                 .shadow(24.dp, RoundedCornerShape(28.dp))
                 .clip(RoundedCornerShape(28.dp))
                 .background(Color(0xFFF0FDF4))
@@ -811,7 +858,7 @@ fun FeatherHuntGame(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                        .padding(horizontal = 16.dp, vertical = if (isCompact) 8.dp else 14.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -863,7 +910,7 @@ fun FeatherHuntGame(
                     BoxWithConstraints(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(310.dp)
+                            .height(if (isCompact) 210.dp else 310.dp)
                             .padding(horizontal = 10.dp)
                             .clip(RoundedCornerShape(22.dp))
                             .background(Color(0xFFE2F0E8))

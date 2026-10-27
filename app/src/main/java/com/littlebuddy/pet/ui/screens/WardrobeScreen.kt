@@ -83,9 +83,7 @@ import com.littlebuddy.pet.wardrobe.WardrobeCategory
 import com.littlebuddy.pet.wardrobe.WardrobeItem
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 
-/**
- * Màn hình Tủ đồ & Cá nhân hóa thú cưng.
- */
+
 @Composable
 fun WardrobeScreen(
     petState: PetState,
@@ -203,7 +201,6 @@ fun WardrobeScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 6.dp)
             ) {
-                // 1. Thanh điều hướng đầu trang
                 WardrobeTopBar(
                     petLevel = petState.level,
                     onBack = onBack,
@@ -213,7 +210,6 @@ fun WardrobeScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // 2. Sân khấu thử đồ Fashion Studio
                 WardrobeStageCard(
                     petState = petState,
                     previewWardrobe = previewWardrobe,
@@ -225,7 +221,6 @@ fun WardrobeScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 3. Thanh tab danh mục Floating Pills
                 WardrobeCategoryFloatingTabs(
                     selectedCategory = selectedCategory,
                     onSelectCategory = {
@@ -263,13 +258,6 @@ fun WardrobeScreen(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// CÁC THÀNH PHẦN GIAO DIỆN CON (MODERN UI COMPONENTS)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Thanh tiêu đề tối giản, tinh tế
- */
 @Composable
 private fun WardrobeTopBar(
     petLevel: Int,
@@ -288,7 +276,6 @@ private fun WardrobeTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Nút Back tròn tối giản
             Box(
                 modifier = Modifier
                     .size(38.dp)
@@ -317,14 +304,13 @@ private fun WardrobeTopBar(
                         fontWeight = FontWeight.Bold,
                         color = MidnightLagoon
                     )
-                    // Huy hiệu cấp độ người chơi thanh lịch
                     Surface(
                         shape = RoundedCornerShape(10.dp),
                         color = Color(0xFFFFF3D6),
                         border = BorderStroke(1.dp, Color(0xFFFFD166).copy(alpha = 0.6f))
                     ) {
                         Text(
-                            text = "👑 Lv.$petLevel",
+                            text = "Lv.$petLevel",
                             color = Color(0xFFB45309),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -373,9 +359,6 @@ private fun WardrobeTopBar(
     }
 }
 
-/**
- * Sân khấu thử đồ thời trang (Podium Showcase) với ánh sáng mềm và khay phụ kiện đang đeo
- */
 @Composable
 private fun WardrobeStageCard(
     petState: PetState,
@@ -398,14 +381,12 @@ private fun WardrobeStageCard(
                 .padding(horizontal = 12.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Sân khấu có bục Podium elip và ánh sáng mềm
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp),
                 contentAlignment = Alignment.Center
             ) {
-                // Vẽ bục Podium và ánh sáng studio
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val w = size.width
                     val h = size.height
@@ -414,7 +395,6 @@ private fun WardrobeStageCard(
                     val podiumX = w / 2f
                     val podiumY = h * 0.83f
 
-                    // 1. Quầng sáng ambient spotlight mềm
                     drawOval(
                         brush = Brush.radialGradient(
                             colors = listOf(Color(0x35E8C8B0), Color(0x00E8C8B0)),
@@ -425,14 +405,12 @@ private fun WardrobeStageCard(
                         size = Size(podiumW * 1.8f, podiumH * 3.4f)
                     )
 
-                    // 2. Chân bục tầng dưới
                     drawOval(
                         color = Color(0xFFDECDB9),
                         topLeft = Offset(podiumX - podiumW / 2f, podiumY - podiumH / 2f + 4.dp.toPx()),
                         size = Size(podiumW, podiumH)
                     )
 
-                    // 3. Mặt bục tầng trên
                     drawOval(
                         color = Color(0xFFF3ECE0),
                         topLeft = Offset(podiumX - podiumW / 2f, podiumY - podiumH / 2f),
@@ -445,7 +423,6 @@ private fun WardrobeStageCard(
                         style = Stroke(width = 1.5f)
                     )
 
-                    // 4. Bóng đổ tiếp xúc chân mèo
                     drawOval(
                         color = Color(0x354A3B32),
                         topLeft = Offset(podiumX - podiumW * 0.28f, podiumY - podiumH * 0.28f),
@@ -453,7 +430,6 @@ private fun WardrobeStageCard(
                     )
                 }
 
-                // Nhân vật Mèo Vector Canvas thời trang
                 PetCanvas(
                     petState = petState,
                     actionState = PetActionState.IDLE,
@@ -466,7 +442,6 @@ private fun WardrobeStageCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Khay trang bị đang mặc (Equipped Items Tray) có nút ✕ tháo nhanh
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -520,9 +495,6 @@ private fun WardrobeStageCard(
     }
 }
 
-/**
- * Chip hiển thị món đồ đang thử trong Khay phụ kiện, có dấu ✕ tháo nhanh
- */
 @Composable
 private fun EquippedTrayChip(
     icon: String,
@@ -562,7 +534,7 @@ private fun EquippedTrayChip(
 }
 
 /**
- * Thanh chuyển đổi danh mục phong cách Floating Pills hiện đại
+ * Thanh chuyển đổi danh mục
  */
 @Composable
 private fun WardrobeCategoryFloatingTabs(
@@ -656,9 +628,6 @@ private fun WardrobeItemsGrid(
     }
 }
 
-/**
- * Thẻ hiển thị một trang phục/màu lông trong lưới
- */
 @Composable
 private fun WardrobeItemCard(
     item: WardrobeItem,
@@ -697,7 +666,6 @@ private fun WardrobeItemCard(
                     .padding(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Vùng chứa hình vẽ Vector Thumbnail (nền tròn mềm mại)
                 Box(
                     modifier = Modifier
                         .size(62.dp)
@@ -727,7 +695,7 @@ private fun WardrobeItemCard(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Nhãn trạng thái tinh tế
+                // Nhãn trạng thái
                 when {
                     isPreviewEquipped -> {
                         Surface(
@@ -776,7 +744,6 @@ private fun WardrobeItemCard(
                 }
             }
 
-            // Huy hiệu khóa kính mờ thanh lịch ở góc trên phải (không che đen thui thumbnail)
             if (isLocked) {
                 Surface(
                     shape = RoundedCornerShape(topEnd = 18.dp, bottomStart = 10.dp),
@@ -845,9 +812,7 @@ private fun WardrobeItemCard(
     }
 }
 
-/**
- * Thanh nút Lưu thay đổi cố định dưới cùng
- */
+
 @Composable
 private fun WardrobeBottomActions(
     onConfirm: () -> Unit
@@ -887,14 +852,6 @@ private fun WardrobeBottomActions(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// HỆ THỐNG VẼ THUMBNAIL VECTOR 100% CANVAS (ĐẶC BIỆT CHĂM CHÚT TỪNG MÀU LÔNG)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Vẽ Thumbnail vector cho từng món đồ trong Tủ đồ.
- * Đặc biệt: Mỗi màu lông mèo được vẽ với nhận diện chibi riêng biệt, chuẩn màu Nâu - Xám - Trắng cho Tam Thể.
- */
 @Composable
 private fun WardrobeItemThumbnail(
     item: WardrobeItem,
@@ -907,7 +864,6 @@ private fun WardrobeItemThumbnail(
         val cx = w / 2f
         val cy = h / 2f
 
-        // Hiệu ứng mờ nhẹ nếu bị khóa
         val contentAlpha = if (isLocked) 0.60f else 1.0f
 
         when (item.category) {
@@ -951,14 +907,13 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     val r = w * 0.32f
     val strokeWidth = 2.2f
 
-    // Bóng đổ nhẹ dưới đáy đầu mèo
     drawOval(
         color = Color(0x18302020).copy(alpha = alpha * 0.5f),
         topLeft = Offset(cx - r * 0.85f, cy + r * 0.70f),
         size = Size(r * 1.7f, r * 0.45f)
     )
 
-    // 1. Hai tai mèo
+    // 1. Hai tai
     val leftEarPath = Path().apply {
         moveTo(cx - r * 0.75f, cy - r * 0.35f)
         lineTo(cx - r * 0.82f, cy - r * 1.12f)
@@ -978,7 +933,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     drawPath(rightEarPath, color = rightEarColor.copy(alpha = alpha))
     drawPath(rightEarPath, color = p.outlineColor.copy(alpha = alpha), style = Stroke(width = strokeWidth))
 
-    // Ruột tai trong màu hồng phấn
     val leftInner = Path().apply {
         moveTo(cx - r * 0.65f, cy - r * 0.42f)
         lineTo(cx - r * 0.72f, cy - r * 0.95f)
@@ -994,14 +948,14 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     drawPath(leftInner, color = p.innerEarColor.copy(alpha = alpha))
     drawPath(rightInner, color = p.innerEarColor.copy(alpha = alpha))
 
-    // 2. Đầu tròn chibi
+    // 2. Đầu
     drawCircle(color = p.bodyColor.copy(alpha = alpha), radius = r, center = Offset(cx, cy))
     drawCircle(color = p.outlineColor.copy(alpha = alpha), radius = r, center = Offset(cx, cy), style = Stroke(width = strokeWidth))
 
-    // 3. Mảng hoa văn đặc trưng theo từng Skin
+    // 3. Mảng hoa văn đ
     when (item.id) {
         WardrobeRegistry.ID_FUR_SIAMESE -> {
-            // Mèo Xiêm: Mặt nạ mocha oval quanh mắt mũi
+            // Mèo Xiêm
             drawOval(
                 color = p.patchColor.copy(alpha = alpha * 0.9f),
                 topLeft = Offset(cx - r * 0.50f, cy - r * 0.40f),
@@ -1009,7 +963,7 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
             )
         }
         WardrobeRegistry.ID_FUR_GINGER -> {
-            // Mèo Cam: 3 sọc trán cam mật ong
+            // Mèo Cam
             listOf(-r * 0.20f, 0f, r * 0.20f).forEach { ox ->
                 drawLine(
                     color = Color(0xFFD46228).copy(alpha = alpha),
@@ -1021,8 +975,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
             }
         }
         WardrobeRegistry.ID_FUR_CALICO -> {
-            // Mèo Tam Thể: Nửa mặt trái Nâu, nửa mặt phải Xám!
-            // Mảng nâu mặt trái
             val brownPatch = Path().apply {
                 moveTo(cx, cy - r * 0.95f)
                 cubicTo(cx - r * 0.50f, cy - r * 0.90f, cx - r * 0.90f, cy - r * 0.40f, cx - r * 0.75f, cy)
@@ -1031,7 +983,7 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
             }
             drawPath(brownPatch, color = p.patchColor.copy(alpha = alpha * 0.92f))
 
-            // Mảng xám mặt phải
+
             val greyPatch = Path().apply {
                 moveTo(cx, cy - r * 0.95f)
                 cubicTo(cx + r * 0.50f, cy - r * 0.90f, cx + r * 0.90f, cy - r * 0.40f, cx + r * 0.75f, cy)
@@ -1043,13 +995,12 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
         }
     }
 
-    // 4. Hai mắt hạt đậu long lanh
+    // 4. Hai mắt
     val eyeOx = r * 0.34f
     val eyeOy = cy - r * 0.08f
     val eyeRadius = r * 0.13f
 
     if (item.id == WardrobeRegistry.ID_FUR_CALICO) {
-        // Mắt dị sắc tố: Trái xanh ngọc bích, Phải hổ phách sáng
         drawCircle(color = p.eyeColor.copy(alpha = alpha), radius = eyeRadius, center = Offset(cx - eyeOx, eyeOy))
         drawCircle(color = Color(0xFFF2C14E).copy(alpha = alpha), radius = eyeRadius, center = Offset(cx + eyeOx, eyeOy))
         // Đồng tử mắt phải
@@ -1063,17 +1014,14 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx - eyeOx - 1.2f, eyeOy - 1.2f))
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx + eyeOx - 1.2f, eyeOy - 1.2f))
 
-    // 5. Mũi nhỏ xinh xắn
+    // 5. Mũi
     drawCircle(color = p.noseColor.copy(alpha = alpha), radius = r * 0.09f, center = Offset(cx, cy + r * 0.16f))
 
-    // 6. Má hồng watercolor đào nhẹ
+    // 6. Má
     drawCircle(color = Color(0x55FFA8A4).copy(alpha = alpha), radius = r * 0.16f, center = Offset(cx - r * 0.52f, cy + r * 0.18f))
     drawCircle(color = Color(0x55FFA8A4).copy(alpha = alpha), radius = r * 0.16f, center = Offset(cx + r * 0.52f, cy + r * 0.18f))
 }
 
-/**
- * Vẽ Thumbnail vector cho Nơ & Mũ cài đầu
- */
 private fun DrawScope.drawHeadwearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
     // Bóng đổ đáy
     drawOval(
@@ -1159,9 +1107,7 @@ private fun DrawScope.drawHeadwearThumbnail(id: String, cx: Float, cy: Float, w:
     }
 }
 
-/**
- * Vẽ Thumbnail vector cho Vòng cổ & Khăn quàng
- */
+
 private fun DrawScope.drawNeckwearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
     drawOval(
         color = Color(0x15302020).copy(alpha = alpha * 0.5f),
@@ -1219,9 +1165,7 @@ private fun DrawScope.drawNeckwearThumbnail(id: String, cx: Float, cy: Float, w:
     }
 }
 
-/**
- * Vẽ Thumbnail vector cho Trang phục thân người
- */
+
 private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
     drawOval(
         color = Color(0x15302020).copy(alpha = alpha * 0.5f),
