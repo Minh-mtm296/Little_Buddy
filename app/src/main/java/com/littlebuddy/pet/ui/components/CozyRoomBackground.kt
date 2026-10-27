@@ -52,14 +52,10 @@ private val PlaidYellow = Color(0xFFF5D182)
 private val PlaidCream = Color(0xFFFFF7E4)
 private val PlaidGreen = Color(0xFF9EB584)
 
-/**
- * Hình nền căn phòng ấm cúng vẽ bằng Compose Canvas.
- */
 @Composable
 fun CozyRoomBackground(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "roomLife")
 
-    // Hạt bụi bay chậm và chùm nắng lung linh nhẹ nhàng
     val dustPhase by infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -80,11 +76,10 @@ fun CozyRoomBackground(modifier: Modifier = Modifier) {
     )
 
     Box(modifier = modifier) {
-        // Lớp tĩnh: không đọc state animate → Compose chỉ vẽ lại khi đổi kích thước
         Canvas(modifier = Modifier.matchParentSize()) {
             val w = size.width
             val h = size.height
-            val horizonY = h * 0.40f // Hạ chân tường xuống 40%, sàn rộng chiếm 60%
+            val horizonY = h * 0.40f
 
                     drawStripedWallAndWainscot(w, h, horizonY)
 
@@ -105,24 +100,20 @@ fun CozyRoomBackground(modifier: Modifier = Modifier) {
                     drawFloorAccessories(w, h)
         }
 
-        // Lớp động: chỉ nắng, quầng đèn, bụi
         Canvas(modifier = Modifier.matchParentSize()) {
             val w = size.width
             val h = size.height
 
-            // Chùm nắng ấm áp từ cửa sổ chiếu xiên qua phòng
             drawAutumnSunbeam(w, h, sunPulse)
 
-            // Quầng sáng đèn cây lung linh
             drawLampGlow(w, h, sunPulse)
 
-            // Hạt bụi vàng lơ lửng bay chậm trong chùm nắng
             drawFloatingDustMotes(w, h, dustPhase, sunPulse)
         }
     }
 }
 
-// ── 1. TƯỜNG KẺ SỌC & PHÀO CHÂN TƯỜNG ───────────────────────────────────────
+// ── 1. TƯỜNG KẺ SỌC & PHÀO CHÂN TƯỜNG ──────────────────────
 
 private fun DrawScope.drawStripedWallAndWainscot(w: Float, h: Float, horizonY: Float) {
     val wainscotTop = h * 0.31f
@@ -137,7 +128,7 @@ private fun DrawScope.drawStripedWallAndWainscot(w: Float, h: Float, horizonY: F
         )
     }
 
-    // Phào chân tường (Wainscoting)
+    // Phào chân tường
     drawRect(
         color = WainscotBg,
         topLeft = Offset(0f, wainscotTop),
@@ -180,7 +171,7 @@ private fun DrawScope.drawStripedWallAndWainscot(w: Float, h: Float, horizonY: F
         strokeWidth = 4.dp.toPx()
     )
 
-    // Đèn dây đom đóm (Fairy string lights) uốn lượn ấm áp dọc mép tường
+    // Đèn dây đom đóm
     val bulbCount = 7
     val startX = w * 0.32f
     val endX = w * 0.95f
@@ -372,7 +363,7 @@ private fun DrawScope.drawGothicAutumnWindow(w: Float, h: Float) {
     drawPath(leafCarve, color = WoodHighlight)
     drawPath(leafCarve, color = WoodDark, style = Stroke(width = 2.5.dp.toPx()))
 
-    // 4.3 Mặt kính cửa sổ (Cảnh sắc thu vàng cam bên ngoài)
+    // 4.3 Mặt kính cửa sổ
     val glassMargin = winW * 0.08f
     val glassL = winL + glassMargin
     val glassT = winT + glassMargin * 0.5f
@@ -383,7 +374,7 @@ private fun DrawScope.drawGothicAutumnWindow(w: Float, h: Float) {
         addRect(androidx.compose.ui.geometry.Rect(glassL, glassT, glassL + glassW, glassT + glassH))
     }
     clipPath(glassPath) {
-        // Nền nắng thu vàng ấm
+        // Nền nắng thu
         drawRect(
             brush = Brush.verticalGradient(
                 colors = listOf(Color(0xFFFFE59E), Color(0xFFFFF6D6)),
@@ -460,8 +451,7 @@ private fun DrawScope.drawGothicAutumnWindow(w: Float, h: Float) {
     drawCircle(color = LeafGreenLight, radius = 7.dp.toPx(), center = Offset(potCx + 6.dp.toPx(), potBottomY - 18.dp.toPx()))
 }
 
-// ── 5. CHÙM NẮNG CHIẾU TỪ CỬA SỔ ────────────────────────────────────────────
-
+// ── 5. CHÙM NẮNg TỪ CỬA SỔ ───────────────────────────
 private fun DrawScope.drawAutumnSunbeam(w: Float, h: Float, sunGlow: Float) {
     val beamPath = Path().apply {
         moveTo(w * 0.08f, h * 0.12f)
@@ -1009,7 +999,6 @@ private fun DrawScope.drawFloorAccessories(w: Float, h: Float) {
     drawCircle(color = LeafGreenLight, radius = 7.dp.toPx(), center = Offset(plantX + 9.dp.toPx(), plantY - 4.dp.toPx()))
 }
 
-// ── 11. HẠT BỤI VÀNG BAY CHẬM TRONG NẮNG ─────────────────────────────────────
 
 private fun DrawScope.drawFloatingDustMotes(w: Float, h: Float, phase: Float, glow: Float) {
     val motes = listOf(

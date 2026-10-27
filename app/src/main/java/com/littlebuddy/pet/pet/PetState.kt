@@ -1,7 +1,7 @@
 package com.littlebuddy.pet.pet
 
 /**
- * Trạng thái và các chỉ số của thú cưng (0f..100f).
+ * Trạng thái và các chỉ số của thú cưng
  */
 data class PetState(
     val name: String = DEFAULT_PET_NAME,
@@ -97,7 +97,7 @@ data class PetState(
             level = newLevel,
             intimacyScore = (intimacyScore + 5).coerceAtMost(MAX_INTIMACY_SCORE),
             temporaryMood = null,
-            feedbackMessage = "$petName ăn no rồi~ Cảm ơn bạn nhiều lắm! 🐾",
+            feedbackMessage = "$petName ăn no rồi~🐾",
             lastInteractionTimestamp = System.currentTimeMillis()
         )
     }
@@ -108,7 +108,7 @@ data class PetState(
                 happiness = (happiness + 5f).coerceIn(0f, 100f),
                 intimacyScore = (intimacyScore + 2).coerceAtMost(MAX_INTIMACY_SCORE),
                 lastInteractionTimestamp = System.currentTimeMillis(),
-                feedbackMessage = "$petName khẽ cựa quậy trong giấc mơ vì được bạn vuốt ve..."
+                feedbackMessage = "$petName khẽ cựa quậy ..."
             )
         }
         val newHappiness = (happiness + 15f).coerceIn(0f, 100f)
@@ -153,7 +153,7 @@ data class PetState(
             level = newLevel,
             intimacyScore = (intimacyScore + 15).coerceAtMost(MAX_INTIMACY_SCORE),
             temporaryMood = PetMood.PLAYFUL,
-            feedbackMessage = "Bắt được rồi! Chơi cùng $petName nữa đi bạn ơi!$levelUpMsg",
+            feedbackMessage = "Bắt được rồi! Chơi cùng $petName nữa đi!$levelUpMsg",
             lastInteractionTimestamp = System.currentTimeMillis()
         )
     }
@@ -177,7 +177,7 @@ data class PetState(
     }
 
     /**
-     * Tính toán chỉ số suy giảm hoặc hồi phục theo thời gian trôi qua (phút).
+     *chỉ số suy giảm hoặc hồi phục theo thời gian trôi qua
      */
     fun applyTimeElapsed(elapsedMinutes: Long): PetState {
         val safeMinutes = elapsedMinutes.coerceAtLeast(0)
@@ -197,7 +197,7 @@ data class PetState(
     }
 
     /**
-     * Tính toán kinh nghiệm và xử lý lên cấp lũy tiến.
+     *  kinh nghiệm và xử lý lên cấp lũy tiến.
      */
     internal fun gainExp(amount: Int): Pair<Int, Int> {
         var currentExp = exp + amount
@@ -210,7 +210,7 @@ data class PetState(
     }
 }
 
-/** Phụ kiện cho thú cưng (dùng cho dữ liệu lưu trữ tương thích ngược) */
+/** Phụ kiện cho thú cưng */
 enum class PetAccessory(val displayName: String, val category: String, val emoji: String) {
     RIBBON("Nơ hồng", "Nơ & Mũ", "🎀"),
     HAT("Mũ cói", "Nơ & Mũ", "👒"),

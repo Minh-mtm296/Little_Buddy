@@ -49,7 +49,7 @@ import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 import kotlinx.coroutines.delay
 
 /**
- * Hộp thoại tùy chỉnh: Đặt tên / Đổi tên thú cưng & Xem hồ sơ bé mèo
+ * Hộp thoại Đặt tên / Đổi tên thú cưng & Xem hồ sơ bé mèo
  */
 @Composable
 fun PetProfileDialog(
@@ -212,7 +212,7 @@ fun PetProfileDialog(
                             color = MidnightLagoon
                         )
                         Text(
-                            text = "Có thể đổi màu lông & trang phục trong Tủ đồ 👗",
+                            text = "Có thể đổi màu lông & trang phục trong Tủ đồ",
                             style = MaterialTheme.typography.labelSmall,
                             color = MidnightLagoon.copy(alpha = 0.7f)
                         )

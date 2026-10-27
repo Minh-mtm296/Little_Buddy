@@ -4,10 +4,6 @@ import androidx.annotation.DrawableRes
 import com.littlebuddy.pet.R
 import com.littlebuddy.pet.pet.BowlFood
 
-/**
- * Ánh xạ tài nguyên Drawable cho BowlFood ở tầng UI.
- * Tách biệt hoàn toàn tầng Domain / State khỏi Android UI Resources (Clean Architecture).
- */
 @get:DrawableRes
 val BowlFood.drawableRes: Int
     get() = when (this) {

@@ -39,11 +39,6 @@ import com.littlebuddy.pet.ui.theme.MistySky
 import com.littlebuddy.pet.ui.theme.Rosewood
 import com.littlebuddy.pet.ui.theme.SoftWhite
 
-/**
- * Hàng 4 nút tương tác chính: Cho ăn, Chơi, Tủ đồ, Ngủ/Thức
- * Vuốt ve được thực hiện trực tiếp bằng cách chạm vào nhân vật.
- * Hỗ trợ chế độ hiển thị lưới 2x2 ([isGrid] = true) khi màn hình xoay ngang.
- */
 @Composable
 fun PetActionButtons(
     petState: PetState,

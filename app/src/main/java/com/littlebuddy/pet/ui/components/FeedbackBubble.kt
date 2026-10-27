@@ -42,9 +42,7 @@ import com.littlebuddy.pet.ui.theme.MidnightLagoon
 import com.littlebuddy.pet.ui.theme.Rosewood
 import com.littlebuddy.pet.ui.theme.SoftWhite
 
-/**
- * Bong bóng lời thoại (khi thức) hoặc đám mây giấc mơ (khi ngủ) của thú cưng.
- */
+
 @Composable
 fun FeedbackBubble(
     message: String,
@@ -64,7 +62,6 @@ fun FeedbackBubble(
         label = "bubbleHoverY"
     )
 
-    // Giữ nội dung cũ khi fade-out để tránh giật text
     var lastNonBlankMessage by remember { mutableStateOf(message) }
     if (message.isNotBlank()) {
         lastNonBlankMessage = message
@@ -133,7 +130,7 @@ fun FeedbackBubble(
 }
 
 /**
- * Vẽ bong bóng thoại comic có đuôi trỏ về vị trí mèo.
+ * Vẽ bong bóng thoại
  */
 private fun DrawScope.drawSpeechBubble(
     w: Float,
@@ -175,9 +172,7 @@ private fun DrawScope.drawSpeechBubble(
     )
 }
 
-/**
- * Vẽ đám mây giấc mơ với các hạt suy nghĩ trôi xuống đầu mèo khi ngủ.
- */
+
 private fun DrawScope.drawDreamCloudBubble(
     w: Float,
     h: Float,
@@ -211,7 +206,6 @@ private fun DrawScope.drawDreamCloudBubble(
     drawPath(cloudPath, color = dreamCloudBg)
     drawPath(cloudPath, color = dreamBorder, style = Stroke(width = strokeW))
 
-    // Ba hạt suy nghĩ dẫn từ đám mây xuống đầu mèo
     val baseDotX = (w * tailFraction).coerceIn(w * 0.25f, w * 0.75f)
 
     val dot1Center = Offset(baseDotX, bodyH + 3.8.dp.toPx())

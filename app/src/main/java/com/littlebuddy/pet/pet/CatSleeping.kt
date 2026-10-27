@@ -86,20 +86,18 @@ internal fun DrawScope.drawSleepingChibiCat(
     wardrobe: EquippedWardrobe,
     legacyAccessory: PetAccessory? = null
 ) {
-    // Độ dày nét: tỉ lệ theo u (ảnh mẫu ≈ 0.012u); sàn 1.6px để không biến mất khi vẽ nhỏ
     val lineW = (u * 0.014f).coerceAtLeast(1.6f)
-    val strokeW = (baseU * 0.033f).coerceAtLeast(3.8f) // vẫn dùng cho phụ kiện/trang phục
+    val strokeW = (baseU * 0.033f).coerceAtLeast(3.8f)
 
     val isLightFur = palette.bodyColor.luminance() > 0.60f
     val outlineCol = when {
-        palette.bodyColor.luminance() < 0.30f -> Color(0xFF2A242B) // mèo đen
-        else -> Color(0xFF8C6A72)                                  // cocoa mauve như ảnh mẫu
+        palette.bodyColor.luminance() < 0.30f -> Color(0xFF2A242B)
+        else -> Color(0xFF8C6A72)
     }
 
     val breath = (sleepingBreathScale - 1f) * 0.32f
     val wag = (tailWag / 10f) * (u * 0.018f)
 
-    // Biến đổi 1 điểm (đơn vị u) → pixel, có nhịp thở ở lưng và vẫy nhẹ ở đáy đuôi
     fun tx(x: Float, y: Float): Float {
         val tailW = ((y - 0.45f) / 0.30f).coerceIn(0f, 1f)
         return cx + x * u + wag * tailW
@@ -124,13 +122,11 @@ internal fun DrawScope.drawSleepingChibiCat(
     val shadowH = u * 0.44f
     val shadowX = cx + u * 0.02f
     val shadowY = cy + u * 0.74f
-    // Vầng bóng loang mềm mại
     drawOval(
         color = Color(0x332A1F1B),
         topLeft = Offset(shadowX - shadowW / 2f, shadowY - shadowH / 2f),
         size = Size(shadowW, shadowH)
     )
-    // Lớp bóng đậm tiếp xúc sàn ngay sát bụng tạo trọng lực tiếp đất vững chãi
     drawOval(
         color = Color(0x543A2720),
         topLeft = Offset(shadowX - (shadowW * 0.78f) / 2f, shadowY - (shadowH * 0.65f) / 2f),
@@ -160,7 +156,6 @@ internal fun DrawScope.drawSleepingChibiCat(
             wash(0.10f, 0.60f, 0.55f, 0xFFFFDDD6, 130)    // hồng đào dưới đuôi
             wash(-0.85f, 0.35f, 0.40f, 0xFFFFE3D8, 110)   // đào nhạt ở tai trái
         } else {
-            // Lông sẫm: chỉ một quầng sáng nhẹ trên lưng cho có khối
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = listOf(Color(0x30FFFFFF), Color(0x00FFFFFF)),
@@ -170,7 +165,6 @@ internal fun DrawScope.drawSleepingChibiCat(
             )
         }
 
-        // Đốm lông Calico
         if (wardrobe.furSkinId == "fur_siamese") {
             drawCircle(
                 color = palette.patchColor.copy(alpha = 0.75f),
@@ -195,7 +189,6 @@ internal fun DrawScope.drawSleepingChibiCat(
         } else if (wardrobe.furSkinId == "fur_calico") {
             val secColor = palette.secondaryPatchColor ?: Color(0xFF6B6E78)
 
-            // 1. Tai trên (Tai trái): phủ màu Nâu, ôm trọn theo chóp tai lông xù
             val earUpperCenter = pt(-0.54f, -0.46f)
             withTransform({ rotate(-15f, pivot = earUpperCenter) }) {
                 drawOval(
@@ -205,7 +198,6 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
 
-            // 2. Mảng mặt trên: vệt Nâu tự nhiên từ chân tai lan nhẹ qua trán
             val facePatchCenter = pt(-0.44f, -0.16f)
             withTransform({ rotate(-20f, pivot = facePatchCenter) }) {
                 drawOval(
@@ -225,7 +217,6 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
 
-            // 4. Mảng Nâu trên sống lưng: tràn qua đỉnh sống lưng (-0.75u) để bị clip theo viền lông xù
             val backBrownCenter = pt(0.04f, -0.62f)
             withTransform({ rotate(12f, pivot = backBrownCenter) }) {
                 drawOval(
@@ -235,7 +226,6 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
 
-            // 5. Mảng Xám trên sống lưng sau & hông: ôm tiếp nối theo đường cong lưng mèo
             val backGreyCenter = pt(0.48f, -0.52f)
             withTransform({ rotate(-18f, pivot = backGreyCenter) }) {
                 drawOval(
@@ -245,7 +235,6 @@ internal fun DrawScope.drawSleepingChibiCat(
                 )
             }
 
-            // 6. Đốm Nâu nhỏ điểm xuyết ở vai/cổ (tương thích vai phải ở tư thế đứng)
             val shoulderPatchCenter = pt(-0.16f, -0.38f)
             drawOval(
                 color = palette.patchColor.copy(alpha = 0.90f),
@@ -264,7 +253,7 @@ internal fun DrawScope.drawSleepingChibiCat(
     fillPoly(floatArrayOf(-1.033f, 0.386f, -0.936f, 0.309f, -0.829f, 0.309f, -0.829f, 0.402f, -0.936f, 0.425f), palette.innerEarColor)
     fillPoly(floatArrayOf(-0.379f, 0.322f, -0.322f, 0.303f, -0.344f, 0.357f), palette.noseColor)
 
-    // Má hồng: elip nghiêng, mờ dần ra rìa (watercolor)
+    // Má hồng
     listOf(
         floatArrayOf(-0.276f, 0.115f, 0.054f, 0.070f, -15.000f),
         floatArrayOf(-0.557f, 0.470f, 0.087f, 0.052f, -20.000f)

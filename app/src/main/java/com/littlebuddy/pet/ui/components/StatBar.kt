@@ -45,10 +45,6 @@ import com.littlebuddy.pet.ui.theme.Rosewood
 import com.littlebuddy.pet.ui.theme.SageLeaf
 import com.littlebuddy.pet.ui.theme.SoftWhite
 
-/**
- * Thanh tiến trình chỉ số chung (StatProgressBar) với hiệu ứng animation, bo tròn mềm mại
- * và hỗ trợ chỉ số trợ năng Accessibility Semantics (0f .. 100f).
- */
 @Composable
 fun StatProgressBar(
     progress: Float,

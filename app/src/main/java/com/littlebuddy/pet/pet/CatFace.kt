@@ -12,9 +12,7 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import com.littlebuddy.pet.wardrobe.CatColorPalette
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 
-/**
- * Gương mặt mèo chibi ngơ ngác đáng yêu: mặt nạ đốm, mắt nghiêng, mũi, miệng ^.
- */
+
 internal fun DrawScope.drawChibiFace(
     cx: Float,
     cy: Float,
@@ -27,7 +25,6 @@ internal fun DrawScope.drawChibiFace(
     strokeW: Float,
     palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!
 ) {
-    // 1. Mặt nạ đốm màu taupe/patch hình bầu dục / quả lê mềm mại ôm trọn mắt, mũi, miệng
     val maskPath = Path().apply {
         moveTo(cx, cy - u * 0.70f)
         cubicTo(
@@ -54,7 +51,6 @@ internal fun DrawScope.drawChibiFace(
     }
     drawPath(maskPath, color = palette.patchColor)
 
-    // Đốm màu thứ 3 đặc trưng cho mèo tam thể (Calico) ở nửa bên phải mặt
     palette.secondaryPatchColor?.let { secColor ->
         val calicoRightPatch = Path().apply {
             moveTo(cx, cy - u * 0.70f)
@@ -74,11 +70,9 @@ internal fun DrawScope.drawChibiFace(
     }
 
     val hasDarkSide = palette.secondaryPatchColor != null
-    // ox > 0 là mắt phải (nằm trên mảng tối); mắt hổ phách để nổi trên nền gần đen
     fun eyeColorAt(ox: Float): Color =
         if (hasDarkSide && ox > 0f) Color(0xFFF2C14E) else palette.eyeColor
 
-    // 2. Mắt dọc hạt đậu nghiêng nhẹ ngơ ngác \ /
     val eyeY = cy - u * 0.44f
     val eyeOffsetX = u * 0.25f
     val eyeW = u * 0.070f
@@ -88,7 +82,6 @@ internal fun DrawScope.drawChibiFace(
     val isBlinking = eyeScaleY < 0.2f
 
     if (isPetting) {
-        // Cười híp mắt hình cung trăng hạnh phúc ^ ^
         listOf(-eyeOffsetX to -6f, eyeOffsetX to 6f).forEach { (ox, rot) ->
             withTransform({
                 rotate(rot, pivot = Offset(cx + ox, eyeY))
@@ -105,7 +98,6 @@ internal fun DrawScope.drawChibiFace(
             }
         }
     } else if (isBlinking || mood == PetMood.SLEEPY) {
-        // Mắt nhắm khi chớp hoặc buồn ngủ
         listOf(-eyeOffsetX, eyeOffsetX).forEach { ox ->
             drawArc(
                 color = eyeColorAt(ox),
@@ -118,7 +110,6 @@ internal fun DrawScope.drawChibiFace(
             )
         }
     } else {
-        // Mắt dọc hạt đậu nghiêng nhẹ chuẩn ảnh \ /
         val currentEyeH = (eyeH * eyeScaleY).coerceAtLeast(eyeW * 0.35f)
         listOf(-eyeOffsetX to -6f, eyeOffsetX to 6f).forEach { (ox, rot) ->
             withTransform({
@@ -140,7 +131,6 @@ internal fun DrawScope.drawChibiFace(
         }
     }
 
-    // 3. Mũi hạt đậu / tam giác tròn nằm ngay giữa 2 mắt
     val noseY = cy - u * 0.43f
     val noseW = u * 0.085f
     val noseH = u * 0.065f
@@ -153,7 +143,6 @@ internal fun DrawScope.drawChibiFace(
     }
     drawPath(nosePath, color = palette.noseColor)
 
-    // 4. Miệng nhỏ chữ ^ dưới mũi chuẩn ảnh mẫu
     val mouthY = cy - u * 0.28f + (chewOffset * 0.3f)
     if (actionState == PetActionState.EATING || mood == PetMood.EATING) {
         drawOval(
@@ -170,7 +159,6 @@ internal fun DrawScope.drawChibiFace(
         drawPath(mouthPath, color = palette.outlineColor, style = Stroke(width = strokeW * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
 
-    // 5. Má hồng đào ửng nhẹ hai bên má (Blush)
     val blushAlpha = if (isPetting) 0.65f else 0.35f
     val blushRadius = u * 0.055f
     val blushY = cy - u * 0.35f
@@ -182,13 +170,12 @@ internal fun DrawScope.drawChibiFace(
         )
     }
 
-    // 6. Râu mèo Chibi thanh mảnh 2 bên má (3 sợi mỗi bên: trên, giữa, dưới)
+
     val whiskerColor = palette.outlineColor.copy(alpha = 0.60f)
     val whiskerStroke = Stroke(width = strokeW * 0.52f, cap = StrokeCap.Round)
     val whiskerBaseY = cy - u * 0.35f
     listOf(-1f, 1f).forEach { dir ->
         val startX = cx + dir * u * 0.31f
-        // Sợi trên: vươn ngang hơi chếch lên
         val topWhisker = Path().apply {
             moveTo(startX, whiskerBaseY - u * 0.038f)
             quadraticTo(
@@ -196,7 +183,6 @@ internal fun DrawScope.drawChibiFace(
                 startX + dir * u * 0.15f, whiskerBaseY - u * 0.048f
             )
         }
-        // Sợi giữa: vươn ngang tự nhiên dài nhất
         val midWhisker = Path().apply {
             moveTo(startX, whiskerBaseY)
             quadraticTo(
@@ -204,7 +190,6 @@ internal fun DrawScope.drawChibiFace(
                 startX + dir * u * 0.165f, whiskerBaseY + u * 0.002f
             )
         }
-        // Sợi dưới: vươn ngang hơi chếch xuống
         val btmWhisker = Path().apply {
             moveTo(startX, whiskerBaseY + u * 0.038f)
             quadraticTo(

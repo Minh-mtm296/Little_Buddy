@@ -15,9 +15,7 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-// ═════════════════════════════════════════════════════════════════════════════
-// VẼ PHỤ KIỆN VÀ TRANG PHỤC KHI ĐỨNG (STANDING WARDROBE)
-// ═════════════════════════════════════════════════════════════════════════════
+// VẼ PHỤ KIỆN VÀ TRANG PHỤC
 
 internal fun DrawScope.drawHeadwearOnChibiCat(
     headwearId: String?,
@@ -675,7 +673,6 @@ internal fun DrawScope.drawSleepingNeckwear(
     strokeW: Float
 ) {
     if (neckwearId == null) return
-    // Căn chuẩn vị trí rãnh cổ (neck groove) kết nối đầu nghiêng và ngực/sống lưng
     val nx = headCx + u * 0.34f
     val ny = headCy - u * 0.06f
 
@@ -883,7 +880,6 @@ internal fun DrawScope.drawSleepingHeadwear(
             }
         }
         else -> {
-            // ID phụ kiện đầu không xác định
         }
     }
 }
