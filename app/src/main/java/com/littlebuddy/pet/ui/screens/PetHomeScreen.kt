@@ -84,9 +84,6 @@ import com.littlebuddy.pet.ui.viewmodel.PetViewModel
 
 private val RoomFrameBrown = Color(0xFF6E5240)
 
-/**
- * Màn hình chính của Little Buddy.
- */
 @Composable
 fun PetHomeScreen(
     viewModel: PetViewModel,
@@ -192,7 +189,7 @@ fun PetHomeScreen(
                         }
                     }
                 } else {
-                    // Bố cục dọc (Portrait)
+                    // Bố cục dọc
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -200,7 +197,7 @@ fun PetHomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // ═══ A. HEADER THÔNG TIN ═════════════════════════════════════════
+                        // ═══ A. HEADER ════════════
                         PetHeaderSection(
                             petState = petState,
                             onEditClick = { showProfileDialog = true }
@@ -208,7 +205,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // ═══ B. KHU VỰC PHÒNG & NHÂN VẬT 2D CANVAS COZY ROOM ═══════════
+                        // ═══ B. KHU VỰC PHÒNG & NHÂN VẬT
                         PetRoomSection(
                             petState = petState,
                             actionState = actionState,
@@ -232,7 +229,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // ═══ C. THANH CHỈ SỐ THU GỌN (1 HÀNG NGANG) ═══════════════════
+                        // ═══ C. THANH CHỈ SỐ  ═════════
                         CompactStatsRow(
                             petState = petState,
                             modifier = Modifier.fillMaxWidth()
@@ -240,7 +237,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // ═══ D. CỤM PHÍM HÀNH ĐỘNG ═══════════════════════════════════════
+                        // ═══ D. CỤM PHÍM HÀNH ĐỘNG ═══════════════
                         PetActionButtons(
                             petState = petState,
                             onFeed = { viewModel.openFoodPicker() },
@@ -320,15 +317,7 @@ fun PetHomeScreen(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// KHU VỰC PHÒNG & NHÂN VẬT 2D CANVAS COZY ROOM
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Khu vực phòng và nhân vật 2D Cozy Room:
- * - Kích thước nhân vật mèo và các vật thể (bát, cuộn len, cột cào, cây) được tính toán theo tỉ lệ chiều cao và rộng của phòng.
- * - Tự động thích ứng mượt mà giữa chế độ đứng (Portrait) và ngang (Landscape).
- */
+// KHU VỰC PHÒNG & NHÂN VẬT
 @Composable
 private fun PetRoomSection(
     petState: PetState,
@@ -357,10 +346,10 @@ private fun PetRoomSection(
         val roomWidth = maxWidth
         val roomHeight = maxHeight
 
-        // 1. Background căn phòng pastel ấm cúng
+        // 1. Background
         CozyRoomBackground(modifier = Modifier.fillMaxSize())
 
-        // Lớp phủ ánh sáng đêm ấm áp khi mèo đi ngủ
+        // Lớp phủ ánh sáng đêm khi mèo đi ngủ
         val nightAlpha by animateFloatAsState(
             targetValue = if (petState.isSleeping || actionState == PetActionState.SLEEPING) 0.30f else 0f,
             animationSpec = tween(900),
@@ -374,7 +363,7 @@ private fun PetRoomSection(
             )
         }
 
-        // 2. Điểm chạm tương tác: Cột cào móng mèo ở góc phải phòng (X=0.88w, Y=0.58h)
+        // 2. Điểm chạm tương tác: Cột cào móng mèo ở góc phải phòng
         val scratchWidth = (roomWidth * 0.12f).coerceAtLeast(36.dp)
         val scratchHeight = (roomHeight * 0.20f).coerceAtLeast(46.dp)
         val scratchOffsetX = (roomWidth * 0.88f) - (scratchWidth / 2f)
@@ -391,7 +380,7 @@ private fun PetRoomSection(
                 ) { onScratchPost() }
         )
 
-        // 3. Điểm chạm tương tác: Chậu cây cảnh góc phòng (X=0.05w, Y=0.74h)
+        // 3. Điểm chạm tương tác: Chậu cây cảnh góc phòng
         val plantWidth = (roomWidth * 0.12f).coerceAtLeast(34.dp)
         val plantHeight = (roomHeight * 0.14f).coerceAtLeast(36.dp)
         val plantOffsetX = ((roomWidth * 0.05f) - (plantWidth / 2f)).coerceAtLeast(0.dp)
@@ -406,7 +395,7 @@ private fun PetRoomSection(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    onShowFeedback("🌿 Cây xanh đón nắng thu ấm áp, tươi tốt quá! ✨", 3000L)
+                    onShowFeedback(" Cây xanh đón nắng thu ấm áp", 3000L)
                 }
         )
 
@@ -446,7 +435,7 @@ private fun PetRoomSection(
             )
         }
 
-        // 6. Chú mèo chuyển động mượt mà (KÍCH THƯỚC TÍNH THEO PHÒNG)
+        // 6. Chú mèo chuyển động
         val isSleepingMode = petState.isSleeping || actionState == PetActionState.SLEEPING
         val catHeight = if (isSleepingMode) {
             (roomHeight * 0.50f).coerceIn(120.dp, 185.dp)
@@ -454,12 +443,10 @@ private fun PetRoomSection(
             (roomHeight * 0.68f).coerceIn(160.dp, 255.dp)
         }
         val catWidth = if (isSleepingMode) catHeight * 1.30f else catHeight * 0.95f
-        // Đồng nhất cao độ sàn tiếp đất cho cả đứng và ngủ để tránh hiện tượng lơ lửng
         val floorPad = roomHeight * 0.07f
 
         val maxTravelWidth = (roomWidth - catWidth).coerceAtLeast(0.dp)
         val currentOffsetX = if (isSleepingMode) {
-            // Mèo ngủ đặt sát góc trái phòng, nằm êm trên chiếc giường gỗ
             (roomWidth * 0.16f - catWidth * 0.5f).coerceAtLeast(6.dp)
         } else {
             maxTravelWidth * animatedCatX.coerceIn(0f, 1f)
@@ -495,26 +482,22 @@ private fun PetRoomSection(
             }
         }
 
-        // 7. Bong bóng lời thoại tương tác (Comic Speech & Thought Cloud Bubble)
+        // 7. Bong bóng lời thoại tương tác
         if (petState.feedbackMessage.isNotBlank()) {
             val catCenterX = currentOffsetX + catWidth * 0.5f
             val catCenterRatio = if (roomWidth > 0.dp) (catCenterX / roomWidth).coerceIn(0f, 1f) else 0.5f
 
-            // Vị trí đầu mèo khi ngủ: đầu mèo nằm ở khoảng 35% từ mép trái thân mèo
             val catHeadX = currentOffsetX + catWidth * 0.35f
             val catHeadFraction = if (roomWidth > 0.dp) (catHeadX / roomWidth).coerceIn(0.15f, 0.85f) else 0.25f
 
             val (bubbleHorizontalBias, tailPositionFraction, bubbleTopPadding) = if (isWideMode) {
-                // Ở chế độ ngang: Đặt bong bóng sang phía đối diện mèo để không che khuất
                 if (catCenterRatio < 0.5f) {
                     Triple(0.55f, 0.25f, (roomHeight * 0.10f).coerceAtLeast(8.dp))
                 } else {
                     Triple(-0.55f, 0.75f, (roomHeight * 0.10f).coerceAtLeast(8.dp))
                 }
             } else {
-                // Ở chế độ dọc
                 if (isSleepingMode) {
-                    // Mèo ngủ ở góc trái: Bong bóng đặt sang bên phải một chút để không che khuất mèo
                     Triple(0.35f, 0.20f, (roomHeight * 0.08f).coerceAtLeast(8.dp))
                 } else {
                     val bias = (catCenterRatio - 0.5f) * 1.5f
@@ -540,7 +523,7 @@ private fun PetRoomSection(
             }
         }
 
-        // 8. Nhãn trạng thái / gợi ý tương tác
+        // 8. Nhãn trạng thái
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -554,11 +537,11 @@ private fun PetRoomSection(
             Text(
                 text = when (actionState) {
                     PetActionState.WALKING -> "🐾 ${petState.petName} đang bước đi..."
-                    PetActionState.EATING -> "🍽️ ${petState.petName} đang thưởng thức món ngon~"
-                    PetActionState.SLEEPING -> "💤 ${petState.petName} đang cuộn tròn ngủ ngoan trên đệm..."
-                    PetActionState.WAKING_UP -> "✨ ${petState.petName} khẽ chớp mắt tỉnh giấc..."
-                    PetActionState.STRETCHING -> "🧘 ${petState.petName} đang vươn vai sảng khoái... Meo~"
-                    PetActionState.PETTING -> "💕 ${petState.petName} đang gầm gừ hạnh phúc vì được vuốt ve ♡"
+                    PetActionState.EATING -> "🍽️ ${petState.petName} đang thưởng thức món ăn, đừng làm phiền~"
+                    PetActionState.SLEEPING -> "💤 ${petState.petName} đang cuộn tròn ngủ trên đệm..."
+                    PetActionState.WAKING_UP -> " ${petState.petName} khẽ chớp mắt tỉnh giấc..."
+                    PetActionState.STRETCHING -> " ${petState.petName} đang vươn vai sảng khoái... Meo~"
+                    PetActionState.PETTING -> "💕 ${petState.petName} đang thoải vì được vuốt ve ♡"
                     else -> "Chạm vào ${petState.petName} để vuốt ve ♡"
                 },
                 style = MaterialTheme.typography.labelSmall,
@@ -570,15 +553,6 @@ private fun PetRoomSection(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// BÁT THỨC ĂN TRONG PHÒNG (DRAWABLE: R.drawable.bat_do_an)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Bát thức ăn hiển thị hình ảnh từ drawable (R.drawable.bat_do_an).
- * Khi đã chọn món, hiển thị đồ ăn trong lòng bát và nhãn tên món ăn.
- * Người dùng có thể chạm trực tiếp vào bát để mở bảng chọn thức ăn.
- */
 @Composable
 private fun FoodBowlInRoom(
     bowlFood: BowlFood,
@@ -611,7 +585,6 @@ private fun FoodBowlInRoom(
                 )
             }
 
-            // Hình ảnh chiếc bát lấy trực tiếp từ drawable tương ứng với món ăn (bat_do_an, bat_hat, bat_pate, bat_ca_kho)
             Image(
                 painter = painterResource(id = bowlFood.drawableRes),
                 contentDescription = bowlFood.displayName,
@@ -641,14 +614,7 @@ private fun FoodBowlInRoom(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// BÁT NƯỚC UỐNG TRONG PHÒNG
-// ═══════════════════════════════════════════════════════════════════════════════
 
-/**
- * Bát nước uống cho mèo đặt cạnh bát thức ăn.
- * Khi chạm vào, mèo được uống nước mát và hồi phục năng lượng/tâm trạng.
- */
 @Composable
 private fun WaterBowlInRoom(
     onDrinkWater: () -> Unit,
@@ -680,11 +646,9 @@ private fun WaterBowlInRoom(
                 )
             }
 
-            // Bát nước vẽ vector: viền gốm pastel + mặt nước trong xanh có ánh sáng phản chiếu
             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                 val bw = size.width
                 val bh = size.height
-                // Vành ngoài bát gốm sứ màu xanh ngọc nhạt
                 drawOval(
                     color = Color(0xFFC4E0DC),
                     topLeft = Offset(bw * 0.08f, bh * 0.16f),
@@ -696,13 +660,11 @@ private fun WaterBowlInRoom(
                     size = Size(bw * 0.84f, bh * 0.68f),
                     style = Stroke(width = (bh * 0.06f).coerceAtLeast(1.5f))
                 )
-                // Lòng nước trong xanh
                 drawOval(
                     color = Color(0xFF75BED7),
                     topLeft = Offset(bw * 0.16f, bh * 0.24f),
                     size = Size(bw * 0.68f, bh * 0.52f)
                 )
-                // Vệt sóng nước / phản quang lấp lánh
                 drawOval(
                     color = Color(0xFFBBE5F4),
                     topLeft = Offset(bw * 0.24f, bh * 0.30f),
@@ -724,13 +686,6 @@ private fun WaterBowlInRoom(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// CUỘN LEN CHƠI ĐÙA TRÊN SÀN (YARN BALL)
-// ═══════════════════════════════════════════════════════════════════════════════
-
-/**
- * Cuộn len sắc màu đặt trên thảm - điểm chạm chơi đùa của mèo khi người dùng nhấn vào.
- */
 @Composable
 private fun InteractiveYarnBall(
     onPlayYarn: () -> Unit,
@@ -748,7 +703,6 @@ private fun InteractiveYarnBall(
             modifier = Modifier.size(width = ballSize * 1.12f, height = ballSize),
             contentAlignment = Alignment.Center
         ) {
-            // Bóng đổ đáy cuộn len
             androidx.compose.foundation.Canvas(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -761,7 +715,6 @@ private fun InteractiveYarnBall(
                 )
             }
 
-            // Quả cầu len màu hồng đào ấm áp với vân sợi cuộn tròn
             androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
                 val cx = size.width * 0.48f
                 val cy = size.height * 0.46f
@@ -771,7 +724,6 @@ private fun InteractiveYarnBall(
                 drawCircle(color = Color(0xFFE88A7A), radius = r, center = Offset(cx, cy))
                 drawCircle(color = Color(0xFF8C4237), radius = r, center = Offset(cx, cy), style = Stroke(width = (r * 0.14f).coerceAtLeast(1.2f)))
 
-                // Vân sợi len đan chéo
                 drawArc(
                     color = Color(0xFFF7B5A8),
                     startAngle = 25f,
@@ -791,7 +743,6 @@ private fun InteractiveYarnBall(
                     style = Stroke(width = (r * 0.12f).coerceAtLeast(1.2f))
                 )
 
-                // Đuôi sợi len uốn lượn lăn dài trên sàn
                 val yarnThread = Path().apply {
                     moveTo(cx + r * 0.65f, cy + r * 0.5f)
                     quadraticTo(cx + r * 1.15f, cy + r * 0.75f, cx + r * 1.55f, cy + r * 0.65f)
@@ -806,10 +757,7 @@ private fun InteractiveYarnBall(
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
 // HEADER
-// ═══════════════════════════════════════════════════════════════════════════════
-
 @Composable
 private fun PetHeaderSection(
     petState: PetState,
