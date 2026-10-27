@@ -408,20 +408,20 @@ internal fun DrawScope.drawBodywearOnChibiCat(
             val stitchGold = Color(0xFFF3C262)
             val pocketBlue = Color(0xFF4A76A2)
 
-            // 1. Quai đeo vai (Straps) - Vắt tự nhiên qua vai mèo, dưới cổ, KHÔNG leo lên mặt
-            val strapWidth = u * 0.085f * scaleX
+            // 1. Quai đeo vai (Straps) - Vắt tự nhiên qua vai từ sau gáy, không bị cụt
+            val strapWidth = u * 0.082f * scaleX
             val strapLeft = Path().apply {
-                moveTo(cx - u * 0.29f * scaleX, cy - u * 0.15f * scaleY)
-                lineTo(cx - u * 0.29f * scaleX + strapWidth, cy - u * 0.15f * scaleY)
-                lineTo(cx - u * 0.18f * scaleX + strapWidth * 0.8f, cy + u * 0.11f * scaleY)
-                lineTo(cx - u * 0.18f * scaleX - strapWidth * 0.2f, cy + u * 0.11f * scaleY)
+                moveTo(cx - u * 0.34f * scaleX, cy - u * 0.22f * scaleY)
+                lineTo(cx - u * 0.34f * scaleX + strapWidth, cy - u * 0.22f * scaleY)
+                lineTo(cx - u * 0.16f * scaleX + strapWidth * 0.6f, cy + u * 0.09f * scaleY)
+                lineTo(cx - u * 0.16f * scaleX - strapWidth * 0.4f, cy + u * 0.09f * scaleY)
                 close()
             }
             val strapRight = Path().apply {
-                moveTo(cx + u * 0.29f * scaleX - strapWidth, cy - u * 0.15f * scaleY)
-                lineTo(cx + u * 0.29f * scaleX, cy - u * 0.15f * scaleY)
-                lineTo(cx + u * 0.18f * scaleX + strapWidth * 0.2f, cy + u * 0.11f * scaleY)
-                lineTo(cx + u * 0.18f * scaleX - strapWidth * 0.8f, cy + u * 0.11f * scaleY)
+                moveTo(cx + u * 0.34f * scaleX - strapWidth, cy - u * 0.22f * scaleY)
+                lineTo(cx + u * 0.34f * scaleX, cy - u * 0.22f * scaleY)
+                lineTo(cx + u * 0.16f * scaleX + strapWidth * 0.4f, cy + u * 0.09f * scaleY)
+                lineTo(cx + u * 0.16f * scaleX - strapWidth * 0.6f, cy + u * 0.09f * scaleY)
                 close()
             }
             drawPath(strapLeft, color = denimBlue)
@@ -429,112 +429,114 @@ internal fun DrawScope.drawBodywearOnChibiCat(
             drawPath(strapRight, color = denimBlue)
             drawPath(strapRight, color = denimDark, style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // Đường chỉ may dọc 2 quai yếm
+            // Chỉ may vàng dọc 2 quai
             drawLine(
                 color = stitchGold.copy(alpha = 0.75f),
-                start = Offset(cx - u * 0.25f * scaleX, cy - u * 0.13f * scaleY),
-                end = Offset(cx - u * 0.16f * scaleX, cy + u * 0.09f * scaleY),
+                start = Offset(cx - u * 0.30f * scaleX, cy - u * 0.20f * scaleY),
+                end = Offset(cx - u * 0.14f * scaleX, cy + u * 0.07f * scaleY),
                 strokeWidth = 1.4f,
                 cap = StrokeCap.Round
             )
             drawLine(
                 color = stitchGold.copy(alpha = 0.75f),
-                start = Offset(cx + u * 0.25f * scaleX, cy - u * 0.13f * scaleY),
-                end = Offset(cx + u * 0.16f * scaleX, cy + u * 0.09f * scaleY),
+                start = Offset(cx + u * 0.30f * scaleX, cy - u * 0.20f * scaleY),
+                end = Offset(cx + u * 0.14f * scaleX, cy + u * 0.07f * scaleY),
                 strokeWidth = 1.4f,
                 cap = StrokeCap.Round
             )
 
-            // 2. Thân yếm & Quần yếm Romper (ôm trọn phần bụng mũm mĩm, bo gấu tròn xinh)
+            // 2. Thân quần yếm (Dungarees) - Ôm trọn vẹn toàn bộ nửa thân dưới từ sườn trái sang phải
             val overallsBody = Path().apply {
                 // Mép trên ngực yếm (Bib top)
-                moveTo(cx - u * 0.22f * scaleX, cy + u * 0.07f * scaleY)
-                lineTo(cx + u * 0.22f * scaleX, cy + u * 0.07f * scaleY)
+                moveTo(cx - u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
+                lineTo(cx + u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
 
                 // Cạnh phải ngực xuống eo
-                lineTo(cx + u * 0.24f * scaleX, cy + u * 0.30f * scaleY)
+                lineTo(cx + u * 0.23f * scaleX, cy + u * 0.28f * scaleY)
 
-                // Vát hông phải lượn mượt theo thân mèo
+                // Cạp quần vát ngang ôm ra sườn phải mèo
+                lineTo(cx + u * 0.58f * scaleX, cy + u * 0.28f * scaleY)
+
+                // Men theo đúng đường cong sườn & hông phải của thân mèo
                 cubicTo(
-                    cx + u * 0.50f * scaleX, cy + u * 0.38f * scaleY,
-                    cx + u * 0.65f * scaleX, cy + u * 0.62f * scaleY,
-                    cx + u * 0.65f * scaleX, cy + u * 0.82f * scaleY
+                    cx + u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
+                    cx + u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
+                    cx + u * 0.66f * scaleX, cy + u * 0.88f * scaleY
                 )
 
-                // Ống quần phải: gấu bo tròn mềm mại
+                // Ống quần phải: gấu bo tròn ngang trên chân sau
                 cubicTo(
                     cx + u * 0.64f * scaleX, cy + u * 0.94f * scaleY,
-                    cx + u * 0.54f * scaleX, cy + u * 0.96f * scaleY,
-                    cx + u * 0.36f * scaleX, cy + u * 0.96f * scaleY
+                    cx + u * 0.52f * scaleX, cy + u * 0.95f * scaleY,
+                    cx + u * 0.36f * scaleX, cy + u * 0.95f * scaleY
                 )
-                cubicTo(
-                    cx + u * 0.22f * scaleX, cy + u * 0.96f * scaleY,
-                    cx + u * 0.14f * scaleX, cy + u * 0.94f * scaleY,
-                    cx + u * 0.08f * scaleX, cy + u * 0.91f * scaleY
-                )
+                lineTo(cx + u * 0.16f * scaleX, cy + u * 0.95f * scaleY)
 
-                // Rãnh giữa đũng quần nông và mềm mại (chibi romper)
+                // Đáy đũng quần võng cong nhẹ nhàng giữa 2 chân
                 quadraticTo(
-                    cx, cy + u * 0.88f * scaleY,
-                    cx - u * 0.08f * scaleX, cy + u * 0.91f * scaleY
+                    cx, cy + u * 0.89f * scaleY,
+                    cx - u * 0.16f * scaleX, cy + u * 0.95f * scaleY
                 )
 
-                // Ống quần trái: gấu bo tròn mềm mại
+                // Ống quần trái: gấu bo tròn ngang trên chân sau
+                lineTo(cx - u * 0.36f * scaleX, cy + u * 0.95f * scaleY)
                 cubicTo(
-                    cx - u * 0.14f * scaleX, cy + u * 0.94f * scaleY,
-                    cx - u * 0.22f * scaleX, cy + u * 0.96f * scaleY,
-                    cx - u * 0.36f * scaleX, cy + u * 0.96f * scaleY
-                )
-                cubicTo(
-                    cx - u * 0.54f * scaleX, cy + u * 0.96f * scaleY,
+                    cx - u * 0.52f * scaleX, cy + u * 0.95f * scaleY,
                     cx - u * 0.64f * scaleX, cy + u * 0.94f * scaleY,
-                    cx - u * 0.65f * scaleX, cy + u * 0.82f * scaleY
+                    cx - u * 0.66f * scaleX, cy + u * 0.88f * scaleY
                 )
 
-                // Vát hông trái lượn mượt lên eo
+                // Men theo đúng đường cong sườn & hông trái của thân mèo lên eo
                 cubicTo(
-                    cx - u * 0.65f * scaleX, cy + u * 0.62f * scaleY,
-                    cx - u * 0.50f * scaleX, cy + u * 0.38f * scaleY,
-                    cx - u * 0.24f * scaleX, cy + u * 0.30f * scaleY
+                    cx - u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
+                    cx - u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
+                    cx - u * 0.58f * scaleX, cy + u * 0.28f * scaleY
                 )
-                lineTo(cx - u * 0.22f * scaleX, cy + u * 0.07f * scaleY)
+
+                // Cạp quần trái nối vào yếm ngực
+                lineTo(cx - u * 0.23f * scaleX, cy + u * 0.28f * scaleY)
+                lineTo(cx - u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
                 close()
             }
             drawPath(overallsBody, color = denimBlue)
             drawPath(overallsBody, color = denimDark, style = Stroke(width = strokeW * 0.85f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // 3. Đường chỉ may cạp quần (Waistband stitch)
-            val waistStitch = Path().apply {
-                moveTo(cx - u * 0.48f * scaleX, cy + u * 0.35f * scaleY)
-                quadraticTo(cx, cy + u * 0.38f * scaleY, cx + u * 0.48f * scaleX, cy + u * 0.35f * scaleY)
+            // 3. Đường chỉ may cạp quần đôi (Double waistband stitching)
+            val waistStitch1 = Path().apply {
+                moveTo(cx - u * 0.56f * scaleX, cy + u * 0.29f * scaleY)
+                lineTo(cx + u * 0.56f * scaleX, cy + u * 0.29f * scaleY)
             }
-            drawPath(waistStitch, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round))
+            val waistStitch2 = Path().apply {
+                moveTo(cx - u * 0.56f * scaleX, cy + u * 0.33f * scaleY)
+                lineTo(cx + u * 0.56f * scaleX, cy + u * 0.33f * scaleY)
+            }
+            drawPath(waistStitch1, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.40f, cap = StrokeCap.Round))
+            drawPath(waistStitch2, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.40f, cap = StrokeCap.Round))
 
-            // 4. Đường gấu xắn quần 2 bên (Cuff hem stitching)
+            // 4. Khuy tán đồng ở 2 bên cạp quần (Side rivets)
+            listOf(-1f, 1f).forEach { side ->
+                val rivetX = cx + side * u * 0.52f * scaleX
+                val rivetY = cy + u * 0.31f * scaleY
+                drawCircle(color = Color(0xFFFFD166), radius = u * 0.020f, center = Offset(rivetX, rivetY))
+                drawCircle(color = Color(0xFF7A5800), radius = u * 0.020f, center = Offset(rivetX, rivetY), style = Stroke(width = strokeW * 0.35f))
+            }
+
+            // 5. Đường gấu xắn quần 2 bên (Cuff hem stitching)
             val cuffRight = Path().apply {
-                moveTo(cx + u * 0.12f * scaleX, cy + u * 0.91f * scaleY)
-                quadraticTo(cx + u * 0.36f * scaleX, cy + u * 0.93f * scaleY, cx + u * 0.58f * scaleX, cy + u * 0.91f * scaleY)
+                moveTo(cx + u * 0.18f * scaleX, cy + u * 0.90f * scaleY)
+                lineTo(cx + u * 0.54f * scaleX, cy + u * 0.90f * scaleY)
             }
             val cuffLeft = Path().apply {
-                moveTo(cx - u * 0.58f * scaleX, cy + u * 0.91f * scaleY)
-                quadraticTo(cx - u * 0.36f * scaleX, cy + u * 0.93f * scaleY, cx - u * 0.12f * scaleX, cy + u * 0.91f * scaleY)
+                moveTo(cx - u * 0.54f * scaleX, cy + u * 0.90f * scaleY)
+                lineTo(cx - u * 0.18f * scaleX, cy + u * 0.90f * scaleY)
             }
             drawPath(cuffRight, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round))
             drawPath(cuffLeft, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round))
 
-            // 5. Đường may chỉ đũng quần tinh tế (ngắn, vừa phải)
-            drawLine(
-                color = stitchGold.copy(alpha = 0.70f),
-                start = Offset(cx, cy + u * 0.72f * scaleY),
-                end = Offset(cx, cy + u * 0.87f * scaleY),
-                strokeWidth = strokeW * 0.45f,
-                cap = StrokeCap.Round
-            )
-
             // 6. Túi ngực yếm (Bib pocket) xinh xắn
-            val pw = u * 0.20f * scaleX
-            val ph = u * 0.15f * scaleY
-            val py = cy + u * 0.15f * scaleY
+            val pw = u * 0.21f * scaleX
+            val ph = u * 0.14f * scaleY
+            val py = cy + u * 0.11f * scaleY
             val pocketPath = Path().apply {
                 moveTo(cx - pw / 2f, py)
                 lineTo(cx + pw / 2f, py)
@@ -548,7 +550,7 @@ internal fun DrawScope.drawBodywearOnChibiCat(
             // 7. Khuy đồng cài yếm (Brass buttons) tròn xoe sáng bóng
             listOf(-1f, 1f).forEach { side ->
                 val btnX = cx + side * u * 0.165f * scaleX
-                val btnY = cy + u * 0.11f * scaleY
+                val btnY = cy + u * 0.08f * scaleY
                 drawCircle(color = Color(0xFFFFD166), radius = u * 0.030f, center = Offset(btnX, btnY))
                 drawCircle(color = Color(0xFF7A5800), radius = u * 0.030f, center = Offset(btnX, btnY), style = Stroke(width = strokeW * 0.45f))
                 drawCircle(color = Color(0xFF7A5800), radius = u * 0.009f, center = Offset(btnX, btnY))
