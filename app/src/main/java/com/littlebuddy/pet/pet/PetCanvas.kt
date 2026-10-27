@@ -212,9 +212,6 @@ private fun DrawScope.drawStandingChibiCat(
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
         translate(0f, pose.bodyBob * u)
     }) {
-        // Trang phục sau lưng (Áo choàng lưng hoàng gia xòe tà)
-        drawBackBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
-
         // Tai mèo
         drawCuteCatEars(
             cx = cx,
