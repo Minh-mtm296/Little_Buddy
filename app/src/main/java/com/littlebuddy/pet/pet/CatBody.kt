@@ -255,18 +255,6 @@ internal fun DrawScope.drawCuteCatEars(
     }
 }
 
-/**
- * Tên cũ để tương thích ngược.
- */
-@Deprecated("Use drawCuteCatEars instead", ReplaceWith("drawCuteCatEars(cx, cy, u, earWiggle, strokeW, palette)"))
-internal fun DrawScope.drawTallCatEars(
-    cx: Float,
-    cy: Float,
-    u: Float,
-    earWiggle: Float,
-    strokeW: Float,
-    palette: CatColorPalette = WardrobeRegistry.FUR_SIAMESE.palette!!
-) = drawCuteCatEars(cx, cy, u, earWiggle, strokeW, palette)
 
 /**
  * Đuôi mèo ngúng nguẩy sau hông phải theo nhịp hoạt ảnh.

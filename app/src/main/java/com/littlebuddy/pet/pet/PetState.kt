@@ -103,18 +103,17 @@ data class PetState(
     val canPlay: Boolean
         get() = !isSleeping && energy >= 15f && hunger >= 15f
 
-    val canFeed: Boolean
-        get() = !isSleeping && hunger < 100f
-
     /**
-     * Cho ăn (Feed): Tăng độ no, tăng nhẹ niềm vui
+     * Cho ăn (Feed): Tăng độ no và niềm vui theo loại thức ăn trong bát.
      */
-    fun feed(): PetState {
+    fun feed(food: BowlFood = BowlFood.DRY_FOOD): PetState {
         if (isSleeping) {
             return copy(feedbackMessage = "$petName đang ngủ say, đừng đánh thức bé nha!")
         }
-        val newHunger = (hunger + 30f).coerceIn(0f, 100f)
-        val newHappiness = (happiness + 10f).coerceIn(0f, 100f)
+        val hungerGain = if (food == BowlFood.EMPTY) 30f else food.hungerBoost
+        val happinessGain = if (food == BowlFood.EMPTY) 10f else food.happinessBoost
+        val newHunger = (hunger + hungerGain).coerceIn(0f, 100f)
+        val newHappiness = (happiness + happinessGain).coerceIn(0f, 100f)
         val (newExp, newLevel) = gainExp(15)
         return copy(
             hunger = newHunger,
@@ -122,8 +121,8 @@ data class PetState(
             exp = newExp,
             level = newLevel,
             intimacyScore = (intimacyScore + 5).coerceAtMost(MAX_INTIMACY_SCORE),
-            temporaryMood = PetMood.EATING,
-            feedbackMessage = "Chóp chép… ngon quá đi mất! $petName cảm ơn bạn nha ♡",
+            temporaryMood = null,
+            feedbackMessage = "$petName ăn no rồi~ Cảm ơn bạn nhiều lắm! 🐾",
             lastInteractionTimestamp = System.currentTimeMillis()
         )
     }
@@ -158,9 +157,9 @@ data class PetState(
      */
     fun play(
         happinessGain: Float = 25f,
-        energyCost: Float = 20f,
-        hungerCost: Float = 15f,
-        expGain: Int = 25
+        energyCost: Float = 18f,
+        hungerCost: Float = 12f,
+        expGain: Int = 15
     ): PetState {
         if (isSleeping) {
             return copy(feedbackMessage = "$petName đang ngủ rồi, để bé nghỉ ngơi nhé!")
@@ -176,6 +175,7 @@ data class PetState(
         val newEnergy = (energy - energyCost).coerceIn(0f, 100f)
         val newHunger = (hunger - hungerCost).coerceIn(0f, 100f)
         val (newExp, newLevel) = gainExp(expGain)
+        val levelUpMsg = if (newLevel > level) " 🎉 Chúc mừng $petName đã lên Cấp $newLevel!" else ""
         return copy(
             happiness = newHappiness,
             energy = newEnergy,
@@ -184,7 +184,7 @@ data class PetState(
             level = newLevel,
             intimacyScore = (intimacyScore + 15).coerceAtMost(MAX_INTIMACY_SCORE),
             temporaryMood = PetMood.PLAYFUL,
-            feedbackMessage = "Bắt được rồi! Chơi cùng $petName nữa đi bạn ơi!",
+            feedbackMessage = "Bắt được rồi! Chơi cùng $petName nữa đi bạn ơi!$levelUpMsg",
             lastInteractionTimestamp = System.currentTimeMillis()
         )
     }
@@ -210,13 +210,7 @@ data class PetState(
         }
     }
 
-    /**
-     * Hồi phục năng lượng trong lúc ngủ theo từng chu kỳ tick (~1 phút để nạp đầy năng lượng)
-     */
-    fun sleepTick(): PetState {
-        if (!isSleeping) return this
-        return copy(energy = (energy + 5f).coerceIn(0f, 100f))
-    }
+
 
     /**
      * Tính toán chỉ số suy giảm hoặc hồi phục dựa trên thời gian trôi qua (phút).

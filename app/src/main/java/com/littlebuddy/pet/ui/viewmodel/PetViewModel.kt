@@ -379,21 +379,7 @@ class PetViewModel(
             // Dùng activeMeal (đã khoá) thay vì đọc lại _bowlFood.value có thể đã bị ghi đè
             val lockedFood = activeMeal ?: BowlFood.EMPTY
             activeMeal = null
-            _petState.update { state ->
-                val newHunger = (state.hunger + lockedFood.hungerBoost).coerceIn(0f, 100f)
-                val newHappiness = (state.happiness + lockedFood.happinessBoost).coerceIn(0f, 100f)
-                val (newExp, newLevel) = gainExp(state, 15)
-                state.copy(
-                    hunger = newHunger,
-                    happiness = newHappiness,
-                    exp = newExp,
-                    level = newLevel,
-                    intimacyScore = (state.intimacyScore + 5).coerceAtMost(PetState.MAX_INTIMACY_SCORE),
-                    temporaryMood = null,
-                    feedbackMessage = "${state.petName} ăn no rồi~ Cảm ơn bạn nhiều lắm! 🐾",
-                    lastInteractionTimestamp = System.currentTimeMillis()
-                )
-            }
+            _petState.update { it.feed(lockedFood) }
             _bowlFood.value = BowlFood.EMPTY
             repository.persistPetState(_petState.value)
 
@@ -501,24 +487,7 @@ class PetViewModel(
         expGain: Int = 15
     ) {
         _actionState.value = PetActionState.IDLE
-        _petState.update { state ->
-            val newHappiness = (state.happiness + happinessGain).coerceIn(0f, 100f)
-            val newEnergy = (state.energy - energyCost).coerceIn(0f, 100f)
-            val newHunger = (state.hunger - hungerCost).coerceIn(0f, 100f)
-            val (newExp, newLevel) = gainExp(state, expGain)
-            val levelUpMsg = if (newLevel > state.level) " 🎉 Chúc mừng ${state.petName} đã lên Cấp $newLevel!" else ""
-            state.copy(
-                happiness = newHappiness,
-                energy = newEnergy,
-                hunger = newHunger,
-                exp = newExp,
-                level = newLevel,
-                intimacyScore = (state.intimacyScore + 15).coerceAtMost(PetState.MAX_INTIMACY_SCORE),
-                temporaryMood = PetMood.PLAYFUL,
-                feedbackMessage = "Bắt được rồi! Chơi cùng ${state.petName} nữa đi bạn ơi!$levelUpMsg",
-                lastInteractionTimestamp = System.currentTimeMillis()
-            )
-        }
+        _petState.update { it.play(happinessGain, energyCost, hungerCost, expGain) }
         persistAndScheduleMoodReset()
         startIdleLifeCycle()
     }
@@ -751,11 +720,7 @@ class PetViewModel(
         }
     }
 
-    /**
-     * Dùng lại `gainExp` từ `PetState` (internal fun) để không lặp logic — nguyên tắc DRY.
-     * Hàm này đơn giản là delegate để ViewModel gọi tiện hơn.
-     */
-    private fun gainExp(state: PetState, amount: Int): Pair<Int, Int> = state.gainExp(amount)
+
 
     /**
      * Gọi từ Activity.onResume() để bù trừ thời gian app bị background.

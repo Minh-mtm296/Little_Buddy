@@ -1,5 +1,6 @@
 package com.littlebuddy.pet
 
+import com.littlebuddy.pet.pet.BowlFood
 import com.littlebuddy.pet.pet.PetMood
 import com.littlebuddy.pet.pet.PetState
 import org.junit.Assert.assertEquals
@@ -16,11 +17,10 @@ class PetStateTest {
     @Test
     fun feed_increasesFullnessAndHappiness() {
         val initial = PetState(name = "Miu", hunger = 50f, happiness = 50f)
-        val updated = initial.feed()
+        val updated = initial.feed(BowlFood.FISH)
 
         assertEquals(80f, updated.hunger, 0.01f)
-        assertEquals(60f, updated.happiness, 0.01f)
-        assertEquals(PetMood.EATING, updated.temporaryMood)
+        assertEquals(70f, updated.happiness, 0.01f)
         assertTrue(updated.feedbackMessage.contains("Miu"))
     }
 
@@ -58,8 +58,8 @@ class PetStateTest {
         val updated = initial.play()
 
         assertEquals(75f, updated.happiness, 0.01f)
-        assertEquals(60f, updated.energy, 0.01f)
-        assertEquals(45f, updated.hunger, 0.01f)
+        assertEquals(62f, updated.energy, 0.01f)
+        assertEquals(48f, updated.hunger, 0.01f)
         assertEquals(PetMood.PLAYFUL, updated.temporaryMood)
     }
 
@@ -96,13 +96,7 @@ class PetStateTest {
         assertFalse(wokeUp.isSleeping)
     }
 
-    @Test
-    fun sleepTick_restoresEnergyUpTo100() {
-        val sleeping = PetState(isSleeping = true, energy = 95f)
-        val ticked = sleeping.sleepTick()
 
-        assertEquals(100f, ticked.energy, 0.01f)
-    }
 
     @Test
     fun currentMood_reflectsHungryStateWhenFullnessIsLow() {
@@ -113,7 +107,7 @@ class PetStateTest {
     @Test
     fun expAndLevel_levelsUpWhenReaching100Exp() {
         val initial = PetState(level = 1, exp = 85)
-        val afterPlay = initial.play() // +25 EXP -> 110 EXP -> Level 2, EXP 10
+        val afterPlay = initial.play(expGain = 25) // +25 EXP -> 110 EXP -> Level 2, EXP 10
 
         assertEquals(2, afterPlay.level)
         assertEquals(10, afterPlay.exp)

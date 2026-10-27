@@ -71,20 +71,3 @@ internal fun DrawScope.drawStar(center: Offset, size: Float) {
     }
     drawPath(starPath, color = StarColor)
 }
-
-internal fun DrawScope.drawEatingSnack(centerX: Float, snackY: Float, radius: Float) {
-    val snackSize = radius * 0.20f
-    val fishBodyW = snackSize * 1.4f
-    val fishBodyH = snackSize * 0.85f
-    drawOval(color = Color(0xFFF8BA78), topLeft = Offset(centerX - fishBodyW * 0.5f, snackY - fishBodyH * 0.5f), size = Size(fishBodyW, fishBodyH))
-    drawOval(color = CatOutline, topLeft = Offset(centerX - fishBodyW * 0.5f, snackY - fishBodyH * 0.5f), size = Size(fishBodyW, fishBodyH), style = Stroke(width = 2.5f))
-    val tailPath = Path().apply {
-        moveTo(centerX - fishBodyW * 0.45f, snackY)
-        lineTo(centerX - fishBodyW * 0.80f, snackY - fishBodyH * 0.40f)
-        lineTo(centerX - fishBodyW * 0.80f, snackY + fishBodyH * 0.40f)
-        close()
-    }
-    drawPath(tailPath, color = Color(0xFFF8BA78))
-    drawPath(tailPath, color = CatOutline, style = Stroke(width = 2.5f))
-    drawCircle(color = CatEyeBrown, radius = fishBodyH * 0.12f, center = Offset(centerX + fishBodyW * 0.22f, snackY - fishBodyH * 0.12f))
-}
