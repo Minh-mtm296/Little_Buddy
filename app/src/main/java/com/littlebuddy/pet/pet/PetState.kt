@@ -35,6 +35,8 @@ data class PetState(
 
         /** Tỷ lệ tiêu hao và hồi phục chỉ số theo thời gian (chuẩn hóa gameplay) */
         const val HUNGER_DECAY_PER_MINUTE = 0.2f
+        /** Khi đang ngủ, trao đổi chất chậm lại — giảm 75% so với thức */
+        const val SLEEP_HUNGER_DECAY_PER_MINUTE = 0.05f
         const val HAPPINESS_DECAY_PER_MINUTE = 0.15f
         const val SLEEP_ENERGY_RECOVER_PER_MINUTE = 4.0f
 
@@ -222,7 +224,9 @@ data class PetState(
      */
     fun applyTimeElapsed(elapsedMinutes: Long): PetState {
         val safeMinutes = elapsedMinutes.coerceAtLeast(0)
-        val decayedHunger = (hunger - (safeMinutes * HUNGER_DECAY_PER_MINUTE)).coerceIn(0f, 100f)
+        // Khi ngủ trao đổi chất chậm lại 75% — tránh mèo thức giấc với bụng rỗng hoàn toàn
+        val hungerDecayRate = if (isSleeping) SLEEP_HUNGER_DECAY_PER_MINUTE else HUNGER_DECAY_PER_MINUTE
+        val decayedHunger = (hunger - (safeMinutes * hungerDecayRate)).coerceIn(0f, 100f)
         val decayedHappiness = (happiness - (safeMinutes * HAPPINESS_DECAY_PER_MINUTE)).coerceIn(0f, 100f)
         val updatedEnergy = if (isSleeping) {
             (energy + (safeMinutes * SLEEP_ENERGY_RECOVER_PER_MINUTE)).coerceIn(0f, 100f)
@@ -238,15 +242,17 @@ data class PetState(
 
     /**
      * Tính toán kinh nghiệm và lên cấp.
+     * Xử lý đúng trường hợp EXP vượt ngưỡng nhiều lần trong một lần nhận thưởng lớn.
      * Được khai báo `internal` để ViewModel dùng chung, tránh duplicate logic (nguyên tắc DRY).
      */
     internal fun gainExp(amount: Int): Pair<Int, Int> {
-        val totalExp = exp + amount
-        return if (totalExp >= expToNextLevel) {
-            Pair(totalExp - expToNextLevel, level + 1)
-        } else {
-            Pair(totalExp, level)
+        var currentExp = exp + amount
+        var currentLevel = level
+        while (currentExp >= expToNextLevel) {
+            currentExp -= expToNextLevel
+            currentLevel++
         }
+        return Pair(currentExp, currentLevel)
     }
 }
 

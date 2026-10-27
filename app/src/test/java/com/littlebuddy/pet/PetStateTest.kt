@@ -157,12 +157,24 @@ class PetStateTest {
             energy = 40f,
             isSleeping = true
         )
-        // 10 phút: hunger -2f, happiness -1.5f, energy +40f (với SLEEP_ENERGY_RECOVER_PER_MINUTE = 4.0f)
+        // Khi ngủ: hunger dùng SLEEP_HUNGER_DECAY_PER_MINUTE = 0.05f
+        // 10 phút: hunger -0.5f, happiness -1.5f, energy +40f
         val updated = sleepingPet.applyTimeElapsed(10L)
+
+        assertEquals(79.5f, updated.hunger, 0.01f)
+        assertEquals(78.5f, updated.happiness, 0.01f)
+        assertEquals(80f, updated.energy, 0.01f)
+    }
+
+    @Test
+    fun applyTimeElapsed_usesFullDecayRateWhenAwake() {
+        val awakePet = PetState(hunger = 80f, happiness = 80f, energy = 40f, isSleeping = false)
+        // Khi thức: hunger dùng HUNGER_DECAY_PER_MINUTE = 0.2f
+        // 10 phút: hunger -2f, happiness -1.5f
+        val updated = awakePet.applyTimeElapsed(10L)
 
         assertEquals(78f, updated.hunger, 0.01f)
         assertEquals(78.5f, updated.happiness, 0.01f)
-        assertEquals(80f, updated.energy, 0.01f)
     }
 
     @Test
@@ -174,6 +186,15 @@ class PetStateTest {
         val updated = awakePet.applyTimeElapsed(10L)
 
         assertEquals(40f, updated.energy, 0.01f)
+    }
+
+    @Test
+    fun gainExp_handlesMultipleLevelUpsInOneBatch() {
+        // EXP hiện tại 90, nhận 250 EXP → 340 total → 3 level-ups (100, 100, 100), còn 40 EXP
+        val pet = PetState(level = 1, exp = 90)
+        val (newExp, newLevel) = pet.gainExp(250)
+        assertEquals(40, newExp)
+        assertEquals(4, newLevel)
     }
 
     @Test
