@@ -46,8 +46,7 @@ val LittleBuddyTypography = Typography(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
-        lineHeight = 18.sp,
-        color = SoftWhite
+        lineHeight = 18.sp
     ),
     labelMedium = TextStyle(
         fontFamily = FontFamily.Default,

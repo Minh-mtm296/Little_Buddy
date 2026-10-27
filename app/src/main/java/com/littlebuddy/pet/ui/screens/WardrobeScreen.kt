@@ -882,11 +882,23 @@ private fun WardrobeBottomActions(
                     .weight(1f)
                     .height(46.dp)
             ) {
-                Text(
-                    text = "Quay lại",
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 13.sp
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = "Quay lại",
+                        tint = MidnightLagoon,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "Quay lại",
+                        color = MidnightLagoon,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp
+                    )
+                }
             }
 
             // Nút Lưu diện mạo sang trọng
@@ -909,6 +921,7 @@ private fun WardrobeBottomActions(
                     Text(text = "✨", fontSize = 14.sp)
                     Text(
                         text = "Lưu diện mạo",
+                        color = SoftWhite,
                         fontWeight = FontWeight.Bold,
                         fontSize = 13.5.sp
                     )
