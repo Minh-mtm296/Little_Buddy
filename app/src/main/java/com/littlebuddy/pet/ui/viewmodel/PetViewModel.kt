@@ -77,10 +77,15 @@ class PetViewModel(
     private var eatJob: Job? = null
     private var wakeJob: Job? = null
     private var idleLifeJob: Job? = null
-    private var feedbackDismissJob: Job? = null
     private var scratchJob: Job? = null
     private var pettingJob: Job? = null
     private var statsJob: Job? = null
+
+    /**
+     * Thời điểm lần cuối app đang ở foreground (được ghi khi Activity vào onPause).
+     * Dùng để tính thời gian trôi qua khi app quay lại sau khi bị background.
+     */
+    private var lastForegroundTimestamp: Long = System.currentTimeMillis()
 
     /** Thời điểm vuốt mèo đang ngủ gần nhất */
     private var lastSleepPetAt: Long = 0L
@@ -120,7 +125,8 @@ class PetViewModel(
             _actionState.value = PetActionState.SLEEPING
             _catPositionX.value = bedPositionX
             _facingDirection.value = -1f
-            startSleepCycle()
+            sleepJob?.cancel()
+            sleepJob = null
         } else {
             startIdleLifeCycle()
         }
@@ -162,16 +168,9 @@ class PetViewModel(
         _petState.update { it.copy(feedbackMessage = "") }
     }
 
-    /** Hiển thị phản hồi và tự ẩn sau autoDismissMs */
+    /** Hiển thị phản hồi — tự động ẩn sau 3.5s qua cơ chế collectLatest trong init{} */
     fun showFeedback(msg: String, autoDismissMs: Long = 3000L) {
-        feedbackDismissJob?.cancel()
         _petState.update { it.copy(feedbackMessage = msg) }
-        if (msg.isNotBlank() && autoDismissMs > 0L) {
-            feedbackDismissJob = viewModelScope.launch {
-                delay(autoDismissMs)
-                _petState.update { if (it.feedbackMessage == msg) it.copy(feedbackMessage = "") else it }
-            }
-        }
     }
 
     /**
@@ -560,7 +559,8 @@ class PetViewModel(
                 // Chỉ khi đến đệm mới chuyển sang SLEEPING và cập nhật isSleeping = true
                 _actionState.value = PetActionState.SLEEPING
                 _petState.update { it.copy(isSleeping = true, feedbackMessage = "${it.petName} đã nằm cuộn tròn ngủ ngon lành... Khò khò~") }
-                startSleepCycle()
+                sleepJob?.cancel()
+                sleepJob = null
                 repository.persistPetState(_petState.value)
             }
         } else {
@@ -595,6 +595,17 @@ class PetViewModel(
     // ── TỦ ĐỒ PHỤ KIỆN & CÁ NHÂN HÓA ──────────────────────────────────────────
 
     fun openWardrobe() {
+        if (_petState.value.isSleeping || _actionState.value == PetActionState.SLEEPING) {
+            showFeedback("${_petState.value.petName} đang ngủ say, đợi bé dậy rồi thay đồ nha! 💤", 2500L)
+            return
+        }
+        if (_actionState.value == PetActionState.WALKING ||
+            _actionState.value == PetActionState.EATING ||
+            _actionState.value == PetActionState.STRETCHING
+        ) {
+            notifyBusy()
+            return
+        }
         _previewWardrobe.value = _petState.value.wardrobe
         _showWardrobe.value = true
     }
@@ -716,7 +727,6 @@ class PetViewModel(
         wakeJob?.cancel()
         idleLifeJob?.cancel()
         temporaryMoodJob?.cancel()
-        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
         activeMeal = null
@@ -731,11 +741,6 @@ class PetViewModel(
     }
 
     // ── NỘI BỘ ───────────────────────────────────────────────────────────────
-
-    private fun startSleepCycle() {
-        sleepJob?.cancel()
-        sleepJob = null
-    }
 
     private fun persistAndScheduleMoodReset() {
         repository.persistPetState(_petState.value)
@@ -752,6 +757,28 @@ class PetViewModel(
      */
     private fun gainExp(state: PetState, amount: Int): Pair<Int, Int> = state.gainExp(amount)
 
+    /**
+     * Gọi từ Activity.onResume() để bù trừ thời gian app bị background.
+     * Xử lý trường hợp Android Doze Mode có thể đình chỉ statsJob trong khi app ở background.
+     */
+    fun onAppResume() {
+        val now = System.currentTimeMillis()
+        val elapsedMinutes = (now - lastForegroundTimestamp) / 60_000L
+        if (elapsedMinutes >= 1L) {
+            _petState.update { it.applyTimeElapsed(elapsedMinutes) }
+            repository.persistPetState(_petState.value)
+        }
+        lastForegroundTimestamp = now
+    }
+
+    /**
+     * Gọi từ Activity.onPause() để ghi lại thời điểm app vào background.
+     */
+    fun onAppPause() {
+        lastForegroundTimestamp = System.currentTimeMillis()
+        repository.persistPetState(_petState.value)
+    }
+
     override fun onCleared() {
         super.onCleared()
         statsJob?.cancel()
@@ -761,7 +788,6 @@ class PetViewModel(
         eatJob?.cancel()
         wakeJob?.cancel()
         idleLifeJob?.cancel()
-        feedbackDismissJob?.cancel()
         scratchJob?.cancel()
         pettingJob?.cancel()
     }

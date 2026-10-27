@@ -13,6 +13,9 @@ import com.littlebuddy.pet.ui.theme.LittleBuddyTheme
 import com.littlebuddy.pet.ui.viewmodel.PetViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var viewModel: PetViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -26,12 +29,22 @@ class MainActivity : ComponentActivity() {
                 return PetViewModel(repository) as T
             }
         }
-        val viewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
+        viewModel = ViewModelProvider(this, factory)[PetViewModel::class.java]
 
         setContent {
             LittleBuddyTheme {
                 PetHomeScreen(viewModel = viewModel)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onAppResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onAppPause()
     }
 }
