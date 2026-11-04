@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import com.littlebuddy.pet.wardrobe.CatColorPalette
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 
-
 internal fun DrawScope.drawChibiFace(
     cx: Float,
     cy: Float,
@@ -169,7 +168,6 @@ internal fun DrawScope.drawChibiFace(
             center = Offset(cx + dir * u * 0.30f, blushY)
         )
     }
-
 
     val whiskerColor = palette.outlineColor.copy(alpha = 0.60f)
     val whiskerStroke = Stroke(width = strokeW * 0.52f, cap = StrokeCap.Round)

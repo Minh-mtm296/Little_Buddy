@@ -252,10 +252,7 @@ fun rememberPetAnimationState(
     }
 }
 
-
-// ═══════════════════════════════════════════════════════════════════════════════
 // HỆ THỐNG HOẠT HỌA ĐA KHỚP XƯƠNG (CatPose Procedural Animation Engine)
-// ═══════════════════════════════════════════════════════════════════════════════
 
 /**
  * Đồng hồ thời gian thực duy nhất dựa trên frame clock của Compose.

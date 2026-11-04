@@ -52,7 +52,6 @@ import com.littlebuddy.pet.ui.theme.SageLeaf
 import com.littlebuddy.pet.ui.theme.SoftWhite
 import com.littlebuddy.pet.ui.theme.VanillaCream
 
-
 @Composable
 fun FoodPickerDialog(
     petState: PetState,

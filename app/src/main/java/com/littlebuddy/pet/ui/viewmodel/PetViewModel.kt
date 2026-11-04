@@ -30,7 +30,6 @@ class PetViewModel(
     private val _petState = MutableStateFlow(repository.getInitialPetState())
     val petState: StateFlow<PetState> = _petState.asStateFlow()
 
-    
     private val _actionState = MutableStateFlow(PetActionState.IDLE)
     val actionState: StateFlow<PetActionState> = _actionState.asStateFlow()
 
@@ -42,11 +41,9 @@ class PetViewModel(
     private val _facingDirection = MutableStateFlow(1f)
     val facingDirection: StateFlow<Float> = _facingDirection.asStateFlow()
 
-    
     private val _bowlFood = MutableStateFlow(BowlFood.EMPTY)
     val bowlFood: StateFlow<BowlFood> = _bowlFood.asStateFlow()
 
-    
     private val _showWardrobe = MutableStateFlow(false)
     val showWardrobe: StateFlow<Boolean> = _showWardrobe.asStateFlow()
 
@@ -54,11 +51,9 @@ class PetViewModel(
     private val _previewWardrobe = MutableStateFlow(repository.getInitialPetState().wardrobe)
     val previewWardrobe: StateFlow<com.littlebuddy.pet.wardrobe.EquippedWardrobe> = _previewWardrobe.asStateFlow()
 
-    
     private val _showFoodPicker = MutableStateFlow(false)
     val showFoodPicker: StateFlow<Boolean> = _showFoodPicker.asStateFlow()
 
-    
     private val _showGamePicker = MutableStateFlow(false)
     val showGamePicker: StateFlow<Boolean> = _showGamePicker.asStateFlow()
 
@@ -78,7 +73,6 @@ class PetViewModel(
      */
     private var lastForegroundTimestamp: Long = System.currentTimeMillis()
 
-    
     private var lastSleepPetAt: Long = 0L
 
     // Chống spam tương tác
@@ -305,7 +299,6 @@ class PetViewModel(
         }
     }
 
-    
     private fun startWalkingToBowl() {
         walkJob?.cancel()
         eatJob?.cancel()
@@ -353,7 +346,6 @@ class PetViewModel(
         }
     }
 
-    
     private suspend fun walkBackToCenter() {
         _actionState.value = PetActionState.WALKING
         moveCatTo(0.5f, speed = 0.20f)

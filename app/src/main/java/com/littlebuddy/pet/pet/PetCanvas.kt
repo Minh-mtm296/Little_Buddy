@@ -32,7 +32,6 @@ fun PetCanvas(
     modifier: Modifier = Modifier,
     actionState: PetActionState = PetActionState.IDLE,
     animState: PetAnimationState? = null,
-    // Giá trị dự phòng khi không truyền animState
     bounceOffsetY: Float = 0f,
     breatheScale: Float = 1f,
     eyeScaleY: Float = 1f,
@@ -65,7 +64,6 @@ fun PetCanvas(
             actionProgress = actionProgress
         )
 
-        // Đọc giá trị animation trong Draw phase (DrawScope)
         val curBounceOffsetY = animState?.bounceOffsetY?.invoke() ?: bounceOffsetY
         val curBreatheScale = animState?.breatheScale?.invoke() ?: breatheScale
         val curEyeScaleY = animState?.eyeScaleY?.invoke() ?: eyeScaleY
@@ -84,7 +82,6 @@ fun PetCanvas(
         val centerX = width / 2f
         val isWalking = actionState == PetActionState.WALKING
 
-        // Nhấp nhô bước chân khi đi bộ
         val walkBob = if (isWalking) sin(curWalkCycle * 4f * PI.toFloat()) * 4.5f else 0f
         val centerY = (height * 0.51f) + curBounceOffsetY + walkBob + curPurrVibrationY
         val u = min(width, height) * 0.40f
@@ -94,9 +91,6 @@ fun PetCanvas(
             ?: WardrobeRegistry.FUR_SIAMESE.palette!!
 
         if (actionState == PetActionState.SLEEPING) {
-            // ══════════════════════════════════════════════════════════════════
-            // TƯ THẾ NẰM CUỘN TRÒN NGỦ TRÊN ĐỆM (100% VECTOR CANVAS)
-            // ══════════════════════════════════════════════════════════════════
             drawSleepingChibiCat(
                 cx = centerX,
                 cy = centerY + u * 0.22f, // Hạ thấp tâm cy để đáy thân mèo và bóng tiếp đất chuẩn xác cùng vạch sàn
@@ -110,9 +104,6 @@ fun PetCanvas(
                 legacyAccessory = petState.accessory
             )
         } else {
-            // ══════════════════════════════════════════════════════════════════
-            // TƯ THẾ ĐỨNG THẲNG MEERKAT CHUẨN MẪU
-            // ══════════════════════════════════════════════════════════════════
             withTransform({
                 scale(scaleX = facingDirection, scaleY = 1f, pivot = Offset(centerX, centerY))
                 if (isWalking) {
@@ -177,7 +168,6 @@ private fun DrawScope.drawStandingChibiCat(
     val strokeW = (baseU * 0.038f).coerceAtLeast(4.8f)
     val isStretching = stretchProgress > 0.01f || pose.pawReach > 0.05f
 
-    // ── BƯỚC 1: Bóng đổ elip dưới sàn ──
     val shadowW = if (isStretching) baseU * 1.50f else baseU * 1.35f
     drawOval(
         color = FloorShadowColor,
@@ -185,14 +175,12 @@ private fun DrawScope.drawStandingChibiCat(
         size = Size(shadowW, baseU * 0.16f)
     )
 
-    // ── BƯỚC 2: Đuôi mèo ngúng nguẩy sau hông phải ──
     withTransform({
         rotate(pose.tailAngle, pivot = Offset(cx + u * 0.50f, cy + u * 0.68f))
     }) {
         drawCuteCatTail(cx, cy, u, tailWag = 0f, strokeW, palette)
     }
 
-    // Chân sau
     drawShortHindFeet(
         cx = cx,
         cy = cy,
@@ -205,14 +193,12 @@ private fun DrawScope.drawStandingChibiCat(
         hindLiftR = pose.hindLiftR
     )
 
-    // Thân trên, tai, tay và đầu
     val bodyFillPath = createStandingBodyFillPath(cx, cy, u)
 
     withTransform({
         scale(pose.bodyScaleX, pose.bodyScaleY, pivot = Offset(cx, cy + u))
         translate(0f, pose.bodyBob * u)
     }) {
-        // Tai mèo
         drawCuteCatEars(
             cx = cx,
             cy = cy,
@@ -224,7 +210,6 @@ private fun DrawScope.drawStandingChibiCat(
             earR = pose.earR
         )
 
-        // Khối thân
         clipPath(bodyFillPath) {
             
             drawPath(bodyFillPath, color = palette.bodyColor)
@@ -233,7 +218,6 @@ private fun DrawScope.drawStandingChibiCat(
                 drawCalicoBodyPatches(cx, cy, u, palette = palette)
             }
 
-            // Bóng đáy bụng
             val bottomShade = Path().apply {
                 moveTo(cx - u * 0.65f, cy + u * 0.82f)
                 quadraticTo(cx, cy + u * 1.05f, cx + u * 0.65f, cy + u * 0.82f)
@@ -244,13 +228,10 @@ private fun DrawScope.drawStandingChibiCat(
             drawPath(bottomShade, color = palette.bellyColor.copy(alpha = 0.55f))
         }
 
-        // Viền thân
         drawStandingBodyOutline(cx, cy, u, strokeW, palette.outlineColor)
 
-        // Trang phục thân
         drawBodywearOnChibiCat(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
 
-        // Hai bàn tay trước
         drawCurledFrontPaws(
             cx = cx,
             cy = cy,
@@ -262,7 +243,6 @@ private fun DrawScope.drawStandingChibiCat(
             reach = pose.pawReach
         )
 
-        // Khuôn mặt và phụ kiện
         withTransform({
             translate(0f, pose.headDip * u)
             rotate(pose.headTilt, pivot = Offset(cx, cy - 0.25f * u))
@@ -280,13 +260,10 @@ private fun DrawScope.drawStandingChibiCat(
                 palette = palette
             )
 
-            // Vòng cổ & Khăn quàng (Neckwear)
             drawNeckwearOnChibiCat(wardrobe.getNeckwear()?.id, cx, cy, u, strokeW)
 
-            // Nơ & Mũ cài đầu (Headwear)
             drawHeadwearOnChibiCat(wardrobe.getHeadwear()?.id, cx, cy, u, strokeW)
 
-            // Phụ kiện legacy nếu chưa có trang phục trong wardrobe
             if (wardrobe.getHeadwear() == null && wardrobe.getNeckwear() == null && wardrobe.getBodywear() == null) {
                 accessory?.let { acc ->
                     drawAccessoryOnChibiCat(acc, cx, cy, u)

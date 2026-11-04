@@ -89,7 +89,6 @@ import com.littlebuddy.pet.wardrobe.WardrobeCategory
 import com.littlebuddy.pet.wardrobe.WardrobeItem
 import com.littlebuddy.pet.wardrobe.WardrobeRegistry
 
-
 @Composable
 fun WardrobeScreen(
     petState: PetState,
@@ -961,7 +960,6 @@ private fun WardrobeItemThumbnail(
     }
 }
 
-
 private fun DrawScope.drawChibiFurSkinThumbnail(
     item: WardrobeItem,
     cx: Float,
@@ -1058,7 +1056,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
                 close()
             }
             drawPath(brownPatch, color = p.patchColor.copy(alpha = alpha * 0.92f))
-
 
             val greyPatch = Path().apply {
                 moveTo(cx, cy - r * 0.95f)
@@ -1181,7 +1178,6 @@ private fun DrawScope.drawHeadwearThumbnail(id: String, cx: Float, cy: Float, w:
     }
 }
 
-
 private fun DrawScope.drawNeckwearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
     drawOval(
         color = Color(0x15302020).copy(alpha = alpha * 0.5f),
@@ -1238,7 +1234,6 @@ private fun DrawScope.drawNeckwearThumbnail(id: String, cx: Float, cy: Float, w:
         }
     }
 }
-
 
 private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
     drawOval(

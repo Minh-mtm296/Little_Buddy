@@ -42,7 +42,6 @@ import com.littlebuddy.pet.ui.theme.MidnightLagoon
 import com.littlebuddy.pet.ui.theme.Rosewood
 import com.littlebuddy.pet.ui.theme.SoftWhite
 
-
 @Composable
 fun FeedbackBubble(
     message: String,
@@ -171,7 +170,6 @@ private fun DrawScope.drawSpeechBubble(
         style = Stroke(width = 1.4.dp.toPx())
     )
 }
-
 
 private fun DrawScope.drawDreamCloudBubble(
     w: Float,

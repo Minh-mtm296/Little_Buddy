@@ -999,7 +999,6 @@ private fun DrawScope.drawFloorAccessories(w: Float, h: Float) {
     drawCircle(color = LeafGreenLight, radius = 7.dp.toPx(), center = Offset(plantX + 9.dp.toPx(), plantY - 4.dp.toPx()))
 }
 
-
 private fun DrawScope.drawFloatingDustMotes(w: Float, h: Float, phase: Float, glow: Float) {
     val motes = listOf(
         listOf(w * 0.24f, h * 0.26f, 3.0f, 0.1f),

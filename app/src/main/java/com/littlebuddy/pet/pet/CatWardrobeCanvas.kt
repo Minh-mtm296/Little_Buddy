@@ -776,9 +776,7 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
     }
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
 // VẼ PHỤ KIỆN VÀ TRANG PHỤC KHI NGỦ (SLEEPING WARDROBE)
-// ═════════════════════════════════════════════════════════════════════════════
 
 internal fun DrawScope.drawSleepingBodywear(
     bodywearId: String?,

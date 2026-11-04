@@ -231,7 +231,6 @@ internal fun DrawScope.drawCuteCatEars(
     }
 }
 
-
 /**
  * Đuôi mèo ngúng nguẩy sau hông phải theo nhịp hoạt ảnh.
  *

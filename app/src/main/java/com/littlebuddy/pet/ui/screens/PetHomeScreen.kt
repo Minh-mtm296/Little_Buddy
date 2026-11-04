@@ -614,7 +614,6 @@ private fun FoodBowlInRoom(
     }
 }
 
-
 @Composable
 private fun WaterBowlInRoom(
     onDrinkWater: () -> Unit,
