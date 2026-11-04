@@ -165,25 +165,38 @@ Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn di�
 
 ## 8. Hướng dẫn cài đặt & Chạy ứng dụng
 
-### Yêu cầu môi trường
+### 8.1. Yêu cầu môi trường
 
 - **Android Studio**: Bản Ladybug / Hedgehog / Meerkat hoặc mới hơn.
-- **JDK**: Java 17 trở lên.
+- **JDK**: Java 17 trở lên (đã tích hợp sẵn trong Android Studio - JBR).
 - **Thiết bị chạy**: Android 7.0 (API 24) trở lên, khuyến nghị Android 12+.
 
-### Các bước thực hiện
+### 8.2. Các bước mở và chạy ứng dụng (Không cần Git)
 
-1. Clone mã nguồn về máy:
-   ```bash
-   git clone https://github.com/Minh-mtm296/Little_Buddy.git
-   ```
-2. Mở Android Studio, chọn **Open** và trỏ đến thư mục `Little_Buddy`.
-3. Đợi Android Studio đồng bộ Gradle (**Sync Project with Gradle Files**).
-4. Chạy toàn bộ Unit Tests kiểm tra:
-   ```powershell
-   ./gradlew testDebugUnitTest
-   ```
-5. Chọn thiết bị ảo (Emulator) hoặc cắm điện thoại Android (bật USB Debugging), nhấn nút **Run 'app'** (`Shift + F10`) để trải nghiệm!
+Dự án nộp bài là một gói mã nguồn hoàn chỉnh, độc lập, có thể chạy trực tiếp mà không cần cài đặt Git hay chạy lệnh `git clone`:
+
+1. **Giải nén file bài nộp**:
+   - Giải nén file `52400002_52400022_52400040_LITTLE BUDDY.zip`.
+   - Ta được thư mục dự án `52400002_52400022_52400040_LITTLE BUDDY`.
+
+2. **Mở dự án trong Android Studio**:
+   - Khởi động **Android Studio**, chọn **Open** (hoặc **File** $\rightarrow$ **Open...**).
+   - Trỏ đến thư mục vừa giải nén: `52400002_52400022_52400040_LITTLE BUDDY` và nhấn **OK**.
+
+3. **Đồng bộ Gradle (Sync Project)**:
+   - Android Studio sẽ tự động nhận diện dự án và tải các thư viện cần thiết (**Sync Project with Gradle Files**).
+   - File cấu hình máy cá nhân (`local.properties`) sẽ được Android Studio tự sinh khớp với đường dẫn SDK trên máy tính của Thầy.
+
+4. **Chạy ứng dụng (Run App)**:
+   - Chọn một máy ảo Android (Emulator) hoặc cắm điện thoại Android thật (bật *USB Debugging*).
+   - Nhấn nút **Run 'app'** (biểu tượng ▶ màu xanh lá hoặc phím tắt `Shift + F10`) để trải nghiệm!
+
+5. **Chạy kiểm thử tự động (Tùy chọn)**:
+   - Trong cửa sổ Project, điều hướng tới `app/src/test/java/com/littlebuddy/pet`.
+   - Nhấp chuột phải vào thư mục và chọn **Run 'Tests in \'pet\''** (hoặc mở Terminal gõ `./gradlew testDebugUnitTest`).
+   - Cả **27/27 test cases** sẽ được thực thi và báo xanh toàn bộ (`OK (27 tests)`).
+
+*(Ghi chú: Nếu cần tham khảo kho mã nguồn trực tuyến, dự án cũng được đồng bộ tại GitHub: [https://github.com/Minh-mtm296/Little_Buddy](https://github.com/Minh-mtm296/Little_Buddy)).*
 
 ---
 
