@@ -66,7 +66,7 @@ app/src/
 │   │   │   │   ├── PetProfileDialog.kt      # Hộp thoại xem hồ sơ và đổi tên thú cưng
 │   │   │   │   └── StatBar.kt               # Thanh chỉ số Hunger, Happiness, Energy (bo góc mềm mại)
 │   │   │   ├── screens/
-│   │   │   │   ├── FoodBowlUi.kt            # Ánh xạ tài nguyên Drawable cho thức ăn trong phòng
+│   │   │   │   ├── FoodBowlUi.kt            # Widget bát thức ăn tương tác vẽ bằng Canvas
 │   │   │   │   ├── FoodPickerDialog.kt      # Dialog chọn món (Hạt khô, Pate, Cá khô)
 │   │   │   │   ├── GameScreen.kt            # Mini-games: Đuổi bắt cuộn len & Săn cần câu lông vũ
 │   │   │   │   ├── PetHomeScreen.kt         # Màn hình chính Little Buddy (tương tác phòng & mèo)
@@ -141,7 +141,7 @@ Màn hình Tủ đồ (`WardrobeScreen`) sở hữu bục thời trang xoay quan
    - _Mèo Tuyết trắng (Pure White)_: Bộ lông trắng muốt như bông tuyết.
 2. **Mũ & Nơ (Headwear)**: Mũ nồi họa sĩ Beret, Nơ hoa cúc vàng, Mũ cói mùa hè.
 3. **Vòng cổ & Khăn quàng (Neckwear)**: Vòng cổ chuông vàng may mắn, Khăn quàng len đỏ ấm áp, Nơ bướm xanh.
-4. **Trang phục thân (Bodywear)**: Quần yếm denim vintage, Áo len dệt kim kẻ sọc mùa đông.
+4. **Trang phục thân (Bodywear)**: Quần yếm denim vintage, Áo len dệt kim kẻ sọc mùa đông, Áo choàng nhung đỏ hoàng gia viền lông Ermine.
 5. **Cơ chế cấp độ mở khóa**: Mỗi vật phẩm đều yêu cầu cấp độ tương ứng của thú cưng để mở khóa, tạo động lực chăm sóc và tương tác hàng ngày.
 
 ---
