@@ -1,4 +1,4 @@
-# Little Buddy — Virtual Pet (Ứng Dụng Thú Cưng Ảo)
+# 52400002_52400022_52400040_LITTLE BUDDY — Virtual Pet (Ứng Dụng Thú Cưng Ảo)
 
 Ứng dụng Android nuôi và tương tác với thú cưng ảo chibi đáng yêu, được xây dựng hoàn toàn bằng **Kotlin**, **Jetpack Compose**, **Compose Canvas** và **Compose Animation APIs**.
 
@@ -189,11 +189,15 @@ Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn di�
 
 ## 9. Phân công nhiệm vụ nhóm
 
-| Thành viên   | Vai trò              | Trách nhiệm chính                                                                                                                                    |
-| :----------- | :------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Thu Minh** | Kiến trúc & Tích hợp | Điều phối kiến trúc Clean Code / MVVM, `MainActivity`, `PetViewModel`, `PetState`, đồng bộ thời gian thực, Unit Tests, Git.                          |
-| **Ngọc Anh** | UI/UX & Components   | Design System 6 màu, Typography Material 3, `StatBar`, `ActionButtons`, `FeedbackBubble`, `PetProfileDialog`, `FoodPickerDialog`.                    |
-| **Kiều Vy**  | Canvas & Wardrobe    | Toàn bộ hình vẽ Canvas nhân vật mèo (`CatBody`, `CatFace`, `CatSleeping`, `CatCalico`, `CatWardrobeCanvas`), `WardrobeScreen`, `CozyRoomBackground`. |
+- **Giảng viên hướng dẫn**: ThS. Trần Đại Nhân
+- **Môn học**: Phát triển ứng dụng di động (Báo cáo Giữa kỳ)
+- **Lớp**: 503074 — Khóa 28
+
+| MSSV | Họ và tên | Vai trò | Trách nhiệm chính |
+| :---: | :--- | :--- | :--- |
+| **52400022** | **Mai Thu Minh** | Kiến trúc & Tích hợp | Điều phối kiến trúc Clean Code / MVVM, MainActivity, PetViewModel, PetState, đồng bộ thời gian thực, Unit Tests, Git. |
+| **52400002** | **Phạm Ngọc Anh** | UI/UX & Components | Design System 6 màu, Typography Material 3, StatBar, ActionButtons, FeedbackBubble, PetProfileDialog, FoodPickerDialog. |
+| **52400040** | **Huỳnh Thị Kiều Vy** | Canvas & Wardrobe | Toàn bộ hình vẽ Canvas nhân vật mèo (CatBody, CatFace, CatSleeping, CatCalico, CatWardrobeCanvas), WardrobeScreen, CozyRoomBackground. |
 
 ---
 
