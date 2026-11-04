@@ -290,7 +290,6 @@ fun GameVictoryCard(
             modifier = Modifier.verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 3 Sao vàng nảy lên lần lượt
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -321,7 +320,6 @@ fun GameVictoryCard(
 
             Spacer(modifier = Modifier.height(if (isCompact) 8.dp else 18.dp))
 
-            // Thống kê phần thưởng
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -410,13 +408,11 @@ fun YarnChaseGame(
     val maxCatch = GAME_MAX_CATCH
     var showVictory by remember { mutableStateOf(false) }
 
-    // Vị trí cuộn len
     var yarnX by remember { mutableFloatStateOf(240f) }
     var yarnY by remember { mutableFloatStateOf(160f) }
     val yarnRotation = remember { Animatable(0f) }
     val yarnTrail = remember { mutableStateListOf<Offset>() }
 
-    // Trạng thái hoạt họa Mèo
     val catPosX = remember { Animatable(80f) }
     val catPosY = remember { Animatable(220f) }
     val catScaleX = remember { Animatable(1f) }
@@ -425,7 +421,6 @@ fun YarnChaseGame(
     val jumpHeight = remember { Animatable(0f) }
     var facingDir by remember { mutableFloatStateOf(1f) }
 
-    // Trạng thái vồ bắt
     var isPouncing by remember { mutableStateOf(false) }
     var isCatchSuccess by remember { mutableStateOf(false) }
     val burstProgress = remember { Animatable(0f) }
@@ -433,23 +428,19 @@ fun YarnChaseGame(
     val catBoxW = with(density) { 95.dp.toPx() }
     val catBoxH = with(density) { 110.dp.toPx() }
 
-    // Hàm kích hoạt cú vồ bắt
     fun triggerPounce(targetX: Float, targetY: Float, arenaW: Float, arenaH: Float) {
         if (isPouncing || showVictory) return
         isPouncing = true
         isCatchSuccess = false
 
         coroutineScope.launch {
-            // Cập nhật vệt chỉ len
             if (yarnTrail.size > 5) yarnTrail.removeAt(0)
             yarnTrail.add(Offset(targetX, targetY))
 
-            // Xoay cuộn len
             launch {
                 yarnRotation.animateTo(yarnRotation.value + 180f, tween(350, easing = FastOutSlowInEasing))
             }
 
-            // Hướng mặt mèo quay về cuộn len
             facingDir = if (targetX >= catPosX.value) 1f else -1f
 
             catScaleY.animateTo(0.78f, tween(150, easing = FastOutSlowInEasing))
@@ -532,7 +523,6 @@ fun YarnChaseGame(
                 .background(Color(0xFFFFF7ED))
         ) {
             Column {
-                // Header
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -607,7 +597,6 @@ fun YarnChaseGame(
                         val arenaW = constraints.maxWidth.toFloat()
                         val arenaH = constraints.maxHeight.toFloat()
 
-                        // Khởi tạo vị trí ban đầu
                         LaunchedEffect(Unit) {
                             catPosX.snapTo(arenaW * 0.22f)
                             catPosY.snapTo(arenaH * 0.65f)
@@ -725,14 +714,12 @@ fun FeatherHuntGame(
     val maxCatch = GAME_MAX_CATCH
     var showVictory by remember { mutableStateOf(false) }
 
-    // Vị trí lông vũ và cần câu
     var featherX by remember { mutableFloatStateOf(220f) }
     var featherY by remember { mutableFloatStateOf(100f) }
     var wandTipX by remember { mutableFloatStateOf(260f) }
     var wandTipY by remember { mutableFloatStateOf(50f) }
     val featherSway = remember { Animatable(0f) }
 
-    // Trạng thái hoạt họa Mèo
     val catPosX = remember { Animatable(100f) }
     val catPosY = remember { Animatable(210f) }
     val catScaleX = remember { Animatable(1f) }
@@ -748,7 +735,6 @@ fun FeatherHuntGame(
     val catBoxW = with(density) { 95.dp.toPx() }
     val catBoxH = with(density) { 110.dp.toPx() }
 
-    // Lắc lư lông vũ
     fun triggerSway() {
         coroutineScope.launch {
             featherSway.animateTo(14f, tween(180))
@@ -758,7 +744,6 @@ fun FeatherHuntGame(
         }
     }
 
-    // Kích hoạt cú nhảy vồ lông vũ
     fun triggerHighJump(targetX: Float, targetY: Float, arenaW: Float, arenaH: Float) {
         if (isJumping || showVictory) return
         isJumping = true
@@ -768,11 +753,9 @@ fun FeatherHuntGame(
         coroutineScope.launch {
             facingDir = if (targetX >= catPosX.value) 1f else -1f
 
-            // 1. Nhún sâu lấy đà
             catScaleY.animateTo(0.74f, tween(160, easing = FastOutSlowInEasing))
             catScaleX.animateTo(1.22f, tween(160, easing = FastOutSlowInEasing))
 
-            // 2. Bật nhảy cao lên không trung
             val startX = catPosX.value
             val startY = catPosY.value
             val landX = (targetX - (facingDir * 28f)).coerceIn(40f, arenaW - 40f)
@@ -806,7 +789,6 @@ fun FeatherHuntGame(
                 delay(stepDelay)
             }
 
-            // 3. Vồ trúng lông vũ
             isCatchSuccess = true
             catchCount++
 
@@ -941,7 +923,6 @@ fun FeatherHuntGame(
 
                         // Lớp vẽ Canvas: Sàn cỏ pastel + Dây cần câu + Lông vũ + Hạt
                         Canvas(modifier = Modifier.fillMaxSize()) {
-                            // Viền thảm
                             drawRoundRect(
                                 color = Color(0xFFD7ECE0),
                                 topLeft = Offset(10f, 10f),
@@ -958,7 +939,6 @@ fun FeatherHuntGame(
                                 size = Size(catBoxW * 0.72f * shadowScale, catBoxH * 0.16f * shadowScale)
                             )
 
-                            // Cần câu que gỗ + Dây cước + Chùm lông vũ
                             drawFeatherWand(
                                 wandTip = Offset(wandTipX, wandTipY),
                                 featherPos = Offset(featherX, featherY),
@@ -966,7 +946,6 @@ fun FeatherHuntGame(
                                 w = size.width
                             )
 
-                            // Hạt lấp lánh khi vồ trúng
                             if (burstProgress.value > 0f && burstProgress.value < 1f) {
                                 drawCatchBurst(Offset(featherX, featherY), burstProgress.value)
                             }
@@ -1018,7 +997,6 @@ private fun DrawScope.drawYarnBall(
     r: Float,
     rotationDeg: Float
 ) {
-    // Bóng đổ dưới cuộn len
     drawOval(
         color = Color(0x304A3525),
         topLeft = Offset(cx - r * 0.9f, cy + r * 0.65f),
@@ -1028,11 +1006,9 @@ private fun DrawScope.drawYarnBall(
     withTransform({
         rotate(degrees = rotationDeg, pivot = Offset(cx, cy))
     }) {
-        // Nền bóng len tròn
         drawCircle(color = Color(0xFFF07A60), radius = r, center = Offset(cx, cy))
         drawCircle(color = Color(0xFFD3543A), radius = r, center = Offset(cx, cy), style = Stroke(width = 2.8f))
 
-        // Các sợi chỉ cuộn chéo nhau
         for (i in 0..3) {
             val angle = i * 45f
             val rad = Math.toRadians(angle.toDouble())
@@ -1048,7 +1024,6 @@ private fun DrawScope.drawYarnBall(
         }
     }
 
-    // Đuôi sợi len xoắn lượn ra ngoài
     val tailPath = Path().apply {
         moveTo(cx + r * 0.8f, cy + r * 0.2f)
         quadraticTo(cx + r * 1.5f, cy + r * 0.1f, cx + r * 1.3f, cy - r * 0.5f)
@@ -1066,7 +1041,6 @@ private fun DrawScope.drawFeatherWand(
 ) {
     val wandBase = Offset(w * 0.96f, 15f)
 
-    // Cần câu que gỗ
     drawLine(
         color = Color(0xFF8D6E63),
         start = wandBase,
@@ -1074,7 +1048,6 @@ private fun DrawScope.drawFeatherWand(
         strokeWidth = 6.5f,
         cap = StrokeCap.Round
     )
-    // Khớp tay cầm
     drawLine(
         color = Color(0xFF5D4037),
         start = wandBase,
@@ -1083,7 +1056,6 @@ private fun DrawScope.drawFeatherWand(
         cap = StrokeCap.Round
     )
 
-    // Dây cước mảnh uốn cong nhẹ từ đầu cần xuống chùm lông vũ
     val stringPath = Path().apply {
         moveTo(wandTip.x, wandTip.y)
         val midX = (wandTip.x + featherPos.x) / 2f + (swayAngle * 0.8f)
@@ -1096,7 +1068,6 @@ private fun DrawScope.drawFeatherWand(
         style = Stroke(width = 1.8f, cap = StrokeCap.Round)
     )
 
-    // Chùm lông vũ đa sắc đung đưa theo góc swayAngle
     withTransform({
         rotate(degrees = swayAngle, pivot = featherPos)
     }) {
@@ -1112,7 +1083,6 @@ private fun DrawScope.drawFeatherWand(
                 drawSingleFeather(featherPos.x, featherPos.y, 28f, color)
             }
         }
-        // Chuông nhỏ leng keng ở cuống lông vũ
         drawCircle(color = Color(0xFFFFD54F), radius = 5.5f, center = featherPos)
         drawCircle(color = Color(0xFFFFA000), radius = 5.5f, center = featherPos, style = Stroke(width = 1.5f))
     }
@@ -1120,7 +1090,6 @@ private fun DrawScope.drawFeatherWand(
 
 /** Vẽ từng nhánh lông vũ mềm mại */
 private fun DrawScope.drawSingleFeather(cx: Float, cy: Float, len: Float, mainColor: Color) {
-    // Sống lông vũ
     drawLine(
         color = mainColor.copy(alpha = 0.9f),
         start = Offset(cx, cy),
@@ -1128,7 +1097,6 @@ private fun DrawScope.drawSingleFeather(cx: Float, cy: Float, len: Float, mainCo
         strokeWidth = 2.5f,
         cap = StrokeCap.Round
     )
-    // Các sợi lông 2 bên
     listOf(-1f, 1f).forEach { side ->
         for (i in 0..5) {
             val fy = cy + i * (len * 0.24f)

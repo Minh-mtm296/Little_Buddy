@@ -113,7 +113,7 @@ fun CozyRoomBackground(modifier: Modifier = Modifier) {
     }
 }
 
-// ── 1. TƯỜNG KẺ SỌC & PHÀO CHÂN TƯỜNG ──────────────────────
+// 1. Tường kẻ sọc & phào chân tường
 
 private fun DrawScope.drawStripedWallAndWainscot(w: Float, h: Float, horizonY: Float) {
     val wainscotTop = h * 0.31f
@@ -197,7 +197,7 @@ private fun DrawScope.drawStripedWallAndWainscot(w: Float, h: Float, horizonY: F
     }
 }
 
-// ── 2. SÀN GẠCH BÔNG HOA VĂN ────────────────────────────────────────────────
+// 2. Sàn gạch bông hoa văn
 
 private fun DrawScope.drawPatternedTileFloor(w: Float, h: Float, horizonY: Float) {
     drawRect(
@@ -245,7 +245,7 @@ private fun DrawScope.drawPatternedTileFloor(w: Float, h: Float, horizonY: Float
     }
 }
 
-// ── 3. THẢM TRÒN XANH SAGE VIỀN HOA ─────────────────────────────────────────
+// 3. Thảm tròn xanh sage viền hoa
 
 private fun DrawScope.drawRoundFloralRug(w: Float, h: Float) {
     val rugCx = w * 0.50f
@@ -312,7 +312,7 @@ private fun DrawScope.drawRoundFloralRug(w: Float, h: Float) {
     }
 }
 
-// ── 4. CỬA SỔ GỖ MÁI VÒM NHỌN MÙA THU & CÂY RỦ ──────────────────────────────
+// 4. Cửa sổ gỗ mái vòm nhọn mùa thu & cây rủ
 
 private fun DrawScope.drawGothicAutumnWindow(w: Float, h: Float) {
     val winL = w * 0.045f
@@ -451,7 +451,7 @@ private fun DrawScope.drawGothicAutumnWindow(w: Float, h: Float) {
     drawCircle(color = LeafGreenLight, radius = 7.dp.toPx(), center = Offset(potCx + 6.dp.toPx(), potBottomY - 18.dp.toPx()))
 }
 
-// ── 5. CHÙM NẮNg TỪ CỬA SỔ ───────────────────────────
+// 5. Chùm nắng từ cửa sổ
 private fun DrawScope.drawAutumnSunbeam(w: Float, h: Float, sunGlow: Float) {
     val beamPath = Path().apply {
         moveTo(w * 0.08f, h * 0.12f)
@@ -474,7 +474,7 @@ private fun DrawScope.drawAutumnSunbeam(w: Float, h: Float, sunGlow: Float) {
     )
 }
 
-// ── 6. KỆ GỖ & CỤM TRANH TREO TƯỜNG (GALLERY WALL CLUSTER) ──────────────────
+// 6. Kệ gỗ & cụm tranh treo tường
 
 private fun DrawScope.drawWallFramesAndShelf(w: Float, h: Float) {
     // 6.1 Kệ gỗ gắn tường ở giữa
@@ -555,7 +555,7 @@ private fun DrawScope.drawWallFramesAndShelf(w: Float, h: Float) {
     drawLine(color = LeafGreenDark, start = Offset(pmpCx, pmpCy - 6.dp.toPx()), end = Offset(pmpCx + 3.dp.toPx(), pmpCy - 9.dp.toPx()), strokeWidth = 2.dp.toPx())
 }
 
-// ── 7. TỦ GỖ KHĂN ĐỎ & GHẾ BÀNH SOFA CARO HỒNG ─────────────────────────────
+// 7. Tủ gỗ khăn đỏ & ghế bành sofa caro hồng
 
 private fun DrawScope.drawRightCabinetAndArmchair(w: Float, h: Float) {
     // 7.1 Tủ gỗ nhỏ kèm khăn trải đỏ viền vàng
@@ -685,7 +685,7 @@ private fun DrawScope.drawRightCabinetAndArmchair(w: Float, h: Float) {
     )
 }
 
-// ── 8. ĐÈN CÂY CỔ ĐIỂN TỎA SÁNG ─────────────────────────────────────────────
+// 8. Đèn cây cổ điển tỏa sáng
 
 private fun DrawScope.drawVintageFloorLamp(w: Float, h: Float) {
     val lampX = w * 0.36f
@@ -764,7 +764,7 @@ private fun DrawScope.drawLampGlow(w: Float, h: Float, lampGlow: Float) {
     )
 }
 
-// ── 9. GIƯỜNG GỖ TAI MÈO & CHĂN CARO (GÓC DƯỚI BÊN TRÁI) ───────────────────
+// 9. Giường gỗ tai mèo & chăn caro
 
 private fun DrawScope.drawCatEarWoodenBed(w: Float, h: Float) {
     val bedL = w * 0.035f
@@ -928,7 +928,7 @@ private fun DrawScope.drawCatEarWoodenBed(w: Float, h: Float) {
     )
 }
 
-// ── 10. ĐỒ VẬT TRANG TRÍ TRÊN SÀN (CỘT CÀO MÓNG, CÂY CẢNH) ─────────────────
+// 10. Đồ vật trang trí trên sàn (cột cào móng, cây cảnh)
 
 private fun DrawScope.drawFloorAccessories(w: Float, h: Float) {
     // Cột cào móng mèo (Cat scratching post) ở góc phải

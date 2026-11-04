@@ -110,7 +110,6 @@ fun PetActionButtons(
             modifier = modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Nút Cho ăn
             ActionButtonItem(
                 title = "Cho ăn",
                 subtitle = "Ngon miệng",
@@ -122,7 +121,6 @@ fun PetActionButtons(
                 modifier = Modifier.weight(1f)
             )
 
-            // Nút Chơi
             ActionButtonItem(
                 title = "Chơi",
                 subtitle = "Vui vẻ",
@@ -134,7 +132,6 @@ fun PetActionButtons(
                 modifier = Modifier.weight(1f)
             )
 
-            // Nút Tủ đồ
             ActionButtonItem(
                 title = "Tủ đồ",
                 subtitle = "Thay đồ",
@@ -146,7 +143,6 @@ fun PetActionButtons(
                 modifier = Modifier.weight(1f)
             )
 
-            // Nút Ngủ / Thức
             ActionButtonItem(
                 title = if (petState.isSleeping) "Thức dậy" else "Đi ngủ",
                 subtitle = if (petState.isSleeping) "Tỉnh giấc" else "Nghỉ ngơi",

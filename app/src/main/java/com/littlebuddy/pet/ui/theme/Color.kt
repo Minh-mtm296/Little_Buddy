@@ -2,9 +2,7 @@ package com.littlebuddy.pet.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// =========================================================================
-// BẢNG MÀU CHÍNH LITTLE BUDDY (BẮT BUỘC THEO QUY CHUẨN THIẾT KẾ ĐỀ BÀI)
-// =========================================================================
+// Bảng màu chính Little Buddy (Quy chuẩn thiết kế)
 val VanillaCream = Color(0xFFFFF7E6)    // Màu nền chính: Ấm áp, nhẹ nhàng
 val BlushPetal = Color(0xFFF7C8D3)      // Màu phụ, thẻ và chi tiết trang trí, má hồng
 val Rosewood = Color(0xFFB46A72)        // Màu nhấn, nút chính, trạng thái active

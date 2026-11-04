@@ -197,7 +197,7 @@ fun PetHomeScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // ═══ A. HEADER ════════════
+                        // Header
                         PetHeaderSection(
                             petState = petState,
                             onEditClick = { showProfileDialog = true }
@@ -205,7 +205,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        // ═══ B. KHU VỰC PHÒNG & NHÂN VẬT
+                        // Khu vực phòng & nhân vật
                         PetRoomSection(
                             petState = petState,
                             actionState = actionState,
@@ -229,7 +229,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // ═══ C. THANH CHỈ SỐ  ═════════
+                        // Thanh chỉ số
                         CompactStatsRow(
                             petState = petState,
                             modifier = Modifier.fillMaxWidth()
@@ -237,7 +237,7 @@ fun PetHomeScreen(
 
                         Spacer(modifier = Modifier.height(10.dp))
 
-                        // ═══ D. CỤM PHÍM HÀNH ĐỘNG ═══════════════
+                        // Cụm phím hành động
                         PetActionButtons(
                             petState = petState,
                             onFeed = { viewModel.openFoodPicker() },
@@ -317,7 +317,6 @@ fun PetHomeScreen(
     }
 }
 
-// KHU VỰC PHÒNG & NHÂN VẬT
 @Composable
 private fun PetRoomSection(
     petState: PetState,
@@ -572,7 +571,6 @@ private fun FoodBowlInRoom(
             modifier = Modifier.size(width = width, height = height),
             contentAlignment = Alignment.Center
         ) {
-            // Bóng đổ nhẹ dưới đáy bát trên sàn
             androidx.compose.foundation.Canvas(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -632,7 +630,6 @@ private fun WaterBowlInRoom(
             modifier = Modifier.size(width = width, height = height),
             contentAlignment = Alignment.Center
         ) {
-            // Bóng đổ đáy bát nước trên sàn
             androidx.compose.foundation.Canvas(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -719,7 +716,6 @@ private fun InteractiveYarnBall(
                 val cy = size.height * 0.46f
                 val r = size.minDimension * 0.36f
 
-                // Thân quả cầu
                 drawCircle(color = Color(0xFFE88A7A), radius = r, center = Offset(cx, cy))
                 drawCircle(color = Color(0xFF8C4237), radius = r, center = Offset(cx, cy), style = Stroke(width = (r * 0.14f).coerceAtLeast(1.2f)))
 
@@ -756,7 +752,6 @@ private fun InteractiveYarnBall(
     }
 }
 
-// HEADER
 @Composable
 private fun PetHeaderSection(
     petState: PetState,

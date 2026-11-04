@@ -94,7 +94,7 @@ object WardrobeRegistry {
 
     const val DEFAULT_FUR_ID = "fur_siamese"
 
-    // ── HẰNG SỐ ID PHỤ KIỆN & MÀU LÔNG ─────────────────────────────────────
+    // Hằng số ID phụ kiện & màu lông
     const val ID_FUR_SIAMESE = "fur_siamese"
     const val ID_FUR_GINGER = "fur_ginger"
     const val ID_FUR_BLACK = "fur_black"
@@ -118,8 +118,7 @@ object WardrobeRegistry {
     const val ID_BODY_ROYAL_CAPE = "body_royal_cape"
     const val ID_BODY_CAPE = ID_BODY_ROYAL_CAPE
 
-    // ── 1. MÀU LÔNG (FUR SKINS) ──────────────────────────────────────────────
-
+    // 1. Màu lông (Fur Skins)
     val FUR_SIAMESE = WardrobeItem(
         id = ID_FUR_SIAMESE,
         name = "Mèo Xiêm",
@@ -235,8 +234,7 @@ object WardrobeRegistry {
         )
     )
 
-    // ── 2. NƠ & MŨ CÀI ĐẦU (HEADWEAR) ───────────────────────────────────────
-
+    // 2. Nơ & Mũ cài đầu (Headwear)
     val HEAD_RIBBON = WardrobeItem(
         id = ID_HEAD_RIBBON,
         name = "Nơ Hồng",
@@ -285,8 +283,7 @@ object WardrobeRegistry {
         previewPrimaryColor = Color(0xFFFFD700)
     )
 
-    // ── 3. VÒNG CỔ & KHĂN QUÀNG (NECKWEAR) ───────────────────────────────────
-
+    // 3. Vòng cổ & Khăn quàng (Neckwear)
     val NECK_BELL_COLLAR = WardrobeItem(
         id = ID_NECK_BELL_COLLAR,
         name = "Vòng Chuông Vàng",
@@ -327,8 +324,7 @@ object WardrobeRegistry {
         previewPrimaryColor = Color(0xFFF0EFEB)
     )
 
-    // ── 4. TRANG PHỤC THÂN NGƯỜI (BODYWEAR) ──────────────────────────────────
-
+    // 4. Trang phục thân người (Bodywear)
     val BODY_SWEATER = WardrobeItem(
         id = ID_BODY_SWEATER,
         name = "Áo Len Mùa Đông",
@@ -358,8 +354,7 @@ object WardrobeRegistry {
         previewSecondaryColor = Color(0xFFFFFFFF)
     )
 
-    // ── TOÀN BỘ DANH SÁCH ───────────────────────────────────────────────────
-
+    // Toàn bộ danh sách
     val ALL_ITEMS: List<WardrobeItem> = listOf(
         FUR_SIAMESE, FUR_GINGER, FUR_BLACK, FUR_SNOW, FUR_GREY, FUR_CALICO,
         HEAD_RIBBON, HEAD_STRAW_HAT, HEAD_BERET, HEAD_FLOWER_CROWN, HEAD_CROWN,

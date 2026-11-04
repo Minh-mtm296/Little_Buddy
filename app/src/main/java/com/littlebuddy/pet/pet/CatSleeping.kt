@@ -115,7 +115,6 @@ internal fun DrawScope.drawSleepingChibiCat(
     }
     fun pt(x: Float, y: Float) = Offset(tx(x, y), ty(y))
 
-    // Bóng đổ sàn
     val shadowW = u * 2.25f
     val shadowH = u * 0.44f
     val shadowX = cx + u * 0.02f
@@ -131,7 +130,6 @@ internal fun DrawScope.drawSleepingChibiCat(
         size = Size(shadowW * 0.78f, shadowH * 0.65f)
     )
 
-    // Thân mèo
     val bodyPath = Path().also { polyline(it, SILHOUETTE, close = true) }
 
     clipPath(bodyPath) {
@@ -241,7 +239,6 @@ internal fun DrawScope.drawSleepingChibiCat(
         }
     }
 
-    // Tai trong, mũi, má hồng
     fun fillPoly(coords: FloatArray, color: Color) {
         val p = Path().also { polyline(it, coords, close = true) }
         drawPath(p, color = color)
@@ -250,7 +247,6 @@ internal fun DrawScope.drawSleepingChibiCat(
     fillPoly(floatArrayOf(-1.033f, 0.386f, -0.936f, 0.309f, -0.829f, 0.309f, -0.829f, 0.402f, -0.936f, 0.425f), palette.innerEarColor)
     fillPoly(floatArrayOf(-0.379f, 0.322f, -0.322f, 0.303f, -0.344f, 0.357f), palette.noseColor)
 
-    // Má hồng
     listOf(
         floatArrayOf(-0.276f, 0.115f, 0.054f, 0.070f, -15.000f),
         floatArrayOf(-0.557f, 0.470f, 0.087f, 0.052f, -20.000f)
@@ -268,7 +264,6 @@ internal fun DrawScope.drawSleepingChibiCat(
         }
     }
 
-    // Nét viền
     fun strokeLayer(list: List<FloatArray>, width: Float, alpha: Float) {
         val p = Path()
         list.forEach { polyline(p, it) }
@@ -277,7 +272,6 @@ internal fun DrawScope.drawSleepingChibiCat(
             style = Stroke(width = width, cap = StrokeCap.Round, join = StrokeJoin.Round)
         )
     }
-    // Viền ngoài khép kín của thân
     drawPath(
         path = bodyPath, color = outlineCol.copy(alpha = 0.55f),
         style = Stroke(width = lineW * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round)
@@ -286,10 +280,8 @@ internal fun DrawScope.drawSleepingChibiCat(
     strokeLayer(FINE_STROKES, lineW * 0.60f, 0.70f)
     strokeLayer(EYE_STROKES, lineW * 1.30f, 1.00f)
 
-    // Trang phục thân
     drawSleepingBodywear(wardrobe.getBodywear()?.id, cx, cy, u, strokeW)
 
-    // Trang phục cổ
     val headRadius = u * HEAD_RADIUS_U
     val headCx = cx + u * HEAD_CX_U
     val headCy = cy + u * HEAD_CY_U
@@ -301,7 +293,6 @@ internal fun DrawScope.drawSleepingChibiCat(
     }
     drawSleepingNeckwear(effectiveNeckwear, headCx, headCy, u, strokeW)
 
-    // Trang phục đầu
     val effectiveHeadwear = wardrobe.getHeadwear()?.id ?: when (legacyAccessory) {
         PetAccessory.RIBBON -> "head_ribbon"
         PetAccessory.HAT -> "head_straw_hat"
@@ -311,7 +302,6 @@ internal fun DrawScope.drawSleepingChibiCat(
         drawSleepingHeadwear(effectiveHeadwear, headCx, headCy, headRadius, u, strokeW)
     }
 
-    // Hiệu ứng Zzz
     drawSleepingZzzEffects(
         headCx = headCx,
         headCy = headCy,

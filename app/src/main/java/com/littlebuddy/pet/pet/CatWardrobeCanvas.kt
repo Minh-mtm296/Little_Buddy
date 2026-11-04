@@ -15,7 +15,6 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-// VẼ PHỤ KIỆN VÀ TRANG PHỤC
 
 internal fun DrawScope.drawHeadwearOnChibiCat(
     headwearId: String?,
@@ -151,7 +150,6 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
     val neckY = cy - u * 0.12f
     when (neckwearId) {
         "neck_bell_collar" -> {
-            // Chiều rộng ôm khít từ sườn trái (cx - topHalfW) sang sườn phải (cx + topHalfW)
             val topHalfW = u * 0.495f
             val botHalfW = u * 0.525f
             val collarH = u * 0.12f
@@ -159,7 +157,6 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
             val yBot = yTop + collarH
             val sag = u * 0.065f // Độ cong võng tự nhiên ôm theo cổ tròn
 
-            // Bóng đổ nhẹ dưới vòng cổ
             val collarShadow = Path().apply {
                 moveTo(cx - botHalfW, yBot)
                 quadraticTo(cx, yBot + sag, cx + botHalfW, yBot)
@@ -169,7 +166,6 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
             }
             drawPath(collarShadow, color = Color(0x303A2820))
 
-            // Thân vòng da đỏ thắm ôm trọn sườn mèo
             val collarPath = Path().apply {
                 moveTo(cx - topHalfW, yTop)
                 quadraticTo(cx, yTop + sag, cx + topHalfW, yTop)
@@ -180,21 +176,17 @@ internal fun DrawScope.drawNeckwearOnChibiCat(
             drawPath(collarPath, color = Color(0xFFC84B31))
             drawPath(collarPath, color = Color(0xFF5A2A20), style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // Rãnh chỉ may da tinh tế
             val stitchPath = Path().apply {
                 moveTo(cx - topHalfW * 0.90f, yTop + collarH * 0.5f)
                 quadraticTo(cx, yTop + collarH * 0.5f + sag, cx + topHalfW * 0.90f, yTop + collarH * 0.5f)
             }
             drawPath(stitchPath, color = Color(0x35FFFFFF), style = Stroke(width = 1.5f, cap = StrokeCap.Round))
 
-            // Quả chuông vàng đính ở điểm võng nhất chính giữa
             val bellCenter = Offset(cx, yBot + sag * 0.70f)
             val bellR = u * 0.065f
 
-            // Vòng khoen nối chuông
             drawCircle(color = Color(0xFF7A5800), radius = bellR * 0.42f, center = Offset(cx, bellCenter.y - bellR * 0.75f), style = Stroke(width = strokeW * 0.5f))
 
-            // Quả chuông vàng tròn trịa
             drawCircle(color = Color(0xFFFFD166), radius = bellR, center = bellCenter)
             drawCircle(color = Color(0xFF7A5800), radius = bellR, center = bellCenter, style = Stroke(width = strokeW * 0.65f))
             drawCircle(color = Color.White.copy(alpha = 0.85f), radius = bellR * 0.30f, center = Offset(bellCenter.x - bellR * 0.32f, bellCenter.y - bellR * 0.32f))
@@ -407,7 +399,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             val stitchGold = Color(0xFFF3C262)
             val pocketBlue = Color(0xFF4A76A2)
 
-            // 1. Quai đeo vai (Straps) - Vắt tự nhiên qua vai từ sau gáy, không bị cụt
             val strapWidth = u * 0.082f * scaleX
             val strapLeft = Path().apply {
                 moveTo(cx - u * 0.34f * scaleX, cy - u * 0.22f * scaleY)
@@ -428,7 +419,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(strapRight, color = denimBlue)
             drawPath(strapRight, color = denimDark, style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // Chỉ may vàng dọc 2 quai
             drawLine(
                 color = stitchGold.copy(alpha = 0.75f),
                 start = Offset(cx - u * 0.30f * scaleX, cy - u * 0.20f * scaleY),
@@ -444,26 +434,20 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 cap = StrokeCap.Round
             )
 
-            // 2. Thân quần yếm (Dungarees) - Ôm trọn vẹn toàn bộ nửa thân dưới từ sườn trái sang phải
             val overallsBody = Path().apply {
-                // Mép trên ngực yếm (Bib top)
                 moveTo(cx - u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
                 lineTo(cx + u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
 
-                // Cạnh phải ngực xuống eo
                 lineTo(cx + u * 0.23f * scaleX, cy + u * 0.28f * scaleY)
 
-                // Cạp quần vát ngang ôm ra sườn phải mèo
                 lineTo(cx + u * 0.58f * scaleX, cy + u * 0.28f * scaleY)
 
-                // Men theo đúng đường cong sườn & hông phải của thân mèo
                 cubicTo(
                     cx + u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
                     cx + u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
                     cx + u * 0.66f * scaleX, cy + u * 0.88f * scaleY
                 )
 
-                // Ống quần phải: gấu bo tròn ngang trên chân sau
                 cubicTo(
                     cx + u * 0.64f * scaleX, cy + u * 0.94f * scaleY,
                     cx + u * 0.52f * scaleX, cy + u * 0.95f * scaleY,
@@ -471,13 +455,11 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 )
                 lineTo(cx + u * 0.16f * scaleX, cy + u * 0.95f * scaleY)
 
-                // Đáy đũng quần võng cong nhẹ nhàng giữa 2 chân
                 quadraticTo(
                     cx, cy + u * 0.89f * scaleY,
                     cx - u * 0.16f * scaleX, cy + u * 0.95f * scaleY
                 )
 
-                // Ống quần trái: gấu bo tròn ngang trên chân sau
                 lineTo(cx - u * 0.36f * scaleX, cy + u * 0.95f * scaleY)
                 cubicTo(
                     cx - u * 0.52f * scaleX, cy + u * 0.95f * scaleY,
@@ -485,14 +467,12 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                     cx - u * 0.66f * scaleX, cy + u * 0.88f * scaleY
                 )
 
-                // Men theo đúng đường cong sườn & hông trái của thân mèo lên eo
                 cubicTo(
                     cx - u * 0.70f * scaleX, cy + u * 0.72f * scaleY,
                     cx - u * 0.64f * scaleX, cy + u * 0.50f * scaleY,
                     cx - u * 0.58f * scaleX, cy + u * 0.28f * scaleY
                 )
 
-                // Cạp quần trái nối vào yếm ngực
                 lineTo(cx - u * 0.23f * scaleX, cy + u * 0.28f * scaleY)
                 lineTo(cx - u * 0.22f * scaleX, cy + u * 0.05f * scaleY)
                 close()
@@ -500,7 +480,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(overallsBody, color = denimBlue)
             drawPath(overallsBody, color = denimDark, style = Stroke(width = strokeW * 0.85f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // 3. Đường chỉ may cạp quần đôi (Double waistband stitching)
             val waistStitch1 = Path().apply {
                 moveTo(cx - u * 0.56f * scaleX, cy + u * 0.29f * scaleY)
                 lineTo(cx + u * 0.56f * scaleX, cy + u * 0.29f * scaleY)
@@ -512,7 +491,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(waistStitch1, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.40f, cap = StrokeCap.Round))
             drawPath(waistStitch2, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.40f, cap = StrokeCap.Round))
 
-            // 4. Khuy tán đồng ở 2 bên cạp quần (Side rivets)
             listOf(-1f, 1f).forEach { side ->
                 val rivetX = cx + side * u * 0.52f * scaleX
                 val rivetY = cy + u * 0.31f * scaleY
@@ -520,7 +498,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 drawCircle(color = Color(0xFF7A5800), radius = u * 0.020f, center = Offset(rivetX, rivetY), style = Stroke(width = strokeW * 0.35f))
             }
 
-            // 5. Đường gấu xắn quần 2 bên (Cuff hem stitching)
             val cuffRight = Path().apply {
                 moveTo(cx + u * 0.18f * scaleX, cy + u * 0.90f * scaleY)
                 lineTo(cx + u * 0.54f * scaleX, cy + u * 0.90f * scaleY)
@@ -532,7 +509,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(cuffRight, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round))
             drawPath(cuffLeft, color = stitchGold.copy(alpha = 0.85f), style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round))
 
-            // 6. Túi ngực yếm (Bib pocket) xinh xắn
             val pw = u * 0.21f * scaleX
             val ph = u * 0.14f * scaleY
             val py = cy + u * 0.11f * scaleY
@@ -546,7 +522,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(pocketPath, color = pocketBlue)
             drawPath(pocketPath, color = stitchGold, style = Stroke(width = strokeW * 0.45f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // 7. Khuy đồng cài yếm (Brass buttons) tròn xoe sáng bóng
             listOf(-1f, 1f).forEach { side ->
                 val btnX = cx + side * u * 0.165f * scaleX
                 val btnY = cy + u * 0.08f * scaleY
@@ -562,7 +537,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             val royalGold = Color(0xFFFFD460)
             val goldBorder = Color(0xFF7A5800)
 
-            // 1. Thân áo choàng nhung đỏ phủ kín trọn vẹn từ cổ xuống chân
             val cloakPath = Path().apply {
                 moveTo(cx - u * 0.40f * scaleX, cy - u * 0.18f * scaleY)
                 quadraticTo(cx, cy - u * 0.10f * scaleY, cx + u * 0.40f * scaleX, cy - u * 0.18f * scaleY)
@@ -584,7 +558,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             }
             drawPath(cloakPath, color = velvetRed)
 
-            // 2. Nếp bóng nhung uốn lượn sâu hai bên sườn tạo độ dày & độ rủ bồng bềnh
             val leftShadow = Path().apply {
                 moveTo(cx - u * 0.40f * scaleX, cy - u * 0.18f * scaleY)
                 cubicTo(
@@ -617,7 +590,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             }
             drawPath(rightShadow, color = velvetShadow)
 
-            // Nếp bóng đứng giữa tạo khối thân hình trụ phồng tròn tự nhiên
             val centerShadow = Path().apply {
                 moveTo(cx - u * 0.04f * scaleX, cy + u * 0.15f * scaleY)
                 lineTo(cx + u * 0.04f * scaleX, cy + u * 0.15f * scaleY)
@@ -627,14 +599,12 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             }
             drawPath(centerShadow, color = velvetShadow.copy(alpha = 0.55f))
 
-            // 3. Viền ngoài áo choàng
             drawPath(
                 cloakPath,
                 color = velvetDark,
                 style = Stroke(width = strokeW * 0.85f, cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
 
-            // 4. Viền thêu chỉ vàng hoàng gia óng ánh dọc hai bên tà áo
             val goldTrimLeft = Path().apply {
                 moveTo(cx - u * 0.35f * scaleX, cy - u * 0.12f * scaleY)
                 cubicTo(
@@ -654,7 +624,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(goldTrimLeft, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
             drawPath(goldTrimRight, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
 
-            // 5. Gấu áo viền lông chồn Ermine trắng muốt quanh đáy áo
             val furHem = Path().apply {
                 moveTo(cx - u * 0.72f * scaleX, cy + u * 0.94f * scaleY)
                 quadraticTo(cx, cy + u * 0.98f * scaleY, cx + u * 0.72f * scaleX, cy + u * 0.94f * scaleY)
@@ -669,14 +638,12 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
 
-            // Dây nẹp chỉ vàng phía trên viền lông đáy
             val goldHemPiping = Path().apply {
                 moveTo(cx - u * 0.68f * scaleX, cy + u * 0.86f * scaleY)
                 quadraticTo(cx, cy + u * 0.90f * scaleY, cx + u * 0.68f * scaleX, cy + u * 0.86f * scaleY)
             }
             drawPath(goldHemPiping, color = royalGold, style = Stroke(width = strokeW * 0.5f, cap = StrokeCap.Round))
 
-            // Đốm đen lông Ermine dọc theo gấu áo đáy
             listOf(-0.52f, -0.32f, -0.12f, 0.12f, 0.32f, 0.52f).forEach { fx ->
                 val spotX = cx + fx * u * scaleX
                 val spotY = cy + u * 0.90f * scaleY
@@ -690,7 +657,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 drawPath(spotTail, color = Color(0xFF2C2424))
             }
 
-            // 6. Nẹp viền vàng trung tâm dọc thân áo
             val centerSeam = Path().apply {
                 moveTo(cx, cy + u * 0.05f * scaleY)
                 lineTo(cx, cy + u * 0.86f * scaleY)
@@ -698,7 +664,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(centerSeam, color = goldBorder, style = Stroke(width = strokeW * 0.6f))
             drawPath(centerSeam, color = royalGold, style = Stroke(width = strokeW * 0.4f))
 
-            // 7. Bo tay áo viền lông chồn Ermine quý tộc dưới hai bàn tay
             listOf(-1f, 1f).forEach { side ->
                 val cuffX = cx + side * u * 0.36f * scaleX
                 val cuffY = cy + u * 0.22f * scaleY
@@ -737,7 +702,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 )
             }
 
-            // 8. Khăn choàng cổ lông thú Ermine trắng muốt
             val furCollar = Path().apply {
                 moveTo(cx - u * 0.40f * scaleX, cy - u * 0.20f * scaleY)
                 quadraticTo(cx, cy - u * 0.06f * scaleY, cx + u * 0.40f * scaleX, cy - u * 0.20f * scaleY)
@@ -749,7 +713,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
             drawPath(furCollar, color = Color(0xFFFFF9F0))
             drawPath(furCollar, color = velvetDark, style = Stroke(width = strokeW * 0.75f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-            // Các đốm lông hoàng gia Ermine màu đen tuyền trên cổ áo
             listOf(-0.25f, -0.10f, 0.10f, 0.25f).forEach { fx ->
                 val spotX = cx + fx * u * scaleX
                 val spotY = cy - u * 0.07f * scaleY
@@ -763,7 +726,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
                 drawPath(tailPath, color = Color(0xFF2C2424))
             }
 
-            // Trâm cài hoàng gia bằng vàng nạm ngọc Ruby rực rỡ
             val broochY = cy - u * 0.035f * scaleY
             val broochR = u * 0.048f
             drawCircle(color = royalGold, radius = broochR, center = Offset(cx, broochY))
@@ -776,7 +738,6 @@ internal fun DrawScope.drawBodywearOnChibiCat(    bodywearId: String?,
     }
 }
 
-// VẼ PHỤ KIỆN VÀ TRANG PHỤC KHI NGỦ (SLEEPING WARDROBE)
 
 internal fun DrawScope.drawSleepingBodywear(
     bodywearId: String?,
@@ -964,7 +925,6 @@ internal fun DrawScope.drawSleepingNeckwear(
             }
         }
         else -> {
-            // ID phụ kiện cổ không xác định
         }
     }
 }

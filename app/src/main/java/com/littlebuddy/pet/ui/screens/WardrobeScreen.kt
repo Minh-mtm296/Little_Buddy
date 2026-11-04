@@ -458,7 +458,6 @@ private fun WardrobeStageCard(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Chip Màu lông (luôn có)
                 val furItem = previewWardrobe.getFurSkin()
                 EquippedTrayChip(
                     icon = "🐱",
@@ -467,7 +466,6 @@ private fun WardrobeStageCard(
                     onRemove = {}
                 )
 
-                // Mũ / Nơ
                 previewWardrobe.getHeadwear()?.let { headItem ->
                     Spacer(modifier = Modifier.width(6.dp))
                     EquippedTrayChip(
@@ -478,7 +476,6 @@ private fun WardrobeStageCard(
                     )
                 }
 
-                // Vòng / Khăn
                 previewWardrobe.getNeckwear()?.let { neckItem ->
                     Spacer(modifier = Modifier.width(6.dp))
                     EquippedTrayChip(
@@ -489,7 +486,6 @@ private fun WardrobeStageCard(
                     )
                 }
 
-                // Trang phục thân
                 previewWardrobe.getBodywear()?.let { bodyItem ->
                     Spacer(modifier = Modifier.width(6.dp))
                     EquippedTrayChip(
@@ -749,7 +745,6 @@ private fun WardrobeItemCard(
 
                 Spacer(modifier = Modifier.height(if (compact) 3.dp else 6.dp))
 
-                // Tên vật phẩm
                 Text(
                     text = item.name,
                     style = if (compact) MaterialTheme.typography.labelSmall else MaterialTheme.typography.labelMedium,
@@ -763,7 +758,6 @@ private fun WardrobeItemCard(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Nhãn trạng thái
                 when {
                     isPreviewEquipped -> {
                         Surface(
@@ -844,7 +838,6 @@ private fun WardrobeItemCard(
                     }
                 }
             } else if (isPreviewEquipped) {
-                // Dấu kiểm tra đang thử
                 Surface(
                     shape = CircleShape,
                     color = Rosewood,
@@ -863,7 +856,6 @@ private fun WardrobeItemCard(
                     }
                 }
             } else if (isActuallyEquipped) {
-                // Dấu kiểm tra đang mặc
                 Surface(
                     shape = CircleShape,
                     color = SageLeaf,
@@ -987,7 +979,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
         size = Size(r * 1.7f, r * 0.45f)
     )
 
-    // 1. Hai tai
     val leftEarPath = Path().apply {
         moveTo(cx - r * 0.75f, cy - r * 0.35f)
         lineTo(cx - r * 0.82f, cy - r * 1.12f)
@@ -1022,14 +1013,11 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     drawPath(leftInner, color = p.innerEarColor.copy(alpha = alpha))
     drawPath(rightInner, color = p.innerEarColor.copy(alpha = alpha))
 
-    // 2. Đầu
     drawCircle(color = p.bodyColor.copy(alpha = alpha), radius = r, center = Offset(cx, cy))
     drawCircle(color = p.outlineColor.copy(alpha = alpha), radius = r, center = Offset(cx, cy), style = Stroke(width = strokeWidth))
 
-    // 3. Mảng hoa văn đ
     when (item.id) {
         WardrobeRegistry.ID_FUR_SIAMESE -> {
-            // Mèo Xiêm
             drawOval(
                 color = p.patchColor.copy(alpha = alpha * 0.9f),
                 topLeft = Offset(cx - r * 0.50f, cy - r * 0.40f),
@@ -1037,7 +1025,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
             )
         }
         WardrobeRegistry.ID_FUR_GINGER -> {
-            // Mèo Cam
             listOf(-r * 0.20f, 0f, r * 0.20f).forEach { ox ->
                 drawLine(
                     color = Color(0xFFD46228).copy(alpha = alpha),
@@ -1068,7 +1055,6 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
         }
     }
 
-    // 4. Hai mắt
     val eyeOx = r * 0.34f
     val eyeOy = cy - r * 0.08f
     val eyeRadius = r * 0.13f
@@ -1085,16 +1071,13 @@ private fun DrawScope.drawChibiFurSkinThumbnail(
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx - eyeOx - 1.2f, eyeOy - 1.2f))
     drawCircle(color = Color.White.copy(alpha = alpha * 0.85f), radius = eyeRadius * 0.35f, center = Offset(cx + eyeOx - 1.2f, eyeOy - 1.2f))
 
-    // 5. Mũi
     drawCircle(color = p.noseColor.copy(alpha = alpha), radius = r * 0.09f, center = Offset(cx, cy + r * 0.16f))
 
-    // 6. Má
     drawCircle(color = Color(0x55FFA8A4).copy(alpha = alpha), radius = r * 0.16f, center = Offset(cx - r * 0.52f, cy + r * 0.18f))
     drawCircle(color = Color(0x55FFA8A4).copy(alpha = alpha), radius = r * 0.16f, center = Offset(cx + r * 0.52f, cy + r * 0.18f))
 }
 
 private fun DrawScope.drawHeadwearThumbnail(id: String, cx: Float, cy: Float, w: Float, h: Float, alpha: Float) {
-    // Bóng đổ đáy
     drawOval(
         color = Color(0x15302020).copy(alpha = alpha * 0.5f),
         topLeft = Offset(cx - w * 0.30f, cy + h * 0.28f),
@@ -1253,7 +1236,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             }
             drawPath(sweaterPath, color = Color(0xFFE8927C).copy(alpha = alpha))
             drawPath(sweaterPath, color = Color(0xFF8C3E2D).copy(alpha = alpha), style = Stroke(width = 2.2f))
-            // Gân sọc áo len ấm áp
             drawLine(color = Color(0xFFFFF2D8).copy(alpha = alpha), start = Offset(cx - w * 0.24f, cy), end = Offset(cx + w * 0.24f, cy), strokeWidth = 2.8f)
             drawLine(color = Color(0xFFFFF2D8).copy(alpha = alpha), start = Offset(cx - w * 0.28f, cy + h * 0.12f), end = Offset(cx + w * 0.28f, cy + h * 0.12f), strokeWidth = 2.8f)
         }
@@ -1274,7 +1256,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             drawCircle(color = Color(0xFFFFD166).copy(alpha = alpha), radius = w * 0.038f, center = Offset(cx + w * 0.16f, cy - h * 0.02f))
         }
         WardrobeRegistry.ID_BODY_ROYAL_CAPE -> {
-            // Áo choàng nhung đỏ phủ thân
             val capePath = Path().apply {
                 moveTo(cx - w * 0.22f, cy - h * 0.20f)
                 cubicTo(cx - w * 0.38f, cy + h * 0.05f, cx - w * 0.42f, cy + h * 0.32f, cx - w * 0.36f, cy + h * 0.36f)
@@ -1285,7 +1266,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             drawPath(capePath, color = Color(0xFFA82A2D).copy(alpha = alpha))
             drawPath(capePath, color = Color(0xFF480E12).copy(alpha = alpha), style = Stroke(width = 2f))
 
-            // Viền vàng 2 bên
             val trimL = Path().apply {
                 moveTo(cx - w * 0.18f, cy - h * 0.14f)
                 cubicTo(cx - w * 0.34f, cy + h * 0.05f, cx - w * 0.38f, cy + h * 0.28f, cx - w * 0.32f, cy + h * 0.32f)
@@ -1297,7 +1277,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             drawPath(trimL, color = Color(0xFFFFD460).copy(alpha = alpha), style = Stroke(width = 1.6f))
             drawPath(trimR, color = Color(0xFFFFD460).copy(alpha = alpha), style = Stroke(width = 1.6f))
 
-            // Nẹp chỉ vàng giữa thân
             drawLine(
                 color = Color(0xFFFFD460).copy(alpha = alpha),
                 start = Offset(cx, cy - h * 0.04f),
@@ -1305,7 +1284,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
                 strokeWidth = 1.5f
             )
 
-            // Gấu áo viền lông trắng dưới đáy
             val furHem = Path().apply {
                 moveTo(cx - w * 0.36f, cy + h * 0.36f)
                 quadraticTo(cx, cy + h * 0.39f, cx + w * 0.36f, cy + h * 0.36f)
@@ -1316,7 +1294,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             drawPath(furHem, color = Color(0xFFFFF9F0).copy(alpha = alpha))
             drawPath(furHem, color = Color(0xFF480E12).copy(alpha = alpha), style = Stroke(width = 1.5f))
 
-            // Bo tay áo viền lông trắng 2 bên
             drawOval(
                 color = Color(0xFFFFF9F0).copy(alpha = alpha),
                 topLeft = Offset(cx - w * 0.30f, cy + h * 0.04f),
@@ -1340,7 +1317,6 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
                 style = Stroke(width = 1.2f)
             )
 
-            // Cổ lông trắng Ermine
             val collar = Path().apply {
                 moveTo(cx - w * 0.26f, cy - h * 0.20f)
                 quadraticTo(cx, cy - h * 0.08f, cx + w * 0.26f, cy - h * 0.20f)
@@ -1351,12 +1327,10 @@ private fun DrawScope.drawBodywearThumbnail(id: String, cx: Float, cy: Float, w:
             drawPath(collar, color = Color(0xFFFFF9F0).copy(alpha = alpha))
             drawPath(collar, color = Color(0xFF480E12).copy(alpha = alpha), style = Stroke(width = 1.8f))
 
-            // Hạt đốm lông đen
             listOf(-0.15f, -0.05f, 0.05f, 0.15f).forEach { fx ->
                 drawCircle(color = Color(0xFF2C2424).copy(alpha = alpha), radius = w * 0.018f, center = Offset(cx + fx * w, cy - h * 0.11f))
             }
 
-            // Trâm cài hoàng gia nạm ngọc ruby
             drawCircle(color = Color(0xFFFFD460).copy(alpha = alpha), radius = w * 0.045f, center = Offset(cx, cy - h * 0.05f))
             drawCircle(color = Color(0xFFD90429).copy(alpha = alpha), radius = w * 0.025f, center = Offset(cx, cy - h * 0.05f))
         }

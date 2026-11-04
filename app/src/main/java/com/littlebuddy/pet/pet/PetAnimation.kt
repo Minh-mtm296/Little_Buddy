@@ -64,7 +64,7 @@ fun rememberPetAnimationState(
     val isStretching = actionState == PetActionState.STRETCHING
     val isEating = actionState == PetActionState.EATING || petState.temporaryMood == PetMood.EATING
 
-    // ── 1. HƠI THỞ TỰ NHIÊN (IDLE BREATHING) ──
+    // 1. Hơi thở tự nhiên (Idle Breathing)
     val breatheScaleState = infiniteTransition.animateFloat(
         initialValue = 0.985f,
         targetValue = 1.015f,
@@ -75,7 +75,6 @@ fun rememberPetAnimationState(
         label = "breathe"
     )
 
-    // Hơi thở sâu khi ngủ (chỉ kích hoạt nhịp dài khi ngủ)
     val sleepingBreathScaleState = if (isSleeping) {
         infiniteTransition.animateFloat(
             initialValue = 0.96f,
@@ -88,7 +87,7 @@ fun rememberPetAnimationState(
         )
     } else null
 
-    // ── 2. ĐUÔI NGOE NGUẨY (TAIL WAG) ──
+    // 2. Đuôi ngoe nguẩy (Tail Wag)
     val tailSpeed = when {
         isSleeping -> 3200
         isWalking -> 650
@@ -111,7 +110,7 @@ fun rememberPetAnimationState(
         label = "tailWag"
     )
 
-    // ── 3. CHU KỲ BƯỚC ĐI BỘ (WALK CYCLE & SWAY - CHỈ CHẠY KHI ĐI BỘ) ──
+    // 3. Chu kỳ bước đi bộ (Walk Cycle & Sway)
     val walkCycleState = if (isWalking) {
         infiniteTransition.animateFloat(
             initialValue = 0f,
@@ -124,7 +123,7 @@ fun rememberPetAnimationState(
         )
     } else null
 
-    // ── 4. RUNG RINH GẦM GỪ KHI VUỐT VE (PURR VIBRATION - CHỈ CHẠY KHI VUỐT VE) ──
+    // 4. Rung rinh khi vuốt ve (Purr Vibration)
     val purrWaveState = if (isPetting) {
         infiniteTransition.animateFloat(
             initialValue = -1.2f,
@@ -137,7 +136,7 @@ fun rememberPetAnimationState(
         )
     } else null
 
-    // ── 5. VƯƠN VAI THỨC DẬY (STRETCHING) ──
+    // 5. Vươn vai thức dậy (Stretching)
     val stretchAnimatable = remember { Animatable(0f) }
     LaunchedEffect(isStretching) {
         if (isStretching) {
@@ -149,7 +148,7 @@ fun rememberPetAnimationState(
         }
     }
 
-    // ── 6. HIỆU ỨNG HẠT BAY BỔNG (Trái tim, Sao, Zzz) ──
+    // 6. Hiệu ứng hạt bay bổng (Trái tim, Sao, Zzz)
     val effectProgressState = infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -160,7 +159,7 @@ fun rememberPetAnimationState(
         label = "effectProgress"
     )
 
-    // ── 7. CHỚP MẮT TỰ NHIÊN (NATURAL BLINK) ──
+    // 7. Chớp mắt tự nhiên (Natural Blink)
     var eyeBlinkScale by remember { mutableFloatStateOf(1f) }
     LaunchedEffect(isSleeping) {
         if (!isSleeping) {
@@ -181,7 +180,7 @@ fun rememberPetAnimationState(
         }
     }
 
-    // ── 8. NHẢY TƯNG TƯNG KHI TƯƠNG TÁC (HOP / BOUNCE) ──
+    // 8. Nhảy tưng tưng khi tương tác (Hop / Bounce)
     val hopOffsetY = remember { Animatable(0f) }
     LaunchedEffect(petState.lastInteractionTimestamp) {
         if (!isSleeping && !isWalking) {
@@ -201,7 +200,7 @@ fun rememberPetAnimationState(
         }
     }
 
-    // ── 9. NHAI NHÓP NHÉP (CHEW OFFSET) ──
+    // 9. Nhai nhóp nhép (Chew Offset)
     val chewOffsetState = animateFloatAsState(
         targetValue = if (isEating) 6f else 0f,
         animationSpec = if (isEating) {
@@ -215,7 +214,7 @@ fun rememberPetAnimationState(
         label = "chew"
     )
 
-    // ── 10. VẪY TAI NHẸ NHÀNG (EAR WIGGLE) ──
+    // 10. Vẫy tai nhẹ nhàng (Ear Wiggle)
     var earWiggle by remember { mutableFloatStateOf(0f) }
     LaunchedEffect(actionState) {
         if (actionState == PetActionState.PETTING || petState.currentMood == PetMood.PLAYFUL) {

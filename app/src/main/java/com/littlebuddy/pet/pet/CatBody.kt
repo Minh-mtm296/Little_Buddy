@@ -306,7 +306,6 @@ internal fun DrawScope.drawCurledFrontPaws(
     }
     val strokeStyle = Stroke(width = strokeW, cap = StrokeCap.Round, join = StrokeJoin.Round)
 
-    // Tay trước trái
     withTransform({
         translate(-reach * 0.14f * u, -liftL * 0.10f * u + reach * 0.20f * u)
     }) {
@@ -314,7 +313,6 @@ internal fun DrawScope.drawCurledFrontPaws(
         drawPath(paw, color = palette.outlineColor, style = strokeStyle)
     }
 
-    // Tay trước phải đối xứng qua trục tâm cx
     withTransform({
         scale(-1f, 1f, pivot = Offset(cx, cy))
         translate(-reach * 0.14f * u, -liftR * 0.10f * u + reach * 0.20f * u)
@@ -352,7 +350,6 @@ internal fun DrawScope.drawShortHindFeet(
         -leftPhase
     }
 
-    // Chân sau trái
     val leftFoot = Path().apply {
         moveTo(cx - u * 0.46f, baseFeetY + leftPhase)
         lineTo(cx - u * 0.46f, baseFeetY + u * 0.09f + leftPhase)
@@ -362,7 +359,6 @@ internal fun DrawScope.drawShortHindFeet(
     drawPath(leftFoot, color = palette.bodyColor)
     drawPath(leftFoot, color = palette.outlineColor, style = Stroke(width = strokeW * 0.9f, cap = StrokeCap.Round, join = StrokeJoin.Round))
 
-    // Chân sau phải
     val rightFoot = Path().apply {
         moveTo(cx + u * 0.26f, baseFeetY + rightPhase)
         lineTo(cx + u * 0.26f, baseFeetY + u * 0.09f + rightPhase)

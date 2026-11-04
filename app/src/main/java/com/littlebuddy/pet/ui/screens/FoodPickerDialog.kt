@@ -86,7 +86,6 @@ fun FoodPickerDialog(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Tiêu đề
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -112,7 +111,6 @@ fun FoodPickerDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // 3 lựa chọn thức ăn
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     FoodOptionCard(
                         food = BowlFood.DRY_FOOD,
@@ -139,7 +137,6 @@ fun FoodPickerDialog(
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                // Nút hủy
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -182,7 +179,6 @@ private fun FoodOptionCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Hình ảnh thực tế của bát đồ ăn
             Image(
                 painter = painterResource(id = food.drawableRes),
                 contentDescription = food.displayName,
@@ -203,7 +199,6 @@ private fun FoodOptionCard(
                 )
             }
 
-            // Boost stats hiển thị nhỏ bên phải
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "+${food.hungerBoost.toInt()}% no",

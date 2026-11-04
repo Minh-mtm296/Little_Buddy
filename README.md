@@ -11,7 +11,7 @@
 - **Điểm nổi bật**:
   1. **Đồ họa Canvas Vector đa tầng**: Mèo có đầy đủ cử chỉ tự nhiên: nhịp thở phập phồng, chớp mắt, quay đầu theo hướng đi, chân bước so le, vươn vai duỗi người khi thức giấc, cuộn tròn khi ngủ say và híp mắt cười khi được vuốt ve.
   2. **Tối ưu Draw-Phase Animation (60 FPS)**: Đọc trạng thái hoạt ảnh trực tiếp ở pha Vẽ (Draw Phase) qua `rememberCatClock` và các lambda provider, bỏ qua hoàn toàn Recomposition và Layout Phase không cần thiết.
-  3. **Hệ thống Tủ đồ & Cá nhân hóa (Wardrobe Studio)**: Đổi màu lông (Mèo Xiêm, Tam thể, Mướp gừng, Đen mun, Tuyết trắng) và phối phụ kiện đa dạng (mũ nơ, vòng cổ chuông, khăn quàng ấm, áo yếm). Hỗ trợ responsive layout cả xoay dọc lẫn xoay ngang (_Portrait & Landscape_).
+  3. **Hệ thống Tủ đồ & Cá nhân hóa (Wardrobe Studio)**: Đổi màu lông (Mèo Xiêm, Tam thể, Mướp gừng, Đen mun, Tuyết trắng, Xám tro) và phối phụ kiện đa dạng (mũ nơ, vương miện, vòng cổ chuông, khăn quàng, ngọc trai, áo len, quần yếm, áo choàng hoàng gia). Hỗ trợ responsive layout cả xoay dọc lẫn xoay ngang (_Portrait & Landscape_).
   4. **State Machine & Gameplay Loop chặt chẽ**: Quản lý rành mạch các trạng thái hành động (`IDLE`, `WALKING`, `EATING`, `SLEEPING`, `WAKING_UP`, `STRETCHING`, `PLAYING`, `PETTING`).
   5. **Bền vững dữ liệu & Đồng bộ thời gian thực**: Lưu trữ qua `SharedPreferences`, tự động bù trừ chỉ số suy giảm khi app chạy ngầm (_Android Doze Mode_) thông qua vòng đời Activity.
   6. **Clean Code & Unit Testing**: Áp dụng nguyên tắc SOLID, phân tách rõ ràng Domain Model (`PetState`) và UI Controller (`PetViewModel`), bộ 27 Unit Test cases tự động đạt tỷ lệ pass 100%.
@@ -53,7 +53,7 @@ app/src/
 │   │   │   ├── CatEffects.kt                # Canvas: Trái tim bay bổng, ngôi sao lấp lánh khi vui vẻ
 │   │   │   ├── CatFace.kt                   # Canvas: Mặt nạ màu sẫm (Seal Point), mắt anime, mũi miệng
 │   │   │   ├── CatSleeping.kt               # Canvas: Mèo cuộn tròn ngủ, đệm ngủ, hiệu ứng Zzz
-│   │   │   ├── CatWardrobeCanvas.kt         # Canvas: Phụ kiện mũ, vòng cổ, áo yếm (tư thế đứng & ngủ)
+│   │   │   ├── CatWardrobeCanvas.kt         # Canvas: Phụ kiện mũ, vòng cổ, trang phục thân (tư thế đứng & ngủ)
 │   │   │   ├── PetAnimation.kt              # Đồng hồ CatClock, Pose interpolator (lerp, smoothstep)
 │   │   │   ├── PetCanvas.kt                 # Composable Canvas kết nối toàn bộ các tầng vẽ của mèo
 │   │   │   ├── PetMood.kt                   # Enum cảm xúc (HAPPY, NEUTRAL, HUNGRY, SLEEPY, PLAYFUL, EATING)
@@ -139,8 +139,9 @@ Màn hình Tủ đồ (`WardrobeScreen`) sở hữu bục thời trang xoay quan
    - _Mèo Mướp gừng (Ginger Tabby)_: Bộ lông cam ấm áp cùng các vệt sọc tinh nghịch.
    - _Mèo Đen mun (Midnight Black)_: Lông đen tuyền cùng đôi mắt hổ phách huyền bí.
    - _Mèo Tuyết trắng (Pure White)_: Bộ lông trắng muốt như bông tuyết.
-2. **Mũ & Nơ (Headwear)**: Mũ nồi họa sĩ Beret, Nơ hoa cúc vàng, Mũ cói mùa hè.
-3. **Vòng cổ & Khăn quàng (Neckwear)**: Vòng cổ chuông vàng may mắn, Khăn quàng len đỏ ấm áp, Nơ bướm xanh.
+   - _Mèo Xám tro (Ash Grey)_: Bộ lông xám tro thanh lịch, quý phái.
+2. **Mũ & Nơ (Headwear)**: Nơ hồng ngọt ngào, Mũ cói mùa hè, Mũ nồi họa sĩ Beret, Vòng hoa cúc trắng, Vương miện hoàng gia.
+3. **Vòng cổ & Khăn quàng (Neckwear)**: Vòng cổ chuông vàng may mắn, Khăn quàng len đỏ ấm áp, Nơ bướm xanh, Chuỗi ngọc trai quý phái.
 4. **Trang phục thân (Bodywear)**: Quần yếm denim vintage, Áo len dệt kim kẻ sọc mùa đông, Áo choàng nhung đỏ hoàng gia viền lông Ermine.
 5. **Cơ chế cấp độ mở khóa**: Mỗi vật phẩm đều yêu cầu cấp độ tương ứng của thú cưng để mở khóa, tạo động lực chăm sóc và tương tác hàng ngày.
 
