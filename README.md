@@ -171,9 +171,7 @@ Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn di�
 - **JDK**: Java 17 trở lên (đã tích hợp sẵn trong Android Studio - JBR).
 - **Thiết bị chạy**: Android 7.0 (API 24) trở lên, khuyến nghị Android 12+.
 
-### 8.2. Các bước mở và chạy ứng dụng (Không cần Git)
-
-Dự án nộp bài là một gói mã nguồn hoàn chỉnh, độc lập, có thể chạy trực tiếp mà không cần cài đặt Git hay chạy lệnh `git clone`:
+### 8.2. Các bước mở và chạy ứng dụng 
 
 1. **Giải nén file bài nộp**:
    - Giải nén file `52400002_52400022_52400040_LITTLE BUDDY.zip`.
