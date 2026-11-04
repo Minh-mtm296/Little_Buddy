@@ -92,12 +92,9 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Số lần bắt cần thiết để kết thúc 1 mini-game và hiện Victory Card */
 private const val GAME_MAX_CATCH = 3
 
-/**
- * Dialog chọn trò chơi — hiện 2 lựa chọn: Cuộn len & Lông vũ
- */
+
 @Composable
 fun GamePickerDialog(
     petState: PetState,
@@ -387,14 +384,7 @@ private fun RewardBadge(
     }
 }
 
-/**
- * Màn hình mini-game Đuổi bắt cuộn len.
- * Đồng bộ nhân vật Mèo Chibi Canvas thật của bé mèo (giữ Skin + phụ kiện mũ/nơ).
- * Cơ chế hoạt họa vồ bắt sống động:
- * 1. Nhún người lấy đà (Crouch / Squash)
- * 2. Phóng vọt parabol theo đường cong không trung (Leap Arch)
- * 3. Tiếp đất vồ trúng cuộn len nảy tưng, bung tỏa sao vàng & tim bay!
- */
+
 @Composable
 fun YarnChaseGame(
     petState: PetState,
@@ -1032,7 +1022,6 @@ private fun DrawScope.drawYarnBall(
     drawPath(tailPath, color = Color(0xFFD3543A), style = Stroke(width = 3.2f, cap = StrokeCap.Round))
 }
 
-/** Vẽ cần câu que gỗ + dây cước + chùm lông vũ đung đưa */
 private fun DrawScope.drawFeatherWand(
     wandTip: Offset,
     featherPos: Offset,
@@ -1088,7 +1077,6 @@ private fun DrawScope.drawFeatherWand(
     }
 }
 
-/** Vẽ từng nhánh lông vũ mềm mại */
 private fun DrawScope.drawSingleFeather(cx: Float, cy: Float, len: Float, mainColor: Color) {
     drawLine(
         color = mainColor.copy(alpha = 0.9f),

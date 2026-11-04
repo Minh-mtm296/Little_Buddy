@@ -84,11 +84,7 @@ fun StatProgressBar(
     }
 }
 
-/**
- * Thanh chỉ số thu gọn (1 hàng ngang) cho màn hình chính.
- * Hiển thị 3 chỉ số cốt lõi: Độ no (🍚), Niềm vui (💕), Năng lượng (⚡).
- * Màu sắc đồng bộ chuẩn theo Theme: Rosewood, SageLeaf, MistySky.
- */
+
 @Composable
 fun CompactStatsRow(
     petState: PetState,
