@@ -84,8 +84,8 @@ app/src/
 │       └── values/                          # Strings, Colors, Themes XML
 └── test/
     └── java/com/littlebuddy/pet/
-        ├── PetStateTest.kt                  # 21 test cases kiểm tra domain model, EXP, thời gian suy giảm
-        └── WardrobeTest.kt                  # 6 test cases kiểm tra logic trang bị và cấp độ mở khóa
+        ├── PetStateTest.kt                  # 18 test cases kiểm tra domain model, EXP, thời gian suy giảm
+        └── WardrobeTest.kt                  # 9 test cases kiểm tra logic trang bị và cấp độ mở khóa
 ```
 
 ---
@@ -151,12 +151,12 @@ Màn hình Tủ đồ (`WardrobeScreen`) sở hữu bục thời trang xoay quan
 
 Dự án sở hữu bộ **27 Unit Test cases** tự động bao phủ toàn diện các ràng buộc logic:
 
-- `PetStateTest` (21 test cases):
+- `PetStateTest` (18 test cases):
   - Ràng buộc tăng/giảm chỉ số khi Cho ăn, Vuốt ve, Chơi mini-game.
   - Xử lý thăng cấp lũy tiến khi nhận lượng lớn EXP cùng lúc.
   - Quy tắc suy giảm chỉ số theo thời gian và hồi phục năng lượng khi ngủ.
   - Chuẩn hóa tên thú cưng và giới hạn trần điểm thân thiết (200 điểm).
-- `WardrobeTest` (6 test cases):
+- `WardrobeTest` (9 test cases):
   - Khởi tạo trang phục mặc định (Mèo Xiêm, không phụ kiện).
   - Thử đồ, tháo đồ theo danh mục và khôi phục mặc định trong Live Preview.
   - Kiểm tra điều kiện cấp độ yêu cầu khi mở khóa trang phục.
