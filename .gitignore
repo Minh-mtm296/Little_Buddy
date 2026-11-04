@@ -33,3 +33,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Local helper scripts
+gw.ps1
